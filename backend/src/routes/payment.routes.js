@@ -1,0 +1,2 @@
+const express=require('express'); const controller=require('../controllers/payment.controller'); const authRequired=require('../middlewares/authRequired'); const requireRole=require('../middlewares/requireRole'); const {sandboxPaymentValidator,webhookValidator}=require('../validators/payment.validators');
+const router=express.Router(); router.post('/sandbox',authRequired,requireRole('comprador'),sandboxPaymentValidator,controller.sandbox); router.post('/webhook-simulated',authRequired,requireRole('administrador'),webhookValidator,controller.webhook); module.exports=router;

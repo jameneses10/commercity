@@ -1,0 +1,35 @@
+{
+  "name": "commercity-backend",
+  "version": "1.0.0",
+  "description": "Backend base para CommerCity marketplace multi-tienda.",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "db:migrate": "node scripts/dbMigrate.js",
+    "db:seed": "node scripts/dbSeed.js"
+  },
+  "keywords": [
+    "commercity",
+    "marketplace",
+    "express",
+    "mysql"
+  ],
+  "author": "CommerCity SENA ADSO",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.2",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.11.0",
+    "mysql2": "^3.22.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

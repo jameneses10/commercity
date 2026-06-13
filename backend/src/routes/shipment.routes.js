@@ -1,0 +1,4 @@
+const express=require('express'); const c=require('../controllers/shipment.controller'); const authRequired=require('../middlewares/authRequired'); const requireRole=require('../middlewares/requireRole'); const {dispatchValidator,statusValidator}=require('../validators/shipment.validators');
+const shipmentRouter=express.Router(); shipmentRouter.get('/my-shipments',authRequired,requireRole('comprador'),c.my); shipmentRouter.patch('/:id/dispatch',authRequired,requireRole('vendedor'),dispatchValidator,c.dispatch); shipmentRouter.patch('/:id/status',authRequired,requireRole('vendedor','administrador'),statusValidator,c.status);
+const sellerShipmentRouter=express.Router(); sellerShipmentRouter.get('/shipments',authRequired,requireRole('vendedor'),c.seller);
+module.exports={shipmentRouter,sellerShipmentRouter};

@@ -1,0 +1,2 @@
+const express=require('express'); const controller=require('../controllers/cart.controller'); const authRequired=require('../middlewares/authRequired'); const requireRole=require('../middlewares/requireRole'); const {cartValidator}=require('../validators/cart.validators');
+const router=express.Router(); router.post('/validate',authRequired,requireRole('comprador'),cartValidator,controller.validate); module.exports=router;

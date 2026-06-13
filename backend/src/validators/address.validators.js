@@ -1,0 +1,4 @@
+const {body}=require('express-validator');
+const createAddressValidator=[body('departamento').trim().notEmpty().isLength({max:100}),body('ciudad').trim().notEmpty().isLength({max:100}),body('direccion').trim().notEmpty().isLength({max:255}),body('codigo_postal').optional({nullable:true,checkFalsy:true}).trim().isLength({max:20}),body('telefono').trim().notEmpty().isLength({max:30}),body('es_principal').optional().isBoolean().toBoolean()];
+const updateAddressValidator=[body('departamento').optional().trim().notEmpty().isLength({max:100}),body('ciudad').optional().trim().notEmpty().isLength({max:100}),body('direccion').optional().trim().notEmpty().isLength({max:255}),body('codigo_postal').optional({nullable:true,checkFalsy:true}).trim().isLength({max:20}),body('telefono').optional().trim().notEmpty().isLength({max:30}),body('es_principal').optional().isBoolean().toBoolean()];
+module.exports={createAddressValidator,updateAddressValidator};

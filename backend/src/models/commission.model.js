@@ -1,0 +1,2 @@
+async function create(conn,{pedido_id,tienda_id,subtotal_tienda,porcentaje_comision,valor_comision,valor_vendedor}){ await conn.query('INSERT INTO comisiones (pedido_id,tienda_id,subtotal_tienda,porcentaje_comision,valor_comision,valor_vendedor) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE subtotal_tienda=VALUES(subtotal_tienda)',[pedido_id,tienda_id,subtotal_tienda,porcentaje_comision,valor_comision,valor_vendedor]); }
+module.exports={create};
