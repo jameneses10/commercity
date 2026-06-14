@@ -29,6 +29,17 @@ function normalizeProductState(stock, currentState = 'activo') {
   if (numericStock > 0 && currentState === 'agotado') return 'activo';
   return currentState;
 }
+function extraProductFields(payload) {
+  const data = {};
+  if (payload.precio_anterior !== undefined) data.precio_anterior = payload.precio_anterior || null;
+  if (payload.descuento_porcentaje !== undefined) data.descuento_porcentaje = Number(payload.descuento_porcentaje || 0);
+  if (payload.fecha_publicacion !== undefined) data.fecha_publicacion = payload.fecha_publicacion || null;
+  if (payload.fecha_caducidad !== undefined) data.fecha_caducidad = payload.fecha_caducidad || null;
+  const pub = data.fecha_publicacion ? new Date(data.fecha_publicacion) : null;
+  const cad = data.fecha_caducidad ? new Date(data.fecha_caducidad) : null;
+  if (pub && cad && cad <= pub) throw httpError('fecha_caducidad debe ser posterior a fecha_publicacion.', 400);
+  return data;
+}
 
 async function listPublicProducts(query) {
   const page = Math.max(parseInt(query.page || '1', 10), 1);
@@ -68,6 +79,7 @@ async function createProductForSeller(userId, payload) {
     slug,
     descripcion: payload.descripcion.trim(),
     precio: payload.precio,
+    ...extraProductFields(payload),
     stock,
     estado,
     imagen_url: payload.imagen_url || null,
@@ -90,6 +102,7 @@ async function updateProduct(user, productId, payload) {
   if (payload.nombre !== undefined) { data.nombre = payload.nombre.trim(); data.slug = createSlug(payload.nombre); await ensureUniqueProductSlug(product.tienda_id, data.slug, product.id); }
   if (payload.descripcion !== undefined) data.descripcion = payload.descripcion.trim();
   if (payload.precio !== undefined) data.precio = payload.precio;
+  Object.assign(data, extraProductFields(payload));
   if (payload.stock !== undefined) data.stock = Number(payload.stock);
   if (payload.imagen_url !== undefined) data.imagen_url = payload.imagen_url || null;
   if (payload.estado !== undefined) data.estado = payload.estado;

@@ -1,0 +1,4 @@
+const {body}=require('express-validator');
+const bankAccountValidator=[body('banco').trim().isLength({min:2,max:120}).withMessage('Banco requerido.'),body('tipo_cuenta').isIn(['ahorros','corriente','nequi','daviplata','simulada']).withMessage('Tipo de cuenta inválido.'),body('numero_cuenta_simulado').trim().isLength({min:4,max:80}).withMessage('Número simulado requerido.'),body('titular').trim().isLength({min:2,max:160}).withMessage('Titular requerido.')];
+const bankAccountUpdateValidator=[body('banco').optional().trim().isLength({min:2,max:120}),body('tipo_cuenta').optional().isIn(['ahorros','corriente','nequi','daviplata','simulada']),body('numero_cuenta_simulado').optional().trim().isLength({min:4,max:80}),body('titular').optional().trim().isLength({min:2,max:160}),body('estado').optional().isIn(['activa','inactiva'])];
+module.exports={bankAccountValidator,bankAccountUpdateValidator};

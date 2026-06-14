@@ -46,7 +46,10 @@ async function updateStoreById(id, data) {
 
 async function listActiveProductsByStore(storeId, { limit, offset }) {
   const [rows] = await pool.query(
-    `SELECT p.id, p.tienda_id, p.categoria_id, p.nombre, p.slug, p.descripcion, p.precio, p.stock,
+    `SELECT p.id, p.tienda_id, p.categoria_id, p.nombre, p.slug, p.descripcion, p.precio,
+            p.precio_anterior, p.descuento_porcentaje,
+            ROUND(CASE WHEN p.descuento_porcentaje > 0 THEN p.precio * (1 - p.descuento_porcentaje / 100) ELSE p.precio END, 2) AS precio_final,
+            p.fecha_publicacion, p.fecha_caducidad, p.stock,
             p.estado, p.imagen_url, p.calificacion_promedio, p.total_resenas, p.created_at, p.updated_at,
             c.nombre AS categoria_nombre, c.slug AS categoria_slug
      FROM productos p

@@ -1,0 +1,2 @@
+const express=require('express'); const c=require('../controllers/sellerStats.controller'); const authRequired=require('../middlewares/authRequired'); const requireRole=require('../middlewares/requireRole');
+const router=express.Router(); router.use(authRequired,requireRole('vendedor')); router.get('/store/stats',c.stats); router.get('/store/earnings',c.earnings); router.get('/store/out-of-stock-products',c.outOfStock); router.get('/store/sold-products',c.soldProducts); module.exports=router;

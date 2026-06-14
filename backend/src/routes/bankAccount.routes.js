@@ -1,0 +1,2 @@
+const express=require('express'); const c=require('../controllers/bankAccount.controller'); const authRequired=require('../middlewares/authRequired'); const requireRole=require('../middlewares/requireRole'); const {bankAccountValidator,bankAccountUpdateValidator}=require('../validators/bankAccount.validators');
+const router=express.Router(); router.use(authRequired,requireRole('vendedor')); router.get('/bank-account',c.get); router.post('/bank-account',bankAccountValidator,c.create); router.patch('/bank-account',bankAccountUpdateValidator,c.update); module.exports=router;

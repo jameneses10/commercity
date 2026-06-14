@@ -768,3 +768,131 @@ frontend-web/js/pages/account-settings.js
 ```
 
 El registro web ahora exige aceptar términos versión `v1.0`.
+
+
+---
+
+# Fase 6.1B - Tiendas, productos ampliados, estadísticas, ganancias y reportes
+
+## Migración nueva
+
+```bash
+npm run db:migrate
+```
+
+Archivo:
+
+```text
+database/migrations/006_create_fase_6_1B_tienda_productos_estadisticas.sql
+```
+
+## Columnas nuevas en productos
+
+```text
+precio_anterior
+descuento_porcentaje
+fecha_publicacion
+fecha_caducidad
+reportado
+total_reportes
+```
+
+Reglas:
+
+- `descuento_porcentaje` debe estar entre 0 y 100.
+- `precio_final` se calcula en consultas como precio con descuento si aplica.
+- Si no hay descuento, `precio_final = precio`.
+- `fecha_caducidad` es opcional.
+- El catálogo público oculta productos caducados y productos ocultos/eliminados.
+- Los productos agotados pueden aparecer, marcados con estado `agotado`.
+
+## Tablas nuevas
+
+```text
+cuentas_bancarias_vendedores
+reportes_productos
+```
+
+## Estadísticas y ganancias vendedor
+
+```text
+GET /api/v1/seller/store/stats
+GET /api/v1/seller/store/earnings
+GET /api/v1/seller/store/out-of-stock-products
+GET /api/v1/seller/store/sold-products
+```
+
+Los cálculos se basan en pedidos pagados, `pedido_detalles`, `comisiones` y productos de la tienda del vendedor.
+
+Regla académica de ganancias:
+
+```text
+10% comisión plataforma
+90% ganancia vendedor
+```
+
+## Cuenta bancaria simulada
+
+```text
+GET   /api/v1/seller/bank-account
+POST  /api/v1/seller/bank-account
+PATCH /api/v1/seller/bank-account
+```
+
+La cuenta bancaria es simulada y solo para fines académicos. No se debe ingresar información financiera real.
+
+## Reportes de productos
+
+```text
+POST  /api/v1/products/:id/report
+GET   /api/v1/admin/reports/products
+PATCH /api/v1/admin/reports/products/:id
+```
+
+Estados:
+
+```text
+pendiente
+revisado
+rechazado
+accionado
+```
+
+Al reportar producto:
+
+- se crea reporte,
+- se incrementa `total_reportes`,
+- se marca `reportado = true`,
+- se notifica a administradores activos,
+- se registra log.
+
+Si el admin marca reporte como `accionado` con `ocultar_producto = true`, el producto pasa a estado `oculto`.
+
+## Frontend web Fase 6.1B
+
+Páginas nuevas/entradas:
+
+```text
+frontend-web/pages/seller-store-stats.html
+frontend-web/pages/seller-earnings.html
+frontend-web/pages/product-report.html
+frontend-web/pages/seller-bank-account.html
+frontend-web/pages/admin-product-reports.html
+```
+
+APIs frontend nuevas:
+
+```text
+frontend-web/js/api/sellerStats.api.js
+frontend-web/js/api/bankAccount.api.js
+frontend-web/js/api/productReports.api.js
+```
+
+Páginas/componentes actualizados:
+
+```text
+frontend-web/components/product-card.js
+frontend-web/js/pages/product-detail.js
+frontend-web/js/pages/seller-dashboard.js
+frontend-web/js/pages/admin-dashboard.js
+```
