@@ -9,50 +9,45 @@ function sanitizeUser(user) {
     telefono: user.telefono,
     estado: user.estado,
     rol: user.rol,
+    acepta_terminos: Boolean(user.acepta_terminos),
+    terminos_version: user.terminos_version,
+    terminos_aceptados_at: user.terminos_aceptados_at,
+    deleted_at: user.deleted_at,
+    ultimo_login_at: user.ultimo_login_at,
     created_at: user.created_at,
     updated_at: user.updated_at,
   };
 }
 
-async function findUserByEmail(correo) {
-  const [rows] = await pool.query(
-    `SELECT u.id, u.rol_id, u.nombre, u.correo, u.password_hash, u.telefono,
-            u.estado, u.created_at, u.updated_at, r.nombre AS rol
+const USER_SELECT = `SELECT u.id, u.rol_id, u.nombre, u.correo, u.password_hash, u.telefono,
+            u.estado, u.acepta_terminos, u.terminos_version, u.terminos_aceptados_at,
+            u.deleted_at, u.ultimo_login_at, u.created_at, u.updated_at, r.nombre AS rol
      FROM usuarios u
-     INNER JOIN roles r ON r.id = u.rol_id
-     WHERE u.correo = ?
-     LIMIT 1`,
-    [correo]
-  );
+     INNER JOIN roles r ON r.id = u.rol_id`;
+
+async function findUserByEmail(correo) {
+  const [rows] = await pool.query(`${USER_SELECT} WHERE u.correo = ? LIMIT 1`, [correo]);
   return rows[0] || null;
 }
 
 async function findUserById(id) {
-  const [rows] = await pool.query(
-    `SELECT u.id, u.rol_id, u.nombre, u.correo, u.telefono,
-            u.estado, u.created_at, u.updated_at, r.nombre AS rol
-     FROM usuarios u
-     INNER JOIN roles r ON r.id = u.rol_id
-     WHERE u.id = ?
-     LIMIT 1`,
-    [id]
-  );
+  const [rows] = await pool.query(`${USER_SELECT} WHERE u.id = ? LIMIT 1`, [id]);
   return rows[0] || null;
 }
 
-async function createUser({ rolId, nombre, correo, passwordHash, telefono = null }) {
-  const [result] = await pool.query(
-    `INSERT INTO usuarios (rol_id, nombre, correo, password_hash, telefono, estado)
-     VALUES (?, ?, ?, ?, ?, 'activo')`,
-    [rolId, nombre, correo, passwordHash, telefono]
+async function createUser({ rolId, nombre, correo, passwordHash, telefono = null, aceptaTerminos = false, terminosVersion = null }, conn = pool) {
+  const [result] = await conn.query(
+    `INSERT INTO usuarios (rol_id, nombre, correo, password_hash, telefono, estado, acepta_terminos, terminos_version, terminos_aceptados_at)
+     VALUES (?, ?, ?, ?, ?, 'activo', ?, ?, CASE WHEN ? THEN NOW() ELSE NULL END)`,
+    [rolId, nombre, correo, passwordHash, telefono, aceptaTerminos, terminosVersion, aceptaTerminos]
   );
-
   return findUserById(result.insertId);
 }
 
-module.exports = {
-  sanitizeUser,
-  findUserByEmail,
-  findUserById,
-  createUser,
-};
+async function updateLastLogin(id){ await pool.query('UPDATE usuarios SET ultimo_login_at=NOW() WHERE id=?',[id]); }
+async function updatePassword(id,passwordHash,conn=pool){ await conn.query('UPDATE usuarios SET password_hash=? WHERE id=?',[passwordHash,id]); }
+async function updateBasic(id,{nombre,telefono}){ await pool.query('UPDATE usuarios SET nombre=COALESCE(?,nombre), telefono=? WHERE id=?',[nombre||null, telefono ?? null, id]); return findUserById(id); }
+async function deactivate(id){ await pool.query("UPDATE usuarios SET estado='inactivo', deleted_at=NOW() WHERE id=? AND estado='activo'",[id]); return findUserById(id); }
+async function upgradeToSeller(id, rolId){ await pool.query('UPDATE usuarios SET rol_id=? WHERE id=? AND estado=\'activo\'',[rolId,id]); return findUserById(id); }
+
+module.exports = { sanitizeUser, findUserByEmail, findUserById, createUser, updateLastLogin, updatePassword, updateBasic, deactivate, upgradeToSeller };

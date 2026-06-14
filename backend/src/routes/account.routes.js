@@ -1,0 +1,2 @@
+const express=require('express'); const c=require('../controllers/account.controller'); const authRequired=require('../middlewares/authRequired'); const {settingsValidator,upgradeValidator}=require('../validators/account.validators');
+const router=express.Router(); router.use(authRequired); router.get('/settings',c.getSettings); router.patch('/settings',settingsValidator,c.updateSettings); router.patch('/deactivate',c.deactivate); router.post('/upgrade-to-seller',upgradeValidator,c.upgrade); module.exports=router;

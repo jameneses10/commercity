@@ -1,0 +1,2 @@
+const express=require('express'); const c=require('../controllers/profile.controller'); const authRequired=require('../middlewares/authRequired'); const {profileValidator}=require('../validators/profile.validators');
+const router=express.Router(); router.get('/me',authRequired,c.me); router.patch('/me',authRequired,profileValidator,c.updateMe); router.get('/:userId',c.publicProfile); module.exports=router;

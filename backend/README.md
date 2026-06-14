@@ -638,3 +638,133 @@ curl -X POST http://localhost:3000/api/v1/reviews \
   -H "Authorization: Bearer TOKEN_..." \
   -d '{"producto_id":1,"pedido_id":1,"estrellas":5,"comentario":"Excelente producto"}'
 ```
+
+
+---
+
+# Fase 6.1A - Seguridad, perfiles y ajustes de cuenta
+
+## Migración nueva
+
+```bash
+npm run db:migrate
+```
+
+Archivo:
+
+```text
+database/migrations/005_create_fase_6_1A_seguridad_perfiles.sql
+```
+
+## Columnas nuevas en usuarios
+
+```text
+acepta_terminos
+terminos_version
+terminos_aceptados_at
+deleted_at
+ultimo_login_at
+```
+
+La desactivación de cuenta es lógica: se marca `estado = inactivo` y `deleted_at = NOW()`.
+
+## Tablas nuevas
+
+```text
+password_reset_tokens
+perfiles_usuarios
+terminos_aceptaciones
+```
+
+## Registro con términos
+
+`POST /api/v1/auth/register` exige aceptación explícita:
+
+```json
+{
+  "nombre": "Comprador Demo",
+  "correo": "comprador@example.com",
+  "password": "Password123!",
+  "confirmPassword": "Password123!",
+  "rol": "comprador",
+  "acepta_terminos": true,
+  "terminos_version": "v1.0"
+}
+```
+
+No se permite registro público como administrador.
+
+## Recuperación de contraseña MVP académico
+
+### Solicitar código
+
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{"correo":"usuario@example.com"}'
+```
+
+La respuesta siempre es genérica, exista o no el correo. En `NODE_ENV=development`, la API devuelve `debug_reset_code` para simular el correo sin SMTP real. No se guardan tokens ni códigos en texto plano.
+
+### Restablecer contraseña
+
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/reset-password \
+  -H "Content-Type: application/json" \
+  -d '{"correo":"usuario@example.com","codigo":"123456","password":"NuevaPassword123!","confirmPassword":"NuevaPassword123!"}'
+```
+
+## Cambio de contraseña autenticado
+
+```text
+POST /api/v1/auth/change-password
+```
+
+Requiere JWT y valida contraseña actual.
+
+## Ajustes de cuenta
+
+```text
+GET   /api/v1/account/settings
+PATCH /api/v1/account/settings
+PATCH /api/v1/account/deactivate
+POST  /api/v1/account/upgrade-to-seller
+```
+
+`upgrade-to-seller` cambia un comprador activo a vendedor si acepta condiciones. No crea tienda automáticamente.
+
+## Perfiles
+
+```text
+GET   /api/v1/profiles/me
+PATCH /api/v1/profiles/me
+GET   /api/v1/profiles/:userId
+```
+
+El perfil público no expone correo, teléfono, `password_hash`, tokens ni datos sensibles.
+
+## Frontend web Fase 6.1A
+
+Páginas nuevas:
+
+```text
+frontend-web/pages/forgot-password.html
+frontend-web/pages/reset-password.html
+frontend-web/pages/profile.html
+frontend-web/pages/public-profile.html
+frontend-web/pages/account-settings.html
+```
+
+Scripts nuevos:
+
+```text
+frontend-web/js/api/account.api.js
+frontend-web/js/api/profiles.api.js
+frontend-web/js/pages/forgot-password.js
+frontend-web/js/pages/reset-password.js
+frontend-web/js/pages/profile.js
+frontend-web/js/pages/public-profile.js
+frontend-web/js/pages/account-settings.js
+```
+
+El registro web ahora exige aceptar términos versión `v1.0`.
