@@ -896,3 +896,388 @@ frontend-web/js/pages/product-detail.js
 frontend-web/js/pages/seller-dashboard.js
 frontend-web/js/pages/admin-dashboard.js
 ```
+
+## Fase 6.1C - Social, chat, administración y notificaciones ampliadas
+
+Migración segura:
+
+```text
+backend/database/migrations/007_create_fase_6_1C_social_chat_admin_notificaciones.sql
+```
+
+Esta fase agrega interacción social y comunicación interna sin app móvil ni WebSockets.
+
+### Tablas nuevas
+
+- `seguimientos`: relación seguidor/seguido, con unicidad para evitar duplicados.
+- `conversaciones`: conversaciones básicas entre comprador y vendedor, opcionalmente asociadas a tienda o producto.
+- `mensajes_chat`: mensajes persistidos en base de datos, con estado `leido` y `leido_at`.
+- `reportes_usuarios`: reportes entre usuarios con estados `pendiente`, `revisado`, `rechazado`, `accionado`.
+
+### Cambios seguros en tablas existentes
+
+- `notificaciones` agrega campos opcionales:
+  - `entidad_tipo`
+  - `entidad_id`
+  - `url_destino`
+  - `deleted_at`
+- `usuarios.estado` permite también `baneado` para gestión administrativa.
+
+No se usan `DROP DATABASE` ni `DROP TABLE`.
+
+### Seguidores
+
+Endpoints:
+
+```text
+POST   /api/v1/profiles/:userId/follow
+DELETE /api/v1/profiles/:userId/follow
+GET    /api/v1/profiles/:userId/followers
+GET    /api/v1/profiles/:userId/following
+GET    /api/v1/profiles/:userId
+```
+
+Reglas:
+
+- No se permite seguirse a sí mismo.
+- No se duplica seguimiento.
+- El perfil público incluye `total_seguidores`, `total_siguiendo` e `is_following` cuando hay token válido.
+- Se genera notificación de nuevo seguidor.
+
+### Chat interno básico
+
+Endpoints:
+
+```text
+GET   /api/v1/chat/conversations
+POST  /api/v1/chat/conversations
+GET   /api/v1/chat/conversations/:id/messages
+POST  /api/v1/chat/conversations/:id/messages
+PATCH /api/v1/chat/conversations/:id/read
+```
+
+Reglas:
+
+- Chat básico persistido en MySQL.
+- No es tiempo real.
+- No usa WebSockets.
+- Solo participantes pueden listar, leer o enviar mensajes.
+- Valida mensajes no vacíos y máximo 1000 caracteres.
+- Crea notificación al receptor.
+- Registra log básico.
+
+### Reportes de usuarios
+
+Endpoints:
+
+```text
+POST  /api/v1/users/:id/report
+GET   /api/v1/admin/reports/users
+PATCH /api/v1/admin/reports/users/:id
+```
+
+Reglas:
+
+- No se permite auto-reporte.
+- Evita duplicados pendientes/revisados del mismo reportante hacia el mismo reportado.
+- Admin puede revisar, rechazar o accionar.
+- Si admin acciona con `inactivar_usuario=true`, el usuario reportado pasa a `inactivo`.
+- Se notifican administradores y usuarios afectados cuando corresponde.
+
+### Dashboard administrativo ampliado
+
+Endpoints:
+
+```text
+GET   /api/v1/admin/dashboard-stats
+GET   /api/v1/admin/search?q=texto
+GET   /api/v1/admin/users
+PATCH /api/v1/admin/users/:id/status
+```
+
+`GET /api/v1/admin/dashboard-stats` devuelve:
+
+- `total_compradores`
+- `total_vendedores`
+- `total_administradores`
+- `total_usuarios_activos`
+- `total_usuarios_inactivos`
+- `total_tiendas`
+- `total_productos`
+- `total_productos_activos`
+- `total_productos_agotados`
+- `total_pedidos`
+- `ventas_totales`
+- `comisiones_totales`
+- `reportes_productos_pendientes`
+- `reportes_usuarios_pendientes`
+
+`GET /api/v1/admin/search?q=` busca usuarios, productos y tiendas sin exponer `password_hash` ni datos sensibles.
+
+`PATCH /api/v1/admin/users/:id/status` permite:
+
+- `activo`
+- `inactivo`
+- `baneado`
+
+Reglas:
+
+- Admin no puede inactivarse o banearse a sí mismo.
+- Usuario inactivo o baneado no puede iniciar sesión.
+- Se registra log y se notifica al usuario cuando aplica.
+
+### Notificaciones ampliadas
+
+Endpoints nuevos:
+
+```text
+GET    /api/v1/notifications/unread-count
+PATCH  /api/v1/notifications/read-all
+DELETE /api/v1/notifications/:id
+DELETE /api/v1/notifications
+```
+
+Se mantienen:
+
+```text
+GET   /api/v1/notifications
+PATCH /api/v1/notifications/:id/read
+```
+
+Reglas:
+
+- Contador de no leídas.
+- Marcar individual como leída.
+- Marcar todas como leídas.
+- Eliminación lógica individual o total con `deleted_at`.
+- Notificaciones para nuevo mensaje, nuevo seguidor, reportes, cambios de estado de cuenta y respuestas administrativas.
+
+### Frontend web Fase 6.1C
+
+Páginas nuevas:
+
+```text
+frontend-web/pages/chat.html
+frontend-web/pages/conversation.html
+frontend-web/pages/followers.html
+frontend-web/pages/following.html
+frontend-web/pages/admin-reports-users.html
+frontend-web/pages/admin-search.html
+frontend-web/pages/admin-users.html
+frontend-web/pages/notifications.html
+```
+
+APIs frontend nuevas:
+
+```text
+frontend-web/js/api/chat.api.js
+frontend-web/js/api/follow.api.js
+frontend-web/js/api/userReports.api.js
+frontend-web/js/api/adminStats.api.js
+frontend-web/js/api/adminSearch.api.js
+```
+
+Scripts nuevos:
+
+```text
+frontend-web/js/pages/chat.js
+frontend-web/js/pages/conversation.js
+frontend-web/js/pages/followers.js
+frontend-web/js/pages/following.js
+frontend-web/js/pages/admin-reports-users.js
+frontend-web/js/pages/admin-search.js
+frontend-web/js/pages/admin-users.js
+frontend-web/js/pages/notifications.js
+```
+
+Frontend existente actualizado:
+
+- Header con acceso a chat y contador de notificaciones.
+- Perfil público con seguir/dejar de seguir, contadores, reportar usuario y mensaje a vendedor.
+- Panel comprador con acceso a chat/notificaciones.
+- Panel vendedor con acceso a chat, notificaciones, estadísticas, ganancias y cuenta bancaria simulada.
+- Panel admin con estadísticas, reportes de usuarios, búsqueda global y gestión de usuarios.
+
+### Limitaciones Fase 6.1C
+
+- Chat no es tiempo real.
+- No hay WebSockets.
+- No hay app móvil.
+- No hay push notifications externas.
+- Notificaciones son internas en base de datos.
+- La gestión administrativa avanzada se limita a estadísticas, búsqueda, reportes y estado de usuarios.
+
+## Fase backend posterior a 6.1C - Uploads, edad vendedor y chat multimedia
+
+Esta fase prepara únicamente el backend para nuevos requerimientos del documento actualizado. No incluye rediseño frontend ni app móvil.
+
+### Requisitos cubiertos
+
+- RF-018: restricción de edad para vendedores.
+- RF-023 / RF-024: logo y banner de tienda por URL o archivo de imagen.
+- RF-036: múltiples imágenes de producto.
+- RF-161: foto de perfil y descripción personal.
+- RF-167: archivos multimedia/documentos en chat.
+- RF-168: soporte de emojis nativos en chat.
+
+### Dependencia nueva
+
+```bash
+npm install multer
+```
+
+### Migración
+
+```text
+database/migrations/008_backend_uploads_chat_age.sql
+```
+
+Cambios aplicados sin `DROP DATABASE` ni `DROP TABLE`:
+
+- `usuarios.fecha_nacimiento DATE NULL`
+- `perfiles_usuarios.foto_perfil_url VARCHAR(500) NULL`
+- `perfiles_usuarios.descripcion_personal TEXT NULL`
+- Tabla `producto_imagenes`
+- Tabla `mensajes`
+- Tabla `mensaje_archivos`
+- Campos compatibles en `conversaciones`: `estado`, `creado_en`, `actualizado_en`
+
+### Uploads seguros
+
+Middleware reutilizable:
+
+```text
+src/middlewares/upload.middleware.js
+```
+
+Carpetas:
+
+```text
+uploads/stores
+uploads/products
+uploads/profiles
+uploads/chat
+```
+
+Reglas:
+
+- No se guardan archivos dentro de `src`.
+- Las rutas públicas se exponen desde `/uploads`.
+- Nombres finales generados por el sistema.
+- El nombre original se guarda solo como metadata cuando aplica.
+- Bloqueados: `.exe`, `.sh`, `.bat`, `.php`, `.js`, `.html`.
+- Imágenes permitidas: `.jpg`, `.jpeg`, `.png`, `.webp`.
+- Chat permite además: `.pdf`, `.doc`, `.docx`.
+- Tamaños máximos: tienda/producto 5MB, perfil 3MB, chat 10MB por archivo.
+
+### Registro vendedor con edad mínima
+
+`POST /api/v1/auth/register` ahora acepta:
+
+```json
+{
+  "fecha_nacimiento": "1995-01-01"
+}
+```
+
+Reglas:
+
+- Si `rol = vendedor`, `fecha_nacimiento` es obligatoria.
+- El vendedor debe ser mayor de 18 años.
+- Comprador puede registrarse sin fecha de nacimiento.
+- Registro público como administrador sigue bloqueado.
+
+### Tiendas con logo y banner por archivo
+
+Endpoints modificados:
+
+```text
+POST  /api/v1/stores
+PATCH /api/v1/stores/me
+```
+
+Aceptan `multipart/form-data`:
+
+- `logo`: archivo de imagen.
+- `banner`: archivo de imagen.
+- `logo_url`: URL http/https.
+- `banner_url`: URL http/https.
+
+Si se envía archivo, se guarda una ruta como:
+
+```text
+/uploads/stores/<nombre_seguro>.png
+```
+
+### Productos con múltiples imágenes
+
+Endpoints modificados:
+
+```text
+POST  /api/v1/products
+PATCH /api/v1/products/:id
+GET   /api/v1/products
+GET   /api/v1/products/:id
+DELETE /api/v1/products/:id/images/:imageId
+```
+
+Reglas:
+
+- Campo multipart: `images`.
+- Máximo 6 imágenes por producto.
+- `GET /products` y `GET /products/:id` devuelven `imagenes`.
+- Se mantiene compatibilidad con `imagen_url` heredado.
+- Solo vendedor dueño o administrador puede eliminar una imagen de producto.
+
+### Perfil de usuario con foto
+
+Endpoint nuevo compatible:
+
+```text
+PATCH /api/v1/profile
+GET   /api/v1/profile
+```
+
+También se mantiene:
+
+```text
+PATCH /api/v1/profiles/me
+GET   /api/v1/profiles/me
+```
+
+Acepta:
+
+- `foto`: archivo de imagen.
+- `foto_perfil_url`: URL opcional.
+- `descripcion_personal`: texto opcional.
+
+`GET /api/v1/auth/me` devuelve `foto_perfil_url` y `descripcion_personal` cuando existen.
+
+### Chat con archivos y emojis
+
+Endpoints modificados/agregados:
+
+```text
+POST   /api/v1/chat/conversations
+GET    /api/v1/chat/conversations
+GET    /api/v1/chat/conversations/:id/messages
+POST   /api/v1/chat/conversations/:id/messages
+PATCH  /api/v1/chat/conversations/:id/read
+PATCH  /api/v1/chat/messages/:id/report
+DELETE /api/v1/chat/messages/:id
+```
+
+`POST /chat/conversations/:id/messages` acepta `multipart/form-data`:
+
+- `mensaje` o `contenido`: texto, permite emojis nativos como `Hola 👋😊🔥`.
+- `files`: archivos adjuntos, máximo 5 por petición.
+
+Reglas:
+
+- Solo comprador y vendedor participantes pueden ver y enviar mensajes.
+- No se permiten mensajes vacíos sin archivos.
+- No se destruyen emojis en validación.
+- Los archivos se guardan en `uploads/chat`.
+- Se permite reportar o eliminar mensajes.
+- La eliminación de mensajes es lógica (`eliminado=true`).
+

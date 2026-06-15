@@ -65,14 +65,14 @@ async function getPublicProduct(id) {
   return product;
 }
 
-async function createProductForSeller(userId, payload) {
+async function createProductForSeller(userId, payload, images = []) {
   const store = await getSellerActiveStore(userId);
   await ensureActiveCategory(payload.categoria_id);
   const slug = createSlug(payload.nombre);
   await ensureUniqueProductSlug(store.id, slug);
   const stock = Number(payload.stock);
   const estado = stock === 0 ? 'agotado' : 'activo';
-  return productModel.createProduct({
+  const product = await productModel.createProduct({
     tienda_id: store.id,
     categoria_id: payload.categoria_id,
     nombre: payload.nombre.trim(),
@@ -84,6 +84,8 @@ async function createProductForSeller(userId, payload) {
     estado,
     imagen_url: payload.imagen_url || null,
   });
+  if (images.length) await productModel.addProductImages(product.id, images);
+  return productModel.findProductById(product.id);
 }
 
 async function assertProductPermission(product, user) {
@@ -94,7 +96,7 @@ async function assertProductPermission(product, user) {
   if (!store || store.id !== product.tienda_id) throw httpError('No tiene permisos para modificar productos de otra tienda.', 403);
 }
 
-async function updateProduct(user, productId, payload) {
+async function updateProduct(user, productId, payload, images = []) {
   const product = await productModel.findProductById(productId);
   await assertProductPermission(product, user);
   const data = {};
@@ -109,7 +111,18 @@ async function updateProduct(user, productId, payload) {
   const finalStock = data.stock !== undefined ? data.stock : product.stock;
   const finalState = data.estado !== undefined ? data.estado : product.estado;
   data.estado = normalizeProductState(finalStock, finalState);
-  return productModel.updateProductById(product.id, data);
+  const updated = await productModel.updateProductById(product.id, data);
+  if (images.length) await productModel.addProductImages(product.id, images);
+  return productModel.findProductById(updated.id);
+}
+
+async function deleteProductImage(user, productId, imageId) {
+  const product = await productModel.findProductById(productId);
+  await assertProductPermission(product, user);
+  const image = await productModel.findImageById(imageId);
+  if (!image || Number(image.producto_id) !== Number(productId)) throw httpError('Imagen de producto no encontrada.', 404);
+  await productModel.deleteProductImage(imageId);
+  return { deleted: true };
 }
 
 async function changeProductVisibility(user, productId, estado) {
@@ -126,4 +139,4 @@ async function logicalDeleteProduct(user, productId) {
   return productModel.updateProductById(product.id, { estado: 'eliminado' });
 }
 
-module.exports = { listPublicProducts, getPublicProduct, createProductForSeller, updateProduct, changeProductVisibility, logicalDeleteProduct };
+module.exports = { listPublicProducts, getPublicProduct, createProductForSeller, updateProduct, deleteProductImage, changeProductVisibility, logicalDeleteProduct };

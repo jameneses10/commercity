@@ -9,6 +9,16 @@ const registerValidator = [
   body('confirmPassword').notEmpty().withMessage('La confirmación de contraseña es obligatoria.').custom((value, { req }) => value === req.body.password).withMessage('La contraseña y su confirmación no coinciden.'),
   body('rol').trim().notEmpty().withMessage('El rol es obligatorio.').customSanitizer((value) => String(value).toLowerCase()).isIn(allowedPublicRoles).withMessage('Solo se permite registro público como comprador o vendedor.'),
   body('telefono').optional({ nullable: true, checkFalsy: true }).trim().isLength({ max: 30 }).withMessage('El teléfono no debe superar 30 caracteres.'),
+  body('fecha_nacimiento').optional({ nullable: true, checkFalsy: true }).isISO8601().withMessage('fecha_nacimiento debe tener formato de fecha válido.').custom((value,{req})=>{
+    if (req.body.rol !== 'vendedor') return true;
+    if (!value) throw new Error('fecha_nacimiento es obligatoria para vendedores.');
+    const birth = new Date(`${value}T00:00:00Z`); const now = new Date();
+    let age = now.getUTCFullYear() - birth.getUTCFullYear();
+    const md = now.getUTCMonth() - birth.getUTCMonth();
+    if (md < 0 || (md === 0 && now.getUTCDate() < birth.getUTCDate())) age -= 1;
+    if (age < 18) throw new Error('El vendedor debe ser mayor de 18 años.');
+    return true;
+  }),
   body('acepta_terminos').custom((value, { req }) => value === true || value === 'true' || req.body.terms_accepted === true || req.body.terms_accepted === 'true').withMessage('Debe aceptar los términos y condiciones.'),
   body('terminos_version').optional({ nullable: true, checkFalsy: true }).trim().isLength({ max: 20 }).withMessage('La versión de términos no debe superar 20 caracteres.'),
 ];

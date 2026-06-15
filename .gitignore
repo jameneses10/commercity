@@ -32,3 +32,8 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Backend uploads: keep runtime media out of Git, preserve empty folders
+backend/uploads/**
+!backend/uploads/**/
+!backend/uploads/**/.gitkeep

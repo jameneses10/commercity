@@ -1,0 +1,9 @@
+const model=require('../models/follow.model');
+const notification=require('./notification.service');
+const logService=require('./log.service');
+function err(m,s){const e=new Error(m);e.statusCode=s;return e;}
+async function follow(user,targetId,ip){ const tid=Number(targetId); if(user.id===tid) throw err('No puede seguirse a sí mismo.',400); const target=await model.findActiveUser(tid); if(!target) throw err('Usuario a seguir no encontrado o inactivo.',404); const created=await model.follow(user.id,tid); if(!created) throw err('Ya sigue a este usuario.',409); await notification.create(null,tid,{tipo:'nuevo_seguidor',titulo:'Nuevo seguidor',mensaje:'Un usuario comenzó a seguirte.',entidad_tipo:'usuarios',entidad_id:user.id,url_destino:`/pages/public-profile.html?id=${user.id}`}); await logService.log(null,{usuario_id:user.id,accion:'seguir_usuario',entidad:'usuarios',entidad_id:tid,detalle:{},ip}); return {following:true}; }
+async function unfollow(user,targetId,ip){ const tid=Number(targetId); if(user.id===tid) throw err('No puede dejar de seguirse a sí mismo.',400); const ok=await model.unfollow(user.id,tid); if(!ok) throw err('No estaba siguiendo a este usuario.',404); await logService.log(null,{usuario_id:user.id,accion:'dejar_seguir_usuario',entidad:'usuarios',entidad_id:tid,detalle:{},ip}); return {following:false}; }
+async function followers(userId,query){ const limit=Math.min(Math.max(parseInt(query.limit||'20',10),1),100); const page=Math.max(parseInt(query.page||'1',10),1); return {followers:await model.followers(userId,{limit,offset:(page-1)*limit}),pagination:{page,limit}}; }
+async function following(userId,query){ const limit=Math.min(Math.max(parseInt(query.limit||'20',10),1),100); const page=Math.max(parseInt(query.page||'1',10),1); return {following:await model.following(userId,{limit,offset:(page-1)*limit}),pagination:{page,limit}}; }
+module.exports={follow,unfollow,followers,following};

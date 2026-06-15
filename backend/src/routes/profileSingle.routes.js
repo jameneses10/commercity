@@ -1,2 +1,2 @@
 const express=require('express'); const c=require('../controllers/profile.controller'); const authRequired=require('../middlewares/authRequired'); const {profileValidator}=require('../validators/profile.validators'); const { profileUpload, multerErrorHandler } = require('../middlewares/upload.middleware');
-const router=express.Router(); router.get('/me',authRequired,c.me); router.patch('/me',authRequired,profileUpload.single('foto'),multerErrorHandler,profileValidator,c.updateMe); router.get('/:userId',c.publicProfile); module.exports=router;
+const router=express.Router(); router.get('/',authRequired,c.me); router.patch('/',authRequired,profileUpload.single('foto'),multerErrorHandler,profileValidator,c.updateMe); module.exports=router;

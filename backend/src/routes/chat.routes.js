@@ -1,0 +1,10 @@
+const express=require('express'); const c=require('../controllers/chat.controller'); const authRequired=require('../middlewares/authRequired'); const {createConversationValidator,messageValidator}=require('../validators/chat.validators'); const { chatUpload, multerErrorHandler } = require('../middlewares/upload.middleware');
+const router=express.Router();
+router.get('/conversations',authRequired,c.list);
+router.post('/conversations',authRequired,createConversationValidator,c.create);
+router.get('/conversations/:id/messages',authRequired,c.messages);
+router.post('/conversations/:id/messages',authRequired,chatUpload.array('files',5),multerErrorHandler,messageValidator,c.send);
+router.patch('/conversations/:id/read',authRequired,c.read);
+router.patch('/messages/:id/report',authRequired,c.report);
+router.delete('/messages/:id',authRequired,c.remove);
+module.exports=router;

@@ -11,13 +11,27 @@ const { signToken } = require('../utils/jwt');
 const PUBLIC_REGISTER_ROLES = ['comprador', 'vendedor'];
 function err(message,statusCode){ const e=new Error(message); e.statusCode=statusCode; return e; }
 
-async function registerUser({ nombre, correo, password, confirmPassword, rol, telefono = null, acepta_terminos, terms_accepted, terminos_version }, meta={}) {
+function isAdult(fechaNacimiento) {
+  const birth = new Date(`${fechaNacimiento}T00:00:00Z`);
+  if (Number.isNaN(birth.getTime())) return false;
+  const today = new Date();
+  let age = today.getUTCFullYear() - birth.getUTCFullYear();
+  const monthDiff = today.getUTCMonth() - birth.getUTCMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getUTCDate() < birth.getUTCDate())) age -= 1;
+  return age >= 18;
+}
+
+async function registerUser({ nombre, correo, password, confirmPassword, rol, telefono = null, fecha_nacimiento = null, acepta_terminos, terms_accepted, terminos_version }, meta={}) {
   const normalizedEmail = correo.toLowerCase().trim();
   const normalizedRole = rol.toLowerCase().trim();
   const accepted = acepta_terminos === true || acepta_terminos === 'true' || terms_accepted === true || terms_accepted === 'true';
   const termsVersion = termsService.normalizeVersion(terminos_version);
   if (!accepted) throw err('Debe aceptar los términos y condiciones para registrarse.',400);
   if (!PUBLIC_REGISTER_ROLES.includes(normalizedRole)) throw err('El rol solicitado no está permitido para registro público.',403);
+  if (normalizedRole === 'vendedor') {
+    if (!fecha_nacimiento) throw err('La fecha de nacimiento es obligatoria para registrarse como vendedor.',400);
+    if (!isAdult(fecha_nacimiento)) throw err('Para registrarse como vendedor debe ser mayor de 18 años.',400);
+  }
   if (password !== confirmPassword) throw err('La contraseña y su confirmación no coinciden.',400);
   const existingUser = await findUserByEmail(normalizedEmail);
   if (existingUser) throw err('El correo electrónico ya está registrado.',409);
@@ -27,7 +41,7 @@ async function registerUser({ nombre, correo, password, confirmPassword, rol, te
   const conn=await pool.getConnection();
   try{
     await conn.beginTransaction();
-    const [result]=await conn.query(`INSERT INTO usuarios (rol_id,nombre,correo,password_hash,telefono,estado,acepta_terminos,terminos_version,terminos_aceptados_at) VALUES (?,?,?,?,?,'activo',TRUE,?,NOW())`,[role.id,nombre.trim(),normalizedEmail,passwordHash,telefono,termsVersion]);
+    const [result]=await conn.query(`INSERT INTO usuarios (rol_id,nombre,correo,password_hash,telefono,fecha_nacimiento,estado,acepta_terminos,terminos_version,terminos_aceptados_at) VALUES (?,?,?,?,?,?,'activo',TRUE,?,NOW())`,[role.id,nombre.trim(),normalizedEmail,passwordHash,telefono,fecha_nacimiento||null,termsVersion]);
     await profileModel.ensureProfile(result.insertId, conn);
     await termsService.record(conn,{usuario_id:result.insertId,version:termsVersion,ip:meta.ip,user_agent:meta.userAgent});
     await conn.commit();

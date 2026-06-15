@@ -1,6 +1,7 @@
-const {validationResult}=require('express-validator'); const service=require('../services/profile.service'); const {successResponse,errorResponse}=require('../utils/response');
+const {validationResult}=require('express-validator'); const service=require('../services/profile.service'); const {successResponse,errorResponse}=require('../utils/response'); const {verifyToken}=require('../utils/jwt'); const { mapFile } = require('../middlewares/upload.middleware');
 function val(req,res){const e=validationResult(req); if(!e.isEmpty()){res.status(400).json(errorResponse('Datos de entrada inválidos.',e.array().map(x=>({field:x.path,message:x.msg})))); return true} return false}
+function optionalUserId(req){ const h=req.headers.authorization; if(!h||!h.startsWith('Bearer ')) return null; try{return verifyToken(h.split(' ')[1]).id;}catch{return null;} }
 async function me(req,res,next){try{res.json(successResponse('Perfil propio obtenido correctamente.',{profile:await service.me(req.user.id)}))}catch(e){next(e)}}
-async function updateMe(req,res,next){try{if(val(req,res))return; res.json(successResponse('Perfil actualizado correctamente.',{profile:await service.updateMe(req.user.id,req.body)}))}catch(e){next(e)}}
-async function publicProfile(req,res,next){try{res.json(successResponse('Perfil público obtenido correctamente.',{profile:await service.publicProfile(req.params.userId)}))}catch(e){next(e)}}
+async function updateMe(req,res,next){try{if(val(req,res))return; const data={...req.body}; const photo=mapFile(req.file,'profiles'); if(photo) data.foto_perfil_url=photo.url; if(data.descripcion_personal!==undefined && data.descripcion===undefined) data.descripcion=data.descripcion_personal; res.json(successResponse('Perfil actualizado correctamente.',{profile:await service.updateMe(req.user.id,data)}))}catch(e){next(e)}}
+async function publicProfile(req,res,next){try{res.json(successResponse('Perfil público obtenido correctamente.',{profile:await service.publicProfile(req.params.userId,optionalUserId(req))}))}catch(e){next(e)}}
 module.exports={me,updateMe,publicProfile};
