@@ -12,10 +12,12 @@
  *
  * 3) Producción con Nginx/reverse proxy:
  *    - Frontend y API bajo el mismo host.
+ *    - Configuración Nginx recomendada: servir frontend y proxy_pass /api/v1 al backend.
  *    - Cambiar API_MODE a 'same-origin' si Nginx expone /api/v1.
  *
  * 4) Dominio externo de API:
  *    - Cambiar API_MODE a 'custom' y definir CUSTOM_API_ORIGIN.
+ *    - Ejemplo: const CUSTOM_API_ORIGIN = 'https://api.commercity.com';
  *
  * También puede sobreescribirse sin editar este archivo antes de cargar módulos:
  *   window.COMMERCITY_API_ORIGIN = 'https://api.midominio.com'
