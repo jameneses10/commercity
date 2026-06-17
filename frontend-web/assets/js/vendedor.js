@@ -7,15 +7,25 @@ let store = null;
 let products = [];
 let editingProduct = null;
 let categories = [];
+let sellerStats = null;
+let earningsRows = [];
+let soldProducts = [];
+let outOfStockProducts = [];
+let bankAccount = null;
+let sellerOrders = [];
+let sellerShipments = [];
 
 async function render() {
-  app.innerHTML = `<div class="dashboard">${sidebar('tienda', 'vendedor')}<main class="container"><section id="hero" class="hero glass mb-6"></section><section class="stats mb-6" id="stats"></section><section class="grid lg:grid-cols-2 gap-6"><form id="storeForm" class="card grid gap-3"><h2 class="text-2xl font-bold">Crear / editar tienda</h2><input class="input" name="nombre" placeholder="Nombre tienda" required><textarea class="input" name="descripcion" placeholder="Descripción"></textarea><div class="grid md:grid-cols-2 gap-3"><label>Logo<input class="input" id="logo" name="logo" type="file" accept="image/*"></label><label>Banner<input class="input" id="banner" name="banner" type="file" accept="image/*"></label></div><div id="storePreview" class="thumbs"></div><div id="storeActions" class="grid md:grid-cols-2 gap-2"></div><button class="btn btn-primary" type="submit">Guardar tienda</button></form><form id="productForm" class="card grid gap-3"><div class="flex justify-between gap-3 items-start"><div><h2 id="productFormTitle" class="text-2xl font-bold">Crear producto</h2><p id="productGuard" class="muted text-sm mt-1"></p></div><button id="cancelEdit" class="btn btn-ghost hidden" type="button">Cancelar edición</button></div><input type="hidden" name="product_id"><label>Nombre<input class="input" name="nombre" placeholder="Nombre producto" required></label><label>Descripción<textarea class="input" name="descripcion" placeholder="Descripción" required></textarea></label><div class="grid md:grid-cols-3 gap-3"><label>Categoría<select class="select" name="categoria_id" id="cat" required></select></label><label>Precio<input class="input" name="precio" type="number" min="1" step="0.01" placeholder="Precio" required></label><label>Stock<input class="input" name="stock" type="number" min="0" step="1" placeholder="Stock" required></label></div><label>Visibilidad al editar<select class="select" name="estado" id="productState"><option value="activo">Visible</option><option value="oculto">Oculto</option><option value="agotado">Agotado</option></select></label><p class="field-hint">La visibilidad se aplica al guardar cambios o desde el botón Visible/Oculto de cada producto.</p><input class="input" id="images" name="images" type="file" multiple accept="image/*"><div id="productPreview" class="thumbs"></div><button id="saveProductBtn" class="btn btn-primary" type="submit">Crear producto</button></form></section><section class="card mt-6"><h2 class="text-2xl font-bold mb-4">Inventario</h2><div id="products"></div></section></main></div>`;
+  app.innerHTML = `<div class="dashboard">${sidebar('tienda', 'vendedor')}<main class="container"><section id="hero" class="hero glass mb-6"></section><section class="stats mb-6" id="stats"></section><section class="grid lg:grid-cols-2 gap-6"><form id="storeForm" class="card grid gap-3"><h2 class="text-2xl font-bold">Crear / editar tienda</h2><input class="input" name="nombre" placeholder="Nombre tienda" required><textarea class="input" name="descripcion" placeholder="Descripción"></textarea><div class="grid md:grid-cols-2 gap-3"><label>Logo<input class="input" id="logo" name="logo" type="file" accept="image/*"></label><label>Banner<input class="input" id="banner" name="banner" type="file" accept="image/*"></label></div><div id="storePreview" class="thumbs"></div><div id="storeActions" class="grid md:grid-cols-2 gap-2"></div><button class="btn btn-primary" type="submit">Guardar tienda</button></form><form id="productForm" class="card grid gap-3"><div class="flex justify-between gap-3 items-start"><div><h2 id="productFormTitle" class="text-2xl font-bold">Crear producto</h2><p id="productGuard" class="muted text-sm mt-1"></p></div><button id="cancelEdit" class="btn btn-ghost hidden" type="button">Cancelar edición</button></div><input type="hidden" name="product_id"><label>Nombre<input class="input" name="nombre" placeholder="Nombre producto" required></label><label>Descripción<textarea class="input" name="descripcion" placeholder="Descripción" required></textarea></label><div class="grid md:grid-cols-3 gap-3"><label>Categoría<select class="select" name="categoria_id" id="cat" required></select></label><label>Precio<input class="input" name="precio" type="number" min="1" step="0.01" placeholder="Precio" required></label><label>Stock<input class="input" name="stock" type="number" min="0" step="1" placeholder="Stock" required></label></div><label>Visibilidad al editar<select class="select" name="estado" id="productState"><option value="activo">Visible</option><option value="oculto">Oculto</option><option value="agotado">Agotado</option></select></label><p class="field-hint">La visibilidad se aplica al guardar cambios o desde el botón Visible/Oculto de cada producto.</p><input class="input" id="images" name="images" type="file" multiple accept="image/*"><div id="productPreview" class="thumbs"></div><button id="saveProductBtn" class="btn btn-primary" type="submit">Crear producto</button></form></section><section id="bank" class="card mt-6"><h2 class="text-2xl font-bold mb-3">Cuenta bancaria simulada</h2><div id="bankStatus" class="mb-3"></div><form id="bankForm" class="grid md:grid-cols-4 gap-3"><input class="input" name="titular" placeholder="Nombre titular" required><input class="input" name="banco" placeholder="Banco simulado" required><select class="select" name="tipo_cuenta" required><option value="ahorros">Ahorros</option><option value="corriente">Corriente</option><option value="nequi">Nequi</option><option value="daviplata">Daviplata</option><option value="simulada">Simulada</option></select><input class="input" name="numero_cuenta_simulado" placeholder="Número de cuenta" required><button id="saveBankBtn" class="btn btn-primary md:col-span-4" type="submit">Guardar cuenta bancaria</button></form></section><section id="reports" class="grid lg:grid-cols-3 gap-6 mt-6"><div class="card"><h2 class="text-2xl font-bold mb-3">Ganancias</h2><label class="text-sm muted">Período<select id="periodFilter" class="select mt-1"><option value="daily">Diario</option><option value="weekly">Semanal</option><option value="monthly" selected>Mensual</option></select></label><div id="earningsBox" class="mt-4"></div></div><div class="card"><h2 class="text-2xl font-bold mb-3">Productos vendidos</h2><div id="soldBox"></div></div><div class="card"><h2 class="text-2xl font-bold mb-3">Productos agotados</h2><div id="outStockBox"></div></div></section><section id="orders" class="card mt-6"><div class="flex justify-between gap-3 items-start mb-4"><div><h2 class="text-2xl font-bold">Pedidos de mi tienda</h2><p class="muted">Órdenes pendientes y pagadas donde participa tu tienda.</p></div><button id="reloadSellerOps" class="btn btn-secondary" type="button">Actualizar operaciones</button></div><div id="ordersBox"></div></section><section id="shipments" class="card mt-6"><h2 class="text-2xl font-bold mb-3">Envíos pendientes</h2><div id="shipmentsBox"></div></section><section class="card mt-6"><h2 class="text-2xl font-bold mb-4">Inventario</h2><div id="products"></div></section></main></div>`;
   await requireAuth(api, ['vendedor']);
   preview(logo, '#storePreview');
   preview(banner, '#storePreview');
   preview(images, '#productPreview');
   storeForm.onsubmit = saveStore;
   productForm.onsubmit = saveProduct;
+  bankForm.onsubmit = saveBankAccount;
+  periodFilter.onchange = drawEarnings;
+  reloadSellerOps.onclick = () => Promise.all([loadSellerOrders(), loadSellerShipments()]);
   cancelEdit.onclick = resetProductForm;
   await load();
 }
@@ -23,229 +33,50 @@ async function render() {
 async function load() {
   await loadStore();
   await loadCategories();
-  await loadStats();
-  await loadProducts();
+  await Promise.all([loadStats(), loadProducts(), loadBankAccount(), loadSellerReports(), loadSellerOrders(), loadSellerShipments()]);
   drawStore();
   updateProductFormAvailability();
 }
 
-async function loadStore() {
-  try {
-    store = (await api.get('/stores/me')).store;
-  } catch {
-    store = null;
-  }
-}
+async function loadStore() { try { store = (await api.get('/stores/me')).store; } catch { store = null; } }
+async function loadCategories() { try { categories = (await api.get('/categories', {auth: false})).categories || []; cat.innerHTML = categories.map((c) => `<option value="${Number(c.id) || ''}">${h(c.nombre)}</option>`).join('') || '<option value="">Sin categorías</option>'; } catch (e) { toast(e.message, 'error'); } }
+async function loadStats() { stats.innerHTML = ''; if (!store) { stats.innerHTML = '<div class="card"><b>Estado</b><div class="stat-value">—</div><p class="muted mt-2">Crea tu tienda para ver estadísticas.</p></div>'; return; } try { const s = await api.get('/seller/store/stats'); sellerStats = s.stats || {}; stats.innerHTML = `<div class="card"><b>Productos</b><div class="stat-value">${Number(sellerStats.total_productos) || 0}</div></div><div class="card"><b>Activos</b><div class="stat-value">${Number(sellerStats.productos_activos) || 0}</div></div><div class="card"><b>Agotados</b><div class="stat-value">${Number(sellerStats.productos_agotados) || 0}</div></div><div class="card"><b>Vendidos</b><div class="stat-value">${Number(sellerStats.total_productos_vendidos) || 0}</div></div>`; } catch { stats.innerHTML = `<div class="card"><b>Estado tienda</b><div class="stat-value text-2xl">${h(store.estado || 'activa')}</div></div>`; } }
+async function loadProducts() { products = []; if (!store) { drawProducts(); return; } try { const d = await api.get(`/products?store_id=${store.id}&limit=50`, {auth: false}); products = d.products || []; } catch (e) { toast(e.message, 'error'); } drawProducts(); }
 
-async function loadCategories() {
-  try {
-    categories = (await api.get('/categories', {auth: false})).categories || [];
-    cat.innerHTML = categories.map((c) => `<option value="${Number(c.id) || ''}">${h(c.nombre)}</option>`).join('') || '<option value="">Sin categorías</option>';
-  } catch (e) {
-    toast(e.message, 'error');
-  }
-}
+function drawStore() { const status = store?.estado || 'sin tienda'; hero.innerHTML = `<div class="min-h-48 rounded-[28px] p-8 flex items-end" style="background:linear-gradient(90deg,rgba(0,112,234,.65),rgba(255,128,0,.65)),url('${assetUrl(store?.banner_url)}') center/cover"><div><img src="${assetUrl(store?.logo_url)}" class="w-24 h-24 rounded-3xl object-cover bg-white p-2" alt="Logo tienda"><h1 class="text-4xl font-extrabold text-white mt-3">${h(store?.nombre || 'Mi Tienda')}</h1><p class="pill mt-3">Estado: ${h(status)}</p></div></div><p class="mt-4 muted">${h(store?.descripcion || 'Primero debes crear tu tienda para publicar productos.')}</p>`; storeForm.nombre.value = store?.nombre || storeForm.nombre.value || ''; storeForm.descripcion.value = store?.descripcion || storeForm.descripcion.value || ''; drawStoreActions(); }
+function drawStoreActions() { if (!store) { storeActions.innerHTML = '<div class="p-3 rounded-2xl bg-orange-50 text-orange-900 md:col-span-2"><b>Primero debes crear tu tienda para publicar productos.</b></div>'; return; } const paused = store.estado !== 'activa'; storeActions.innerHTML = `<button id="pauseStore" class="btn btn-secondary" type="button" ${paused ? 'disabled' : ''}>Pausar tienda</button><button id="activateStore" class="btn btn-primary" type="button" ${!paused ? 'disabled' : ''}>Reactivar tienda</button>`; pauseStore.onclick = () => changeStoreStatus('pause'); activateStore.onclick = () => changeStoreStatus('activate'); }
+function updateProductFormAvailability() { const disabled = !store || store.estado !== 'activa'; [...productForm.elements].forEach((el) => { if (el.id !== 'cancelEdit') el.disabled = disabled; }); productGuard.textContent = !store ? 'Primero debes crear tu tienda para publicar productos.' : store.estado !== 'activa' ? 'Tu tienda está pausada. Reactívala para crear o editar productos.' : 'Gestión de productos habilitada.'; bankForm.querySelectorAll('input,select,button').forEach((el) => { el.disabled = !store; }); }
 
-async function loadStats() {
-  stats.innerHTML = '';
-  if (!store) {
-    stats.innerHTML = '<div class="card"><b>Estado</b><div class="stat-value">—</div><p class="muted mt-2">Crea tu tienda para ver estadísticas.</p></div>';
-    return;
-  }
-  try {
-    const s = await api.get('/seller/store/stats');
-    stats.innerHTML = `<div class="card"><b>Productos</b><div class="stat-value">${Number(s.stats?.total_productos) || 0}</div></div><div class="card"><b>Activos</b><div class="stat-value">${Number(s.stats?.productos_activos) || 0}</div></div><div class="card"><b>Agotados</b><div class="stat-value">${Number(s.stats?.productos_agotados) || 0}</div></div><div class="card"><b>Estado tienda</b><div class="stat-value text-2xl">${h(store.estado || 'activa')}</div></div>`;
-  } catch {
-    stats.innerHTML = `<div class="card"><b>Estado tienda</b><div class="stat-value text-2xl">${h(store.estado || 'activa')}</div></div>`;
-  }
-}
+async function loadBankAccount() { bankAccount = null; if (!store) { drawBankAccount(); return; } try { const d = await api.get('/seller/bank-account'); bankAccount = d.bank_account || null; } catch (e) { if (e.status !== 404) toast(e.message, 'error'); } drawBankAccount(); }
+function drawBankAccount() { if (!store) { bankStatus.innerHTML = '<p class="muted">Crea una tienda para registrar cuenta bancaria simulada.</p>'; return; } if (!bankAccount) { bankStatus.innerHTML = '<p class="muted">Sin cuenta bancaria simulada registrada.</p>'; saveBankBtn.textContent = 'Crear cuenta bancaria simulada'; return; } bankStatus.innerHTML = `<div class="p-3 rounded-2xl bg-green-50 border border-green-200"><b>${h(bankAccount.titular)}</b><p>${h(bankAccount.banco)} · ${h(bankAccount.tipo_cuenta)} · ${h(bankAccount.numero_cuenta_simulado)}</p><p class="text-sm muted">${h(bankAccount.academic_notice || 'Cuenta simulada para fines académicos.')}</p></div>`; bankForm.titular.value = bankAccount.titular || ''; bankForm.banco.value = bankAccount.banco || ''; bankForm.tipo_cuenta.value = bankAccount.tipo_cuenta || 'ahorros'; bankForm.numero_cuenta_simulado.value = bankAccount.numero_cuenta_simulado || ''; saveBankBtn.textContent = 'Actualizar cuenta bancaria simulada'; }
+async function saveBankAccount(e) { e.preventDefault(); if (!store) return toast('Primero crea tu tienda.', 'error'); await withButtonLoading(saveBankBtn, async () => { try { const body = Object.fromEntries(new FormData(bankForm)); const d = bankAccount ? await api.patch('/seller/bank-account', body) : await api.post('/seller/bank-account', body); bankAccount = d.bank_account || null; toast(bankAccount ? 'Cuenta bancaria guardada' : 'Cuenta bancaria procesada'); drawBankAccount(); } catch (err) { toast(err.message, 'error'); } }, 'Guardando cuenta...'); }
 
-async function loadProducts() {
-  products = [];
-  if (!store) {
-    drawProducts();
-    return;
-  }
-  try {
-    const d = await api.get(`/products?store_id=${store.id}&limit=50`, {auth: false});
-    products = d.products || [];
-  } catch (e) {
-    toast(e.message, 'error');
-  }
-  drawProducts();
-}
+async function loadSellerReports() { if (!store) { drawEarnings(); drawSoldProducts(); drawOutOfStock(); return; } await Promise.all([api.get('/seller/store/earnings').then((d) => { earningsRows = d.earnings || []; }).catch(() => { earningsRows = []; }), api.get('/seller/store/sold-products').then((d) => { soldProducts = d.products || []; }).catch(() => { soldProducts = []; }), api.get('/seller/store/out-of-stock-products').then((d) => { outOfStockProducts = d.products || []; }).catch(() => { outOfStockProducts = []; })]); drawEarnings(); drawSoldProducts(); drawOutOfStock(); }
+function periodStart() { const now = new Date(); if (periodFilter.value === 'daily') return new Date(now.getFullYear(), now.getMonth(), now.getDate()); if (periodFilter.value === 'weekly') { const d = new Date(now); d.setDate(now.getDate() - 7); return d; } return new Date(now.getFullYear(), now.getMonth(), 1); }
+function filteredEarnings() { const start = periodStart(); return earningsRows.filter((r) => !r.fecha || new Date(r.fecha) >= start); }
+function drawEarnings() { if (!store) { earningsBox.innerHTML = emptyState('Sin tienda', 'Crea tu tienda para ver ganancias.'); return; } const rows = filteredEarnings(); const gross = sellerStats?.ventas_brutas ?? rows.reduce((s, r) => s + Number(r.subtotal_tienda || 0), 0); const platform = sellerStats?.comision_plataforma_10 ?? rows.reduce((s, r) => s + Number(r.valor_comision || 0), 0); const seller = sellerStats?.ganancia_vendedor_90 ?? rows.reduce((s, r) => s + Number(r.valor_vendedor || 0), 0); earningsBox.innerHTML = `<div class="grid gap-2"><p>Total ventas: <b>${money(gross)}</b></p><p>Comisión plataforma 10%: <b>${money(platform || Number(gross) * .1)}</b></p><p>Ganancia vendedor 90%: <b class="text-green-700">${money(seller || Number(gross) * .9)}</b></p><p>Saldo acumulado: <b>${money(seller || Number(gross) * .9)}</b></p></div><div class="mt-4 grid gap-2">${rows.slice(0, 5).map((r) => `<p class="text-sm border-t border-orange-100 pt-2">Pedido #${Number(r.pedido_id) || ''}: ${money(r.valor_vendedor || 0)} vendedor / ${money(r.valor_comision || 0)} comisión</p>`).join('') || '<p class="muted mt-3">Sin movimientos para el período seleccionado.</p>'}</div>`; }
+function drawSoldProducts() { if (!store) { soldBox.innerHTML = emptyState('Sin tienda', 'Crea tu tienda para ver productos vendidos.'); return; } soldBox.innerHTML = soldProducts.length ? soldProducts.slice(0, 10).map((p) => `<div class="border-t border-orange-100 py-2"><b>${h(p.nombre)}</b><p class="muted text-sm">Vendidos: ${Number(p.cantidad_vendida) || 0} · Total: ${money(p.total_vendido || 0)} · Stock: ${Number(p.stock) || 0}</p></div>`).join('') : emptyState('Sin productos vendidos', 'Aún no hay ventas pagadas para esta tienda.'); }
+function drawOutOfStock() { if (!store) { outStockBox.innerHTML = emptyState('Sin tienda', 'Crea tu tienda para ver productos agotados.'); return; } outStockBox.innerHTML = outOfStockProducts.length ? outOfStockProducts.map((p) => `<div class="border-t border-orange-100 py-2"><b>${h(p.nombre)}</b><p class="text-sm text-red-700">Stock: ${Number(p.stock) || 0} · Estado: ${h(p.estado)}</p></div>`).join('') : emptyState('Sin agotados', 'No tienes productos agotados actualmente.'); }
 
-function drawStore() {
-  const status = store?.estado || 'sin tienda';
-  hero.innerHTML = `<div class="min-h-48 rounded-[28px] p-8 flex items-end" style="background:linear-gradient(90deg,rgba(0,112,234,.65),rgba(255,128,0,.65)),url('${assetUrl(store?.banner_url)}') center/cover"><div><img src="${assetUrl(store?.logo_url)}" class="w-24 h-24 rounded-3xl object-cover bg-white p-2" alt="Logo tienda"><h1 class="text-4xl font-extrabold text-white mt-3">${h(store?.nombre || 'Mi Tienda')}</h1><p class="pill mt-3">Estado: ${h(status)}</p></div></div><p class="mt-4 muted">${h(store?.descripcion || 'Primero debes crear tu tienda para publicar productos.')}</p>`;
-  storeForm.nombre.value = store?.nombre || storeForm.nombre.value || '';
-  storeForm.descripcion.value = store?.descripcion || storeForm.descripcion.value || '';
-  drawStoreActions();
-}
+async function loadSellerOrders() { if (!store) { ordersBox.innerHTML = emptyState('Sin tienda', 'Crea tu tienda para ver pedidos.'); return; } ordersBox.innerHTML = '<p class="muted">Cargando pedidos...</p>'; try { const d = await api.get('/seller/orders'); const base = d.orders || []; sellerOrders = await Promise.all(base.slice(0, 20).map(async (o) => { const detail = await api.get(`/orders/${o.id}`).catch(() => o); return detail.order || detail; })); drawSellerOrders(); } catch (e) { ordersBox.innerHTML = `<p class="text-red-700">${h(e.message)}</p>`; } }
+function drawSellerOrders() { if (!sellerOrders.length) { ordersBox.innerHTML = emptyState('Sin pedidos', 'Cuando un comprador pague productos de tu tienda aparecerán aquí.'); return; } ordersBox.innerHTML = `<table class="table"><thead><tr><th>Orden</th><th>Comprador</th><th>Productos</th><th>Total</th><th>Pago</th><th>Estado</th></tr></thead><tbody>${sellerOrders.map((o) => `<tr><td>#${Number(o.id) || ''}<p class="muted text-sm">${formatDate(o.created_at)}</p></td><td>${h(o.comprador_nombre || `#${o.comprador_id || ''}`)}</td><td>${(o.details || []).map((d) => `${h(d.producto_nombre || 'Producto')} x ${Number(d.cantidad) || 0}`).join('<br>') || 'Detalle no disponible'}</td><td>${money(o.total)}</td><td><span class="pill">${h(o.estado_pago || 'pendiente')}</span></td><td><span class="pill orange">${h(o.estado_general || 'creado')}</span></td></tr>`).join('')}</tbody></table>`; }
+async function loadSellerShipments() { if (!store) { shipmentsBox.innerHTML = emptyState('Sin tienda', 'Crea tu tienda para gestionar envíos.'); return; } shipmentsBox.innerHTML = '<p class="muted">Cargando envíos...</p>'; try { const d = await api.get('/seller/shipments'); sellerShipments = d.shipments || d.envios || []; drawSellerShipments(); } catch (e) { shipmentsBox.innerHTML = `<p class="text-red-700">${h(e.message)}</p>`; } }
+function drawSellerShipments() { if (!sellerShipments.length) { shipmentsBox.innerHTML = emptyState('Sin envíos pendientes', 'Los pagos aprobados generarán envíos por tienda.'); return; } shipmentsBox.innerHTML = `<div class="grid gap-4">${sellerShipments.map(shipmentCard).join('')}</div>`; $$('.dispatch-form').forEach((form) => { form.onsubmit = dispatchShipment; }); $$('.ship-status').forEach((sel) => { sel.onchange = () => updateShipmentStatus(sel.dataset.id, sel.value); }); }
+function shipmentCard(s) { return `<article class="p-4 rounded-3xl bg-white/70 border border-orange-100"><div class="flex flex-wrap justify-between gap-3"><div><h3 class="font-bold">Envío #${Number(s.id) || ''} · Pedido #${Number(s.pedido_id) || ''}</h3><p class="muted text-sm">Comprador #${Number(s.comprador_id) || ''} · Estado actual: ${h(s.estado || 'pendiente')}</p><p class="text-sm">Transportadora actual: <b>${h(s.transportadora || 'Pendiente')}</b> · Guía: <b>${h(s.numero_guia || 'Pendiente')}</b></p></div><select class="select ship-status max-w-48" data-id="${Number(s.id) || ''}"><option value="preparado" ${s.estado === 'preparado' ? 'selected' : ''}>En preparación</option><option value="en_camino" ${s.estado === 'en_camino' ? 'selected' : ''}>En camino</option><option value="entregado" ${s.estado === 'entregado' ? 'selected' : ''}>Entregado</option><option value="cancelado" ${s.estado === 'cancelado' ? 'selected' : ''}>Cancelado</option></select></div><form class="dispatch-form grid md:grid-cols-[1fr_1fr_auto] gap-2 mt-3" data-id="${Number(s.id) || ''}"><input class="input" name="transportadora" value="${h(s.transportadora || '')}" placeholder="Transportadora" required><input class="input" name="numero_guia" value="${h(s.numero_guia || '')}" placeholder="Número de guía" required><button class="btn btn-secondary" type="submit">Registrar guía</button></form></article>`; }
+async function dispatchShipment(e) { e.preventDefault(); const form = e.currentTarget; const btn = form.querySelector('button'); await withButtonLoading(btn, async () => { try { await api.patch(`/shipments/${form.dataset.id}/dispatch`, Object.fromEntries(new FormData(form))); toast('Guía registrada y envío en preparación'); await loadSellerShipments(); } catch (err) { toast(err.message, 'error'); } }, 'Guardando guía...'); }
+async function updateShipmentStatus(id, estado) { try { await api.patch(`/shipments/${id}/status`, {estado}); toast('Estado de envío actualizado'); await loadSellerShipments(); } catch (e) { toast(e.message, 'error'); } }
 
-function drawStoreActions() {
-  if (!store) {
-    storeActions.innerHTML = '<div class="p-3 rounded-2xl bg-orange-50 text-orange-900 md:col-span-2"><b>Primero debes crear tu tienda para publicar productos.</b></div>';
-    return;
-  }
-  const paused = store.estado !== 'activa';
-  storeActions.innerHTML = `<button id="pauseStore" class="btn btn-secondary" type="button" ${paused ? 'disabled' : ''}>Pausar tienda</button><button id="activateStore" class="btn btn-primary" type="button" ${!paused ? 'disabled' : ''}>Reactivar tienda</button>`;
-  pauseStore.onclick = () => changeStoreStatus('pause');
-  activateStore.onclick = () => changeStoreStatus('activate');
-}
-
-function updateProductFormAvailability() {
-  const disabled = !store || store.estado !== 'activa';
-  [...productForm.elements].forEach((el) => {
-    if (el.id !== 'cancelEdit') el.disabled = disabled;
-  });
-  productGuard.textContent = !store
-    ? 'Primero debes crear tu tienda para publicar productos.'
-    : store.estado !== 'activa'
-      ? 'Tu tienda está pausada. Reactívala para crear o editar productos.'
-      : 'Gestión de productos habilitada.';
-}
-
-function drawProducts() {
-  if (!store) {
-    productsEl().innerHTML = emptyState('Primero crea tu tienda', 'Cuando tengas una tienda activa, aquí podrás gestionar tus productos.');
-    return;
-  }
-  if (!products.length) {
-    productsEl().innerHTML = emptyState('Sin productos visibles', 'Crea tu primer producto. Si ocultas o eliminas productos, dejarán de aparecer en el catálogo público.');
-    return;
-  }
-  productsEl().innerHTML = `<table class="table"><thead><tr><th>Producto</th><th>Stock</th><th>Precio</th><th>Estado</th><th>Imágenes</th><th>Acciones</th></tr></thead><tbody>${products.map((p) => productRow(p)).join('')}</tbody></table>`;
-  $$('.edit-product').forEach((b) => { b.onclick = () => startEdit(products.find((p) => p.id == b.dataset.id)); });
-  $$('.delete-product').forEach((b) => { b.onclick = () => deleteProduct(b.dataset.id); });
-  $$('.toggle-visibility').forEach((b) => { b.onclick = () => toggleVisibility(products.find((p) => p.id == b.dataset.id)); });
-  $$('.del-img').forEach((b) => { b.onclick = () => deleteImage(b.dataset.p, b.dataset.i); });
-}
-
-function productsEl() {
-  return document.getElementById('products');
-}
-
-function productRow(p) {
-  const state = p.estado || 'activo';
-  const nextState = state === 'oculto' ? 'activo' : 'oculto';
-  const visibilityLabel = state === 'oculto' ? 'Visible' : 'Oculto';
-  return `<tr><td><div class="flex gap-3"><img src="${assetUrl(p.imagenes?.[0]?.url_imagen || p.imagen_url)}" class="w-14 h-14 rounded-2xl object-cover" alt="${h(p.nombre)}"><div><b>${h(p.nombre)}</b><p class="muted text-sm">ID ${Number(p.id) || ''}</p><p class="muted text-xs">${h(p.categoria_nombre || '')}</p></div></div></td><td>${Number(p.stock) || 0}</td><td>${money(p.precio_final || p.precio)}</td><td><span class="pill ${state === 'oculto' ? '' : 'orange'}">${h(state)}</span></td><td>${(p.imagenes || []).filter((i) => i.id).map((i) => `<button class="text-red-600 del-img" type="button" data-p="${Number(p.id) || ''}" data-i="${Number(i.id) || ''}">Eliminar imagen ${Number(i.id) || ''}</button>`).join('<br>') || '—'}</td><td><div class="grid gap-2 min-w-40"><button class="btn btn-secondary edit-product" type="button" data-id="${Number(p.id) || ''}">Editar</button><button class="btn btn-ghost toggle-visibility" type="button" data-id="${Number(p.id) || ''}" data-next="${nextState}">${visibilityLabel}</button><button class="btn btn-danger delete-product" type="button" data-id="${Number(p.id) || ''}">Eliminar</button></div></td></tr>`;
-}
-
-function startEdit(p) {
-  if (!p) return;
-  editingProduct = p;
-  productForm.product_id.value = p.id;
-  productForm.nombre.value = p.nombre || '';
-  productForm.descripcion.value = p.descripcion || '';
-  productForm.precio.value = Number(p.precio || p.precio_final || 0);
-  productForm.stock.value = Number(p.stock || 0);
-  productForm.categoria_id.value = p.categoria_id || '';
-  productState.value = p.estado || 'activo';
-  productFormTitle.textContent = `Editar producto #${p.id}`;
-  saveProductBtn.textContent = 'Guardar cambios';
-  cancelEdit.classList.remove('hidden');
-  productForm.scrollIntoView({behavior: 'smooth', block: 'start'});
-}
-
-function resetProductForm() {
-  editingProduct = null;
-  productForm.reset();
-  productForm.product_id.value = '';
-  productState.value = 'activo';
-  productPreview.innerHTML = '';
-  productFormTitle.textContent = 'Crear producto';
-  saveProductBtn.textContent = 'Crear producto';
-  cancelEdit.classList.add('hidden');
-  updateProductFormAvailability();
-}
-
-async function changeStoreStatus(action) {
-  if (!store) return;
-  const label = action === 'pause' ? 'pausar' : 'reactivar';
-  if (!confirm(`¿Confirmas ${label} esta tienda?`)) return;
-  try {
-    const d = await api.patch(`/stores/${store.id}/${action}`, {});
-    store = d.store || d;
-    toast(action === 'pause' ? 'Tienda pausada' : 'Tienda reactivada');
-    await load();
-  } catch (e) {
-    toast(e.message, 'error');
-  }
-}
-
-async function saveStore(e) {
-  e.preventDefault();
-  const btn = storeForm.querySelector('button[type="submit"]');
-  const fd = new FormData(storeForm);
-  if (!fd.get('nombre') && store?.nombre) fd.set('nombre', store.nombre);
-  await withButtonLoading(btn, async () => {
-    try {
-      const d = store ? await api.form('/stores/me', fd, {method: 'PATCH'}) : await api.form('/stores', fd);
-      store = d.store || d;
-      toast('Tienda guardada');
-      await load();
-    } catch (err) {
-      toast(err.message, 'error');
-    }
-  }, 'Guardando tienda...');
-}
-
-async function saveProduct(e) {
-  e.preventDefault();
-  if (!store) return toast('Primero debes crear tu tienda para publicar productos.', 'error');
-  if (store.estado !== 'activa') return toast('Reactiva tu tienda para gestionar productos.', 'error');
-  const btn = productForm.querySelector('button[type="submit"]');
-  const fd = new FormData(productForm);
-  const id = fd.get('product_id');
-  fd.delete('product_id');
-  if (!id) fd.delete('estado');
-  await withButtonLoading(btn, async () => {
-    try {
-      await api.form(id ? `/products/${id}` : '/products', fd, {method: id ? 'PATCH' : 'POST'});
-      toast(id ? 'Producto actualizado' : 'Producto creado');
-      resetProductForm();
-      await load();
-    } catch (err) {
-      toast(err.message, 'error');
-    }
-  }, id ? 'Guardando cambios...' : 'Creando producto...');
-}
-
-async function deleteProduct(id) {
-  if (!confirm('¿Eliminar este producto? Se hará una eliminación lógica y dejará de verse en el catálogo.')) return;
-  try {
-    await api.delete(`/products/${id}`);
-    toast('Producto eliminado');
-    await load();
-  } catch (e) {
-    toast(e.message, 'error');
-  }
-}
-
-async function toggleVisibility(p) {
-  if (!p) return;
-  const estado = p.estado === 'oculto' ? 'activo' : 'oculto';
-  if (estado === 'activo' && Number(p.stock) <= 0) return toast('No se puede activar un producto sin stock.', 'error');
-  try {
-    await api.patch(`/products/${p.id}/visibility`, {estado});
-    toast(estado === 'activo' ? 'Producto visible' : 'Producto oculto');
-    await load();
-  } catch (e) {
-    toast(e.message, 'error');
-  }
-}
-
-async function deleteImage(productId, imageId) {
-  if (!confirm('¿Eliminar esta imagen del producto?')) return;
-  try {
-    await api.delete(`/products/${productId}/images/${imageId}`);
-    toast('Imagen eliminada');
-    await load();
-  } catch (e) {
-    toast(e.message, 'error');
-  }
-}
+function drawProducts() { if (!store) { productsEl().innerHTML = emptyState('Primero crea tu tienda', 'Cuando tengas una tienda activa, aquí podrás gestionar tus productos.'); return; } if (!products.length) { productsEl().innerHTML = emptyState('Sin productos visibles', 'Crea tu primer producto. Si ocultas o eliminas productos, dejarán de aparecer en el catálogo público.'); return; } productsEl().innerHTML = `<table class="table"><thead><tr><th>Producto</th><th>Stock</th><th>Precio</th><th>Estado</th><th>Imágenes</th><th>Acciones</th></tr></thead><tbody>${products.map((p) => productRow(p)).join('')}</tbody></table>`; $$('.edit-product').forEach((b) => { b.onclick = () => startEdit(products.find((p) => p.id == b.dataset.id)); }); $$('.delete-product').forEach((b) => { b.onclick = () => deleteProduct(b.dataset.id); }); $$('.toggle-visibility').forEach((b) => { b.onclick = () => toggleVisibility(products.find((p) => p.id == b.dataset.id)); }); $$('.del-img').forEach((b) => { b.onclick = () => deleteImage(b.dataset.p, b.dataset.i); }); }
+function productsEl() { return document.getElementById('products'); }
+function productRow(p) { const state = p.estado || 'activo'; const visibilityLabel = state === 'oculto' ? 'Visible' : 'Oculto'; return `<tr><td><div class="flex gap-3"><img src="${assetUrl(p.imagenes?.[0]?.url_imagen || p.imagen_url)}" class="w-14 h-14 rounded-2xl object-cover" alt="${h(p.nombre)}"><div><b>${h(p.nombre)}</b><p class="muted text-sm">ID ${Number(p.id) || ''}</p><p class="muted text-xs">${h(p.categoria_nombre || '')}</p></div></div></td><td>${Number(p.stock) || 0}</td><td>${money(p.precio_final || p.precio)}</td><td><span class="pill ${state === 'oculto' ? '' : 'orange'}">${h(state)}</span></td><td>${(p.imagenes || []).filter((i) => i.id).map((i) => `<button class="text-red-600 del-img" type="button" data-p="${Number(p.id) || ''}" data-i="${Number(i.id) || ''}">Eliminar imagen ${Number(i.id) || ''}</button>`).join('<br>') || '—'}</td><td><div class="grid gap-2 min-w-40"><button class="btn btn-secondary edit-product" type="button" data-id="${Number(p.id) || ''}">Editar</button><button class="btn btn-ghost toggle-visibility" type="button" data-id="${Number(p.id) || ''}">${visibilityLabel}</button><button class="btn btn-danger delete-product" type="button" data-id="${Number(p.id) || ''}">Eliminar</button></div></td></tr>`; }
+function startEdit(p) { if (!p) return; editingProduct = p; productForm.product_id.value = p.id; productForm.nombre.value = p.nombre || ''; productForm.descripcion.value = p.descripcion || ''; productForm.precio.value = Number(p.precio || p.precio_final || 0); productForm.stock.value = Number(p.stock || 0); productForm.categoria_id.value = p.categoria_id || ''; productState.value = p.estado || 'activo'; productFormTitle.textContent = `Editar producto #${p.id}`; saveProductBtn.textContent = 'Guardar cambios'; cancelEdit.classList.remove('hidden'); productForm.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+function resetProductForm() { editingProduct = null; productForm.reset(); productForm.product_id.value = ''; productState.value = 'activo'; productPreview.innerHTML = ''; productFormTitle.textContent = 'Crear producto'; saveProductBtn.textContent = 'Crear producto'; cancelEdit.classList.add('hidden'); updateProductFormAvailability(); }
+async function changeStoreStatus(action) { if (!store) return; const label = action === 'pause' ? 'pausar' : 'reactivar'; if (!confirm(`¿Confirmas ${label} esta tienda?`)) return; try { const d = await api.patch(`/stores/${store.id}/${action}`, {}); store = d.store || d; toast(action === 'pause' ? 'Tienda pausada' : 'Tienda reactivada'); await load(); } catch (e) { toast(e.message, 'error'); } }
+async function saveStore(e) { e.preventDefault(); const btn = storeForm.querySelector('button[type="submit"]'); const fd = new FormData(storeForm); if (!fd.get('nombre') && store?.nombre) fd.set('nombre', store.nombre); await withButtonLoading(btn, async () => { try { const d = store ? await api.form('/stores/me', fd, {method: 'PATCH'}) : await api.form('/stores', fd); store = d.store || d; toast('Tienda guardada'); await load(); } catch (err) { toast(err.message, 'error'); } }, 'Guardando tienda...'); }
+async function saveProduct(e) { e.preventDefault(); if (!store) return toast('Primero debes crear tu tienda para publicar productos.', 'error'); if (store.estado !== 'activa') return toast('Reactiva tu tienda para gestionar productos.', 'error'); const btn = productForm.querySelector('button[type="submit"]'); const fd = new FormData(productForm); const id = fd.get('product_id'); fd.delete('product_id'); if (!id) fd.delete('estado'); await withButtonLoading(btn, async () => { try { await api.form(id ? `/products/${id}` : '/products', fd, {method: id ? 'PATCH' : 'POST'}); toast(id ? 'Producto actualizado' : 'Producto creado'); resetProductForm(); await load(); } catch (err) { toast(err.message, 'error'); } }, id ? 'Guardando cambios...' : 'Creando producto...'); }
+async function deleteProduct(id) { if (!confirm('¿Eliminar este producto? Se hará una eliminación lógica y dejará de verse en el catálogo.')) return; try { await api.delete(`/products/${id}`); toast('Producto eliminado'); await load(); } catch (e) { toast(e.message, 'error'); } }
+async function toggleVisibility(p) { if (!p) return; const estado = p.estado === 'oculto' ? 'activo' : 'oculto'; if (estado === 'activo' && Number(p.stock) <= 0) return toast('No se puede activar un producto sin stock.', 'error'); try { await api.patch(`/products/${p.id}/visibility`, {estado}); toast(estado === 'activo' ? 'Producto visible' : 'Producto oculto'); await load(); } catch (e) { toast(e.message, 'error'); } }
+async function deleteImage(productId, imageId) { if (!confirm('¿Eliminar esta imagen del producto?')) return; try { await api.delete(`/products/${productId}/images/${imageId}`); toast('Imagen eliminada'); await load(); } catch (e) { toast(e.message, 'error'); } }
+function formatDate(value) { if (!value) return 'Fecha no disponible'; const d = new Date(value); return Number.isNaN(d.getTime()) ? h(value) : d.toLocaleString('es-CO'); }
 
 render();
