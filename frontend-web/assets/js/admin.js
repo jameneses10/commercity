@@ -8,12 +8,13 @@ let categories = [];
 let adminOrders = [];
 let products = [];
 let reports = [];
+let userReports = [];
 let logs = [];
 let statsData = null;
 let adminSearchResults = null;
 
 async function render() {
-  app.innerHTML = `<div class="dashboard">${sidebar('admin', 'admin')}<main class="container"><div class="flex justify-between items-center mb-6"><div><h1 class="text-4xl font-extrabold">Panel Ejecutivo</h1><p class="muted">Supervisión operativa de CommerCity.</p></div><button id="reloadAdmin" class="btn btn-primary" type="button">↻ Actualizar panel</button></div><section class="stats mb-6" id="stats"></section><section id="search" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Buscador global</h2><div class="flex gap-2"><input id="q" class="input" placeholder="Buscar usuarios, productos, tiendas..."><button id="go" class="btn btn-secondary" type="button">Buscar</button></div><div id="results" class="grid md:grid-cols-3 gap-3 mt-4"></div></section><section id="categories" class="card mb-6"><div class="flex justify-between gap-3 items-start mb-4"><div><h2 class="text-2xl font-bold">Categorías</h2><p class="muted">CRUD administrativo de categorías.</p></div><button id="reloadCategories" class="btn btn-secondary" type="button">Actualizar</button></div><form id="categoryForm" class="grid md:grid-cols-[1fr_1fr_150px_auto] gap-2 mb-4"><input type="hidden" name="id"><input class="input" name="nombre" placeholder="Nombre categoría" required><input class="input" name="descripcion" placeholder="Descripción"><select class="select" name="estado"><option value="activa">Activa</option><option value="inactiva">Inactiva</option></select><button id="saveCategoryBtn" class="btn btn-primary" type="submit">Crear categoría</button><button id="cancelCategoryEdit" class="btn btn-ghost hidden md:col-span-4" type="button">Cancelar edición</button></form><div id="categoryTable"></div></section><section id="users" class="card mb-6"><div class="flex justify-between gap-3 items-start mb-4"><div><h2 class="text-2xl font-bold">Gobernanza de usuarios</h2><p class="muted">Activar, inactivar o banear según endpoint administrativo.</p></div><input id="userFilter" class="input max-w-sm" placeholder="Filtrar usuarios visualmente"></div><div id="userTable"></div></section><section id="orders" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Órdenes</h2><div class="grid md:grid-cols-3 gap-2 mb-4"><select id="orderFilter" class="select"><option value="">Todos los estados</option><option value="pendiente">Pago pendiente</option><option value="pagado">Pagado</option><option value="creado">Creado</option><option value="procesando">Procesando</option></select></div><div id="ordersBox"></div></section><section id="stores" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Tiendas</h2><p class="muted mb-3">No existe endpoint de listado global de tiendas; se muestran resultados desde búsqueda admin cuando se consulta un término.</p><div id="storesBox"></div></section><section id="products" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Productos globales</h2><div id="productsBox"></div></section><section id="reports" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Productos reportados</h2><div id="reportGrid" class="grid md:grid-cols-3 gap-4"></div></section><section id="adminReports" class="grid lg:grid-cols-2 gap-6 mb-6"><div class="card"><h2 class="text-2xl font-bold mb-3">Reportes básicos</h2><div id="reportsSummary"></div></div><div class="card"><h2 class="text-2xl font-bold mb-3">Logs / auditoría</h2><div id="logsBox"></div></div></section></main></div>`;
+  app.innerHTML = `<div class="dashboard">${sidebar('admin', 'admin')}<main class="container"><div class="flex justify-between items-center mb-6"><div><h1 class="text-4xl font-extrabold">Panel Ejecutivo</h1><p class="muted">Supervisión operativa de CommerCity.</p></div><button id="reloadAdmin" class="btn btn-primary" type="button">↻ Actualizar panel</button></div><section class="stats mb-6" id="stats"></section><section id="search" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Buscador global</h2><div class="flex gap-2"><input id="q" class="input" placeholder="Buscar usuarios, productos, tiendas..."><button id="go" class="btn btn-secondary" type="button">Buscar</button></div><div id="results" class="grid md:grid-cols-3 gap-3 mt-4"></div></section><section id="categories" class="card mb-6"><div class="flex justify-between gap-3 items-start mb-4"><div><h2 class="text-2xl font-bold">Categorías</h2><p class="muted">CRUD administrativo de categorías.</p></div><button id="reloadCategories" class="btn btn-secondary" type="button">Actualizar</button></div><form id="categoryForm" class="grid md:grid-cols-[1fr_1fr_150px_auto] gap-2 mb-4"><input type="hidden" name="id"><input class="input" name="nombre" placeholder="Nombre categoría" required><input class="input" name="descripcion" placeholder="Descripción"><select class="select" name="estado"><option value="activa">Activa</option><option value="inactiva">Inactiva</option></select><button id="saveCategoryBtn" class="btn btn-primary" type="submit">Crear categoría</button><button id="cancelCategoryEdit" class="btn btn-ghost hidden md:col-span-4" type="button">Cancelar edición</button></form><div id="categoryTable"></div></section><section id="users" class="card mb-6"><div class="flex justify-between gap-3 items-start mb-4"><div><h2 class="text-2xl font-bold">Gobernanza de usuarios</h2><p class="muted">Activar, inactivar o banear según endpoint administrativo.</p></div><input id="userFilter" class="input max-w-sm" placeholder="Filtrar usuarios visualmente"></div><div id="userTable"></div></section><section id="orders" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Órdenes</h2><div class="grid md:grid-cols-3 gap-2 mb-4"><select id="orderFilter" class="select"><option value="">Todos los estados</option><option value="pendiente">Pago pendiente</option><option value="pagado">Pagado</option><option value="creado">Creado</option><option value="procesando">Procesando</option></select></div><div id="ordersBox"></div></section><section id="stores" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Tiendas</h2><p class="muted mb-3">No existe endpoint de listado global de tiendas; se muestran resultados desde búsqueda admin cuando se consulta un término.</p><div id="storesBox"></div></section><section id="products" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Productos globales</h2><div id="productsBox"></div></section><section id="reports" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Productos reportados</h2><div id="reportGrid" class="grid md:grid-cols-3 gap-4"></div></section><section id="userReports" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Reportes de usuarios</h2><div id="userReportGrid" class="grid md:grid-cols-3 gap-4"></div></section><section id="messageReports" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Reportes de mensajes</h2><div class="empty-state"><h3 class="text-xl font-bold mb-2">Pendiente backend</h3><p>No existe GET /admin/reports/messages ni PATCH /admin/reports/messages/:id. Los mensajes sí pueden reportarse desde chat y quedan trazados en logs.</p></div></section><section id="reviewModeration" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Moderación de reseñas</h2><div class="empty-state"><h3 class="text-xl font-bold mb-2">Listado pendiente backend</h3><p>Existe PATCH /admin/reviews/:id/moderate, pero no existe endpoint para listar reseñas pendientes. La acción queda preparada cuando backend entregue el listado.</p></div></section><section id="adminReports" class="grid lg:grid-cols-2 gap-6 mb-6"><div class="card"><h2 class="text-2xl font-bold mb-3">Reportes básicos</h2><div id="reportsSummary"></div></div><div class="card"><h2 class="text-2xl font-bold mb-3">Logs / auditoría</h2><div id="logsBox"></div></div></section></main></div>`;
   await requireAuth(api, ['administrador']);
   reloadAdmin.onclick = load;
   go.onclick = search;
@@ -27,7 +28,7 @@ async function render() {
 }
 
 async function load() {
-  await Promise.all([loadStats(), loadCategories(), loadUsers(), loadOrders(), loadProducts(), loadProductReports(), loadLogs()]);
+  await Promise.all([loadStats(), loadCategories(), loadUsers(), loadOrders(), loadProducts(), loadProductReports(), loadUserReports(), loadLogs()]);
   drawStores();
 }
 
@@ -204,6 +205,35 @@ async function updateReport(id, body) {
   } catch (e) {
     toast(e.message, 'error');
   }
+}
+
+async function loadUserReports() {
+  try {
+    const d = await api.get('/admin/reports/users');
+    userReports = d.reports || d.user_reports || [];
+    drawUserReports();
+  } catch (e) {
+    if (typeof userReportGrid !== 'undefined') userReportGrid.innerHTML = `<p class="text-red-700">${h(e.message)}</p>`;
+  }
+}
+
+function drawUserReports() {
+  userReportGrid.innerHTML = userReports.length ? userReports.slice(0, 12).map((r) => `<article class="card"><h3 class="font-bold">${h(r.usuario_reportado_nombre || `Usuario #${r.usuario_reportado_id || ''}`)}</h3><p class="muted">Motivo: ${h(r.motivo)}</p><p class="text-sm">${h(r.descripcion || '')}</p><p class="text-sm muted">Estado: ${h(r.estado || 'pendiente')}</p><div class="grid gap-2 mt-3"><select class="select user-report-state" data-id="${Number(r.id) || ''}"><option value="pendiente">pendiente</option><option value="revisado">revisado</option><option value="rechazado">rechazado</option><option value="accionado">accionado</option></select><button class="btn btn-danger ban-reported-user" type="button" data-id="${Number(r.id) || ''}" data-user="${Number(r.usuario_reportado_id) || ''}">Accionar e inactivar usuario</button></div></article>`).join('') : emptyState('Sin reportes de usuarios', 'No hay reportes de usuarios pendientes.');
+  $$('.user-report-state').forEach((s) => { s.value = userReports.find((r) => r.id == s.dataset.id)?.estado || 'pendiente'; s.onchange = () => updateUserReport(s.dataset.id, {estado: s.value}); });
+  $$('.ban-reported-user').forEach((b) => { b.onclick = () => actionUserReport(b.dataset.id, b.dataset.user); });
+}
+
+async function updateUserReport(id, body) {
+  try { await api.patch(`/admin/reports/users/${id}`, body); toast('Reporte de usuario actualizado'); await loadUserReports(); } catch (e) { toast(e.message, 'error'); }
+}
+
+async function actionUserReport(reportId, userId) {
+  try {
+    await api.patch(`/admin/users/${userId}/status`, {estado: 'inactivo'});
+    await api.patch(`/admin/reports/users/${reportId}`, {estado: 'accionado', respuesta_admin: 'Usuario inactivado desde moderación.'});
+    toast('Usuario inactivado y reporte accionado');
+    await Promise.all([loadUsers(), loadUserReports(), loadLogs()]);
+  } catch (e) { toast(e.message, 'error'); }
 }
 
 function drawReportsSummary() {

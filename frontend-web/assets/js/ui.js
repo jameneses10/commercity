@@ -1,5 +1,5 @@
 
-import {currentUser, logout} from './auth.js';
+import {currentUser, logout, getToken} from './auth.js';
 import {api} from './api.js';
 
 export const $ = (s, r = document) => r.querySelector(s);
@@ -89,29 +89,43 @@ export async function withButtonLoading(button, fn, label) {
 }
 
 export async function shell(active = 'home') {
-  const u = currentUser();
+  const u = getToken() ? currentUser() : null;
   let count = 0;
-  try { if (u) count = (await api.get('/notifications/unread-count')).unread_count || 0; } catch {}
+  try { if (u && getToken()) count = (await api.get('/notifications/unread-count')).unread_count || 0; } catch {}
   return `<header class="topbar"><a class="brand brand-lockup" href="index.html" aria-label="CommerCity inicio"><img class="brand-logo" src="assets/img/logo-commercity.png" alt="Logo CommerCity"><span class="brand-text"><span>Commer</span><span>City</span></span></a><nav class="nav" aria-label="Navegación principal">${navLink({active: active === 'home', key: 'home', href: 'index.html', label: 'Home'})}${navLink({active: active === 'carrito', key: 'carrito', href: 'carrito.html', label: 'Carrito'})}${u ? navLink({active: active === 'pedidos', key: 'pedidos', href: 'perfil.html#orders', label: 'Historial de pedidos'}) : ''}${navLink({active: active === 'chat', key: 'chat', href: 'chat.html', label: 'Chat'})}${navLink({active: active === 'perfil', key: 'perfil', href: 'perfil.html', label: 'Perfil y ajustes'})}${u?.rol === 'vendedor' ? navLink({active: active === 'vendedor', key: 'tienda', href: 'vendedor.html', label: 'Tienda'}) : ''}${u?.rol === 'administrador' ? navLink({active: active === 'admin', key: 'admin', href: 'admin.html', label: 'Administración'}) : ''}<button class="icon-btn nav-icon" id="notifBtn" type="button" aria-label="Notificaciones" title="Notificaciones">${icon('noti', 'Notificaciones')} <span class="badge">${Number(count) || 0}</span></button>${u ? `<button class="icon-btn nav-icon" id="logoutBtn" type="button" aria-label="Cerrar sesión" title="Cerrar sesión">${icon('logout', 'Cerrar sesión')}<span class="sr-only">Cerrar sesión</span></button>` : navLink({active: active === 'login', key: 'login', href: 'login.html', label: 'Ingresar'})}</nav></header><div id="notificationsPanel" class="hidden fixed right-4 top-20 z-50 w-80 card"></div>`;
 }
 
 export function bindShell() {
   $('#logoutBtn')?.addEventListener('click', logout);
-  $('#notifBtn')?.addEventListener('click', async () => {
+  let notificationPoll = null;
+  async function updateNotificationCount() {
+    try {
+      if (!getToken()) return;
+      const d = await api.get('/notifications/unread-count');
+      const badge = $('#notifBtn .badge');
+      if (badge) badge.textContent = Number(d.unread_count ?? d.total ?? 0);
+    } catch {}
+  }
+  async function renderNotifications() {
     const p = $('#notificationsPanel');
-    p.classList.toggle('hidden');
-    if (p.classList.contains('hidden')) return;
+    if (!p || p.classList.contains('hidden')) return;
     p.innerHTML = '<p class="muted">Cargando notificaciones...</p>';
     try {
       const d = await api.get('/notifications');
-      const list = d.notifications || [];
-      p.innerHTML = `<h3 class="font-bold mb-3">Notificaciones</h3><div class="grid gap-2">${list.map((n) => `<div class="p-3 rounded-2xl bg-white/70"><b>${h(n.titulo || n.tipo)}</b><p class="text-sm muted">${h(n.mensaje || '')}</p><button data-id="${Number(n.id) || ''}" class="read text-blue-600 text-sm">Marcar leída</button></div>`).join('') || '<p class="muted">Sin notificaciones</p>'}</div><button id="readAll" class="btn btn-secondary mt-3 w-full" type="button">Marcar todas</button>`;
-      $$('.read', p).forEach((b) => { b.onclick = () => api.patch(`/notifications/${b.dataset.id}/read`, {}).then(() => toast('Notificación leída')).catch((e) => toast(e.message, 'error')); });
-      $('#readAll', p).onclick = () => api.patch('/notifications/read-all', {}).then(() => toast('Todas leídas')).catch((e) => toast(e.message, 'error'));
+      const list = (d.notifications || []).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      p.innerHTML = `<div class="flex justify-between items-center mb-3"><h3 class="font-bold">Notificaciones</h3><button id="closeNoti" class="text-sm muted" type="button">Cerrar</button></div><div class="grid gap-2 max-h-96 overflow-auto">${list.map((n) => `<div class="p-3 rounded-2xl ${n.leida ? 'bg-white/70' : 'bg-orange-50 border border-orange-200'}"><b>${h(n.titulo || n.tipo)}</b><p class="text-sm muted">${h(n.mensaje || '')}</p><p class="text-xs muted mt-1">${n.created_at ? new Date(n.created_at).toLocaleString('es-CO') : ''}</p><div class="flex gap-2 mt-2"><button data-id="${Number(n.id) || ''}" class="read text-blue-600 text-sm" type="button">Marcar leída</button><button data-id="${Number(n.id) || ''}" class="del-noti text-red-600 text-sm" type="button">Eliminar</button></div></div>`).join('') || '<p class="muted">Sin notificaciones</p>'}</div><div class="grid grid-cols-2 gap-2 mt-3"><button id="readAll" class="btn btn-secondary" type="button">Marcar todas</button><button id="refreshNoti" class="btn btn-ghost" type="button">Actualizar</button></div><p class="field-hint mt-2">Actualización periódica cada 30 segundos mientras navegas.</p>`;
+      $('#closeNoti', p).onclick = () => p.classList.add('hidden');
+      $('#refreshNoti', p).onclick = renderNotifications;
+      $$('.read', p).forEach((b) => { b.onclick = () => api.patch(`/notifications/${b.dataset.id}/read`, {}).then(async () => { toast('Notificación leída'); await updateNotificationCount(); await renderNotifications(); }).catch((e) => toast(e.message, 'error')); });
+      $$('.del-noti', p).forEach((b) => { b.onclick = () => api.delete(`/notifications/${b.dataset.id}`).then(async () => { toast('Notificación eliminada'); await updateNotificationCount(); await renderNotifications(); }).catch((e) => toast(e.message, 'error')); });
+      $('#readAll', p).onclick = () => api.patch('/notifications/read-all', {}).then(async () => { toast('Todas leídas'); await updateNotificationCount(); await renderNotifications(); }).catch((e) => toast(e.message, 'error'));
     } catch (e) {
       p.innerHTML = `<p class="text-red-700">${h(e.message || 'Inicia sesión para ver notificaciones.')}</p>`;
     }
-  });
+  }
+  $('#notifBtn')?.addEventListener('click', async () => { const p = $('#notificationsPanel'); p.classList.toggle('hidden'); await renderNotifications(); });
+  updateNotificationCount();
+  if (!notificationPoll) notificationPoll = setInterval(updateNotificationCount, 30000);
 }
 
 export function sidebar(active, role = 'vendedor') {
