@@ -1,0 +1,10 @@
+const express = require('express');
+const authRequired = require('../middlewares/authRequired');
+const requireRole = require('../middlewares/requireRole');
+const c = require('../controllers/return.controller');
+const { adminResolveValidator } = require('../validators/return.validators');
+const router = express.Router();
+router.use(authRequired, requireRole('administrador'));
+router.get('/returns', c.adminList);
+router.patch('/returns/:id/resolve', adminResolveValidator, c.adminResolve);
+module.exports = router;

@@ -1,7 +1,12 @@
-const {validationResult}=require('express-validator'); const service=require('../services/account.service'); const {successResponse,errorResponse}=require('../utils/response');
+const { validationResult } = require('express-validator'); const service = require('../services/account.service'); const { successResponse, errorResponse } = require('../utils/response');
 function val(req,res){const e=validationResult(req); if(!e.isEmpty()){res.status(400).json(errorResponse('Datos de entrada inválidos.',e.array().map(x=>({field:x.path,message:x.msg})))); return true} return false}
 async function getSettings(req,res,next){try{res.json(successResponse('Ajustes obtenidos correctamente.',await service.settings(req.user.id)))}catch(e){next(e)}}
-async function updateSettings(req,res,next){try{if(val(req,res))return; res.json(successResponse('Ajustes actualizados correctamente.',await service.updateSettings(req.user.id,req.body)))}catch(e){next(e)}}
-async function deactivate(req,res,next){try{res.json(successResponse('Cuenta inactivada correctamente.',await service.deactivateAccount(req.user.id)))}catch(e){next(e)}}
+async function updateSettings(req,res,next){try{if(val(req,res))return; res.json(successResponse('Ajustes actualizados correctamente.',await service.updateSettings(req.user.id,req.body,{ip:req.ip})))}catch(e){next(e)}}
+async function changePassword(req,res,next){try{if(val(req,res))return; res.json(successResponse('Contraseña actualizada correctamente.',await service.changePassword(req.user.id,req.body,{ip:req.ip})))}catch(e){next(e)}}
+async function changeEmail(req,res,next){try{if(val(req,res))return; res.json(successResponse('Correo actualizado correctamente.',await service.changeEmail(req.user.id,req.body,{ip:req.ip})))}catch(e){next(e)}}
+async function deactivate(req,res,next){try{res.json(successResponse('Cuenta inactivada correctamente.',await service.deactivateAccount(req.user.id,{ip:req.ip})))}catch(e){next(e)}}
+async function deleteRequest(req,res,next){try{if(val(req,res))return; res.status(201).json(successResponse('Solicitud de eliminación enviada correctamente.',await service.requestDeletion(req.user.id,req.body,{ip:req.ip})))}catch(e){next(e)}}
+async function adminDeleteRequests(req,res,next){try{res.json(successResponse('Solicitudes de eliminación obtenidas correctamente.',await service.listDeleteRequests()))}catch(e){next(e)}}
+async function adminResolveDeleteRequest(req,res,next){try{if(val(req,res))return; res.json(successResponse('Solicitud de eliminación resuelta correctamente.',await service.resolveDeleteRequest(req.user.id,req.params.id,req.body,{ip:req.ip})))}catch(e){next(e)}}
 async function upgrade(req,res,next){try{if(val(req,res))return; res.json(successResponse('Usuario convertido a vendedor correctamente.',await service.upgrade(req.user.id,req.body)))}catch(e){next(e)}}
-module.exports={getSettings,updateSettings,deactivate,upgrade};
+module.exports={getSettings,updateSettings,changePassword,changeEmail,deactivate,deleteRequest,adminDeleteRequests,adminResolveDeleteRequest,upgrade};

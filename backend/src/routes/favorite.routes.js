@@ -1,0 +1,11 @@
+const express = require('express');
+const { param } = require('express-validator');
+const authRequired = require('../middlewares/authRequired');
+const c = require('../controllers/favorite.controller');
+const router = express.Router();
+const productParam = [param('productId').isInt({ min: 1 }).withMessage('Producto inválido.')];
+router.use(authRequired);
+router.get('/', c.list);
+router.post('/:productId', productParam, c.add);
+router.delete('/:productId', productParam, c.remove);
+module.exports = router;

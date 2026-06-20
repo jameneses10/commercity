@@ -1,0 +1,10 @@
+const express = require('express');
+const authRequired = require('../middlewares/authRequired');
+const requireRole = require('../middlewares/requireRole');
+const c = require('../controllers/return.controller');
+const { sellerStatusValidator } = require('../validators/return.validators');
+const router = express.Router();
+router.use(authRequired, requireRole('vendedor'));
+router.get('/returns', c.sellerList);
+router.patch('/returns/:id/status', sellerStatusValidator, c.sellerUpdate);
+module.exports = router;

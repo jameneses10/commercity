@@ -1,0 +1,11 @@
+const express = require('express');
+const authRequired = require('../middlewares/authRequired');
+const c = require('../controllers/return.controller');
+const { returnUpload, multerErrorHandler } = require('../middlewares/upload.middleware');
+const { idParam, createValidator } = require('../validators/return.validators');
+const router = express.Router();
+router.use(authRequired);
+router.post('/', returnUpload.array('evidencias', 5), multerErrorHandler, createValidator, c.create);
+router.get('/my-returns', c.myReturns);
+router.get('/:id', idParam, c.detail);
+module.exports = router;
