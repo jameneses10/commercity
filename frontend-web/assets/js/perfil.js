@@ -70,16 +70,38 @@ async function openReturnForm(orderId){
     returnDialog.showModal(); cancelReturn.onclick=()=>returnDialog.remove(); returnForm.onsubmit=submitReturn;
   }catch(e){toast(e.message,'error');}
 }
+const RETURN_ALLOWED_EXT = new Set(['jpg','jpeg','png','webp','pdf','doc','docx']);
+const RETURN_BLOCKED_EXT = new Set(['exe','sh','bat','php','js','html']);
+function validateReturnFiles(files) {
+  if (files.length > 5) return 'Puedes adjuntar máximo 5 evidencias.';
+  for (const file of files) {
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    if (RETURN_BLOCKED_EXT.has(ext) || !RETURN_ALLOWED_EXT.has(ext)) return `Archivo no permitido: ${file.name}. Usa jpg, jpeg, png, webp, pdf, doc o docx.`;
+  }
+  return '';
+}
 async function submitReturn(e){
   e.preventDefault();
   const form=e.currentTarget;
   const btn=form.querySelector('button[type="submit"]');
-  const body={pedido_id:Number(form.pedido_id.value),motivo:form.motivo.value,descripcion:form.descripcion.value,items:[{pedido_detalle_id:Number(form.pedido_detalle_id.value),cantidad:Number(form.cantidad.value)}]};
+  const items=[{pedido_detalle_id:Number(form.pedido_detalle_id.value),cantidad:Number(form.cantidad.value)}];
+  const files=[...form.evidencias.files];
+  const validation=validateReturnFiles(files);
+  if(validation) return toast(validation, 'error');
   await withButtonLoading(btn, async()=>{
     try{
-      if(form.evidencias.files.length) toast('El backend actual rechaza items en FormData; se enviará la solicitud sin adjuntos y las evidencias quedan pendientes de ajuste backend.', 'warn');
-      await api.post('/returns', body);
-      toast('Solicitud de devolución creada');
+      if(files.length){
+        const fd=new FormData();
+        fd.set('pedido_id',form.pedido_id.value);
+        fd.set('motivo',form.motivo.value);
+        fd.set('descripcion',form.descripcion.value);
+        fd.set('items',JSON.stringify(items));
+        files.forEach((file)=>fd.append('evidencias',file));
+        await api.form('/returns',fd);
+      } else {
+        await api.post('/returns',{pedido_id:Number(form.pedido_id.value),motivo:form.motivo.value,descripcion:form.descripcion.value,items});
+      }
+      toast('Solicitud de devolución creada correctamente');
       document.getElementById('returnDialog')?.remove();
       routeSection('returns');
     }catch(err){toast(err.message,'error');}
