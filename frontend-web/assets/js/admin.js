@@ -1,6 +1,6 @@
 
 import {api, assetUrl} from './api.js';
-import {sidebar, $, $$, money, toast, h, withButtonLoading, emptyState} from './ui.js';
+import {sidebar, $, $$, money, toast, h, withButtonLoading, emptyState, confirmDialog, promptDialog} from './ui.js';
 import {requireAuth} from './auth.js';
 
 let users = [];
@@ -12,9 +12,12 @@ let userReports = [];
 let logs = [];
 let statsData = null;
 let adminSearchResults = null;
+let adminReturns = [];
+let deleteRequests = [];
 
 async function render() {
   app.innerHTML = `<div class="dashboard">${sidebar('admin', 'admin')}<main class="container"><div class="flex justify-between items-center mb-6"><div><h1 class="text-4xl font-extrabold">Panel Ejecutivo</h1><p class="muted">Supervisión operativa de CommerCity.</p></div><button id="reloadAdmin" class="btn btn-primary" type="button">↻ Actualizar panel</button></div><section class="stats mb-6" id="stats"></section><section id="search" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Buscador global</h2><div class="flex gap-2"><input id="q" class="input" placeholder="Buscar usuarios, productos, tiendas..."><button id="go" class="btn btn-secondary" type="button">Buscar</button></div><div id="results" class="grid md:grid-cols-3 gap-3 mt-4"></div></section><section id="categories" class="card mb-6"><div class="flex justify-between gap-3 items-start mb-4"><div><h2 class="text-2xl font-bold">Categorías</h2><p class="muted">CRUD administrativo de categorías.</p></div><button id="reloadCategories" class="btn btn-secondary" type="button">Actualizar</button></div><form id="categoryForm" class="grid md:grid-cols-[1fr_1fr_150px_auto] gap-2 mb-4"><input type="hidden" name="id"><input class="input" name="nombre" placeholder="Nombre categoría" required><input class="input" name="descripcion" placeholder="Descripción"><select class="select" name="estado"><option value="activa">Activa</option><option value="inactiva">Inactiva</option></select><button id="saveCategoryBtn" class="btn btn-primary" type="submit">Crear categoría</button><button id="cancelCategoryEdit" class="btn btn-ghost hidden md:col-span-4" type="button">Cancelar edición</button></form><div id="categoryTable"></div></section><section id="users" class="card mb-6"><div class="flex justify-between gap-3 items-start mb-4"><div><h2 class="text-2xl font-bold">Gobernanza de usuarios</h2><p class="muted">Activar, inactivar o banear según endpoint administrativo.</p></div><input id="userFilter" class="input max-w-sm" placeholder="Filtrar usuarios visualmente"></div><div id="userTable"></div></section><section id="orders" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Órdenes</h2><div class="grid md:grid-cols-3 gap-2 mb-4"><select id="orderFilter" class="select"><option value="">Todos los estados</option><option value="pendiente">Pago pendiente</option><option value="pagado">Pagado</option><option value="creado">Creado</option><option value="procesando">Procesando</option></select></div><div id="ordersBox"></div></section><section id="stores" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Tiendas</h2><p class="muted mb-3">No existe endpoint de listado global de tiendas; se muestran resultados desde búsqueda admin cuando se consulta un término.</p><div id="storesBox"></div></section><section id="products" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Productos globales</h2><div id="productsBox"></div></section><section id="reports" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Productos reportados</h2><div id="reportGrid" class="grid md:grid-cols-3 gap-4"></div></section><section id="userReports" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Reportes de usuarios</h2><div id="userReportGrid" class="grid md:grid-cols-3 gap-4"></div></section><section id="messageReports" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Reportes de mensajes</h2><div class="empty-state"><h3 class="text-xl font-bold mb-2">Pendiente backend</h3><p>No existe GET /admin/reports/messages ni PATCH /admin/reports/messages/:id. Los mensajes sí pueden reportarse desde chat y quedan trazados en logs.</p></div></section><section id="reviewModeration" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Moderación de reseñas</h2><div class="empty-state"><h3 class="text-xl font-bold mb-2">Listado pendiente backend</h3><p>Existe PATCH /admin/reviews/:id/moderate, pero no existe endpoint para listar reseñas pendientes. La acción queda preparada cuando backend entregue el listado.</p></div></section><section id="adminReports" class="grid lg:grid-cols-2 gap-6 mb-6"><div class="card"><h2 class="text-2xl font-bold mb-3">Reportes básicos</h2><div id="reportsSummary"></div></div><div class="card"><h2 class="text-2xl font-bold mb-3">Logs / auditoría</h2><div id="logsBox"></div></div></section></main></div>`;
+  document.querySelector('.dashboard main').insertAdjacentHTML('beforeend', `<section id="returnAdmin" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Devoluciones y reembolsos</h2><div id="adminReturnsBox"></div></section><section id="deleteRequests" class="card mb-6"><h2 class="text-2xl font-bold mb-3">Solicitudes de eliminación de cuenta</h2><div id="deleteRequestsBox"></div></section>`);
   await requireAuth(api, ['administrador']);
   reloadAdmin.onclick = load;
   go.onclick = search;
@@ -28,7 +31,7 @@ async function render() {
 }
 
 async function load() {
-  await Promise.all([loadStats(), loadCategories(), loadUsers(), loadOrders(), loadProducts(), loadProductReports(), loadUserReports(), loadLogs()]);
+  await Promise.all([loadStats(), loadCategories(), loadUsers(), loadOrders(), loadProducts(), loadProductReports(), loadUserReports(), loadLogs(), loadAdminReturns(), loadDeleteRequests()]);
   drawStores();
 }
 
@@ -282,6 +285,44 @@ async function changeStoreStatus(id, action) {
   } catch (e) {
     toast(e.message, 'error');
   }
+}
+
+async function loadAdminReturns() {
+  adminReturnsBox.innerHTML = '<p class="muted">Cargando devoluciones...</p>';
+  try { const d = await api.get('/admin/returns'); adminReturns = d.returns || []; drawAdminReturns(); }
+  catch (e) { adminReturnsBox.innerHTML = `<p class="text-red-700">${h(e.message)}</p>`; }
+}
+function drawAdminReturns() {
+  if (!adminReturns.length) { adminReturnsBox.innerHTML = emptyState('Sin devoluciones', 'No hay solicitudes de devolución o reembolso.'); return; }
+  adminReturnsBox.innerHTML = `<table class="table"><thead><tr><th>Solicitud</th><th>Comprador/Tienda</th><th>Pedido</th><th>Estado</th><th>Monto</th><th>Acciones</th></tr></thead><tbody>${adminReturns.map((r)=>`<tr><td><b>${h(r.numero_solicitud || `#${r.id}`)}</b><p class="muted text-sm">${h(r.motivo)} · ${formatDate(r.creado_en)}</p></td><td>${h(r.comprador_nombre || `#${r.comprador_id}`)}<p class="muted text-sm">${h(r.tienda_nombre || `Tienda #${r.tienda_id}`)}</p></td><td>#${Number(r.pedido_id)||''}</td><td><span class="status-badge ${h(r.estado)}">${h(r.estado)}</span></td><td>${money(r.monto_estimado)}</td><td><div class="grid gap-2 min-w-44">${['en_revision','aprobada','rechazada','reembolso_simulado','cerrada'].map((s)=>`<button class="btn ${s==='rechazada'?'btn-danger':s==='reembolso_simulado'?'btn-primary':'btn-secondary'} admin-return-action" data-id="${Number(r.id)}" data-state="${s}" type="button">${h(s)}</button>`).join('')}</div></td></tr>`).join('')}</tbody></table>`;
+  $$('.admin-return-action').forEach((b)=>{ b.onclick=()=>resolveAdminReturn(b.dataset.id,b.dataset.state); });
+}
+async function resolveAdminReturn(id, estado) {
+  const respuesta_admin = await promptDialog({title:'Resolver devolución', message:`Respuesta administrativa para estado ${estado}.`, placeholder:'Respuesta para comprador/vendedor'});
+  if (respuesta_admin === null) return;
+  try { await api.patch(`/admin/returns/${id}/resolve`, {estado, respuesta_admin}); toast('Devolución actualizada'); await Promise.all([loadAdminReturns(), loadLogs()]); }
+  catch (e) { toast(e.message, 'error'); }
+}
+
+async function loadDeleteRequests() {
+  deleteRequestsBox.innerHTML = '<p class="muted">Cargando solicitudes...</p>';
+  try { const d = await api.get('/admin/account-delete-requests'); deleteRequests = d.requests || []; drawDeleteRequests(); }
+  catch (e) { deleteRequestsBox.innerHTML = `<p class="text-red-700">${h(e.message)}</p>`; }
+}
+function drawDeleteRequests() {
+  if (!deleteRequests.length) { deleteRequestsBox.innerHTML = emptyState('Sin solicitudes', 'No hay solicitudes de eliminación de cuenta.'); return; }
+  deleteRequestsBox.innerHTML = `<table class="table"><thead><tr><th>Usuario</th><th>Correo</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody>${deleteRequests.map((r)=>`<tr><td><b>${h(r.nombre)}</b><p class="muted text-sm">#${Number(r.id)||''} · ${h(r.rol||'')}</p></td><td>${h(r.anonimizado ? 'anonimizado' : r.correo)}</td><td><span class="status-badge ${h(r.solicitud_eliminacion_estado)}">${h(r.solicitud_eliminacion_estado)}</span></td><td>${formatDate(r.solicitud_eliminacion_fecha)}</td><td><div class="flex gap-2"><button class="btn btn-danger delete-req-action" data-id="${Number(r.id)}" data-state="aprobada" type="button" ${r.solicitud_eliminacion_estado!=='pendiente'?'disabled':''}>Aprobar</button><button class="btn btn-secondary delete-req-action" data-id="${Number(r.id)}" data-state="rechazada" type="button" ${r.solicitud_eliminacion_estado!=='pendiente'?'disabled':''}>Rechazar</button></div></td></tr>`).join('')}</tbody></table>`;
+  $$('.delete-req-action').forEach((b)=>{ b.onclick=()=>resolveDeleteRequest(b.dataset.id,b.dataset.state); });
+}
+async function resolveDeleteRequest(id, estado) {
+  if (estado === 'aprobada') {
+    const ok = await confirmDialog({title:'Anonimizar cuenta', message:'Esta acción anonimizará datos personales sin borrar historial transaccional. ¿Deseas continuar?', confirmText:'Anonimizar', danger:true});
+    if (!ok) return;
+  }
+  const respuesta_admin = await promptDialog({title:'Responder solicitud', message:`Respuesta para solicitud ${estado}.`, placeholder:'Motivo o respuesta administrativa'});
+  if (respuesta_admin === null) return;
+  try { await api.patch(`/admin/account-delete-requests/${id}`, {estado, respuesta_admin}); toast('Solicitud actualizada'); await Promise.all([loadDeleteRequests(), loadUsers(), loadLogs()]); }
+  catch (e) { toast(e.message, 'error'); }
 }
 
 function formatDate(value) {

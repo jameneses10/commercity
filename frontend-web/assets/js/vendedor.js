@@ -1,6 +1,6 @@
 
 import {api, assetUrl} from './api.js';
-import {sidebar, $, $$, money, toast, preview, h, emptyState, withButtonLoading} from './ui.js';
+import {sidebar, $, $$, money, toast, preview, h, emptyState, withButtonLoading, promptDialog} from './ui.js';
 import {requireAuth} from './auth.js';
 
 let store = null;
@@ -14,9 +14,11 @@ let outOfStockProducts = [];
 let bankAccount = null;
 let sellerOrders = [];
 let sellerShipments = [];
+let sellerReturns = [];
 
 async function render() {
   app.innerHTML = `<div class="dashboard">${sidebar('tienda', 'vendedor')}<main class="container"><section id="hero" class="hero glass mb-6"></section><section class="stats mb-6" id="stats"></section><section class="grid lg:grid-cols-2 gap-6"><form id="storeForm" class="card grid gap-3"><h2 class="text-2xl font-bold">Crear / editar tienda</h2><input class="input" name="nombre" placeholder="Nombre tienda" required><textarea class="input" name="descripcion" placeholder="Descripción"></textarea><div class="grid md:grid-cols-2 gap-3"><label>Logo<input class="input" id="logo" name="logo" type="file" accept="image/*"></label><label>Banner<input class="input" id="banner" name="banner" type="file" accept="image/*"></label></div><div id="storePreview" class="thumbs"></div><div id="storeActions" class="grid md:grid-cols-2 gap-2"></div><button class="btn btn-primary" type="submit">Guardar tienda</button></form><form id="productForm" class="card grid gap-3"><div class="flex justify-between gap-3 items-start"><div><h2 id="productFormTitle" class="text-2xl font-bold">Crear producto</h2><p id="productGuard" class="muted text-sm mt-1"></p></div><button id="cancelEdit" class="btn btn-ghost hidden" type="button">Cancelar edición</button></div><input type="hidden" name="product_id"><label>Nombre<input class="input" name="nombre" placeholder="Nombre producto" required></label><label>Descripción<textarea class="input" name="descripcion" placeholder="Descripción" required></textarea></label><div class="grid md:grid-cols-3 gap-3"><label>Categoría<select class="select" name="categoria_id" id="cat" required></select></label><label>Precio<input class="input" name="precio" type="number" min="1" step="0.01" placeholder="Precio" required></label><label>Stock<input class="input" name="stock" type="number" min="0" step="1" placeholder="Stock" required></label></div><label>Visibilidad al editar<select class="select" name="estado" id="productState"><option value="activo">Visible</option><option value="oculto">Oculto</option><option value="agotado">Agotado</option></select></label><p class="field-hint">La visibilidad se aplica al guardar cambios o desde el botón Visible/Oculto de cada producto.</p><input class="input" id="images" name="images" type="file" multiple accept="image/*"><div id="productPreview" class="thumbs"></div><button id="saveProductBtn" class="btn btn-primary" type="submit">Crear producto</button></form></section><section id="bank" class="card mt-6"><h2 class="text-2xl font-bold mb-3">Cuenta bancaria simulada</h2><div id="bankStatus" class="mb-3"></div><form id="bankForm" class="grid md:grid-cols-4 gap-3"><input class="input" name="titular" placeholder="Nombre titular" required><input class="input" name="banco" placeholder="Banco simulado" required><select class="select" name="tipo_cuenta" required><option value="ahorros">Ahorros</option><option value="corriente">Corriente</option><option value="nequi">Nequi</option><option value="daviplata">Daviplata</option><option value="simulada">Simulada</option></select><input class="input" name="numero_cuenta_simulado" placeholder="Número de cuenta" required><button id="saveBankBtn" class="btn btn-primary md:col-span-4" type="submit">Guardar cuenta bancaria</button></form></section><section id="reports" class="grid lg:grid-cols-3 gap-6 mt-6"><div class="card"><h2 class="text-2xl font-bold mb-3">Ganancias</h2><label class="text-sm muted">Período<select id="periodFilter" class="select mt-1"><option value="daily">Diario</option><option value="weekly">Semanal</option><option value="monthly" selected>Mensual</option></select></label><div id="earningsBox" class="mt-4"></div></div><div class="card"><h2 class="text-2xl font-bold mb-3">Productos vendidos</h2><div id="soldBox"></div></div><div class="card"><h2 class="text-2xl font-bold mb-3">Productos agotados</h2><div id="outStockBox"></div></div></section><section id="orders" class="card mt-6"><div class="flex justify-between gap-3 items-start mb-4"><div><h2 class="text-2xl font-bold">Pedidos de mi tienda</h2><p class="muted">Órdenes pendientes y pagadas donde participa tu tienda.</p></div><button id="reloadSellerOps" class="btn btn-secondary" type="button">Actualizar operaciones</button></div><div id="ordersBox"></div></section><section id="shipments" class="card mt-6"><h2 class="text-2xl font-bold mb-3">Envíos pendientes</h2><div id="shipmentsBox"></div></section><section class="card mt-6"><h2 class="text-2xl font-bold mb-4">Inventario</h2><div id="products"></div></section></main></div>`;
+  document.querySelector('.dashboard main').insertAdjacentHTML('beforeend', `<section id="sellerReturns" class="card mt-6"><div class="flex justify-between gap-3 items-start mb-4"><div><h2 class="text-2xl font-bold">Devoluciones de mi tienda</h2><p class="muted">Solicitudes de devolución y reembolso asociadas a tus productos.</p></div><button id="reloadSellerReturns" class="btn btn-secondary" type="button">Actualizar devoluciones</button></div><div id="sellerReturnsBox"></div></section>`);
   await requireAuth(api, ['vendedor']);
   preview(logo, '#storePreview');
   preview(banner, '#storePreview');
@@ -25,7 +27,8 @@ async function render() {
   productForm.onsubmit = saveProduct;
   bankForm.onsubmit = saveBankAccount;
   periodFilter.onchange = drawEarnings;
-  reloadSellerOps.onclick = () => Promise.all([loadSellerOrders(), loadSellerShipments()]);
+  reloadSellerOps.onclick = () => Promise.all([loadSellerOrders(), loadSellerShipments(), loadSellerReturns()]);
+  reloadSellerReturns.onclick = loadSellerReturns;
   cancelEdit.onclick = resetProductForm;
   await load();
 }
@@ -33,7 +36,7 @@ async function render() {
 async function load() {
   await loadStore();
   await loadCategories();
-  await Promise.all([loadStats(), loadProducts(), loadBankAccount(), loadSellerReports(), loadSellerOrders(), loadSellerShipments()]);
+  await Promise.all([loadStats(), loadProducts(), loadBankAccount(), loadSellerReports(), loadSellerOrders(), loadSellerShipments(), loadSellerReturns()]);
   drawStore();
   updateProductFormAvailability();
 }
@@ -65,6 +68,24 @@ function drawSellerShipments() { if (!sellerShipments.length) { shipmentsBox.inn
 function shipmentCard(s) { return `<article class="p-4 rounded-3xl bg-white/70 border border-orange-100"><div class="flex flex-wrap justify-between gap-3"><div><h3 class="font-bold">Envío #${Number(s.id) || ''} · Pedido #${Number(s.pedido_id) || ''}</h3><p class="muted text-sm">Comprador #${Number(s.comprador_id) || ''} · Estado actual: ${h(s.estado || 'pendiente')}</p><p class="text-sm">Transportadora actual: <b>${h(s.transportadora || 'Pendiente')}</b> · Guía: <b>${h(s.numero_guia || 'Pendiente')}</b></p></div><select class="select ship-status max-w-48" data-id="${Number(s.id) || ''}"><option value="preparado" ${s.estado === 'preparado' ? 'selected' : ''}>En preparación</option><option value="en_camino" ${s.estado === 'en_camino' ? 'selected' : ''}>En camino</option><option value="entregado" ${s.estado === 'entregado' ? 'selected' : ''}>Entregado</option><option value="cancelado" ${s.estado === 'cancelado' ? 'selected' : ''}>Cancelado</option></select></div><form class="dispatch-form grid md:grid-cols-[1fr_1fr_auto] gap-2 mt-3" data-id="${Number(s.id) || ''}"><input class="input" name="transportadora" value="${h(s.transportadora || '')}" placeholder="Transportadora" required><input class="input" name="numero_guia" value="${h(s.numero_guia || '')}" placeholder="Número de guía" required><button class="btn btn-secondary" type="submit">Registrar guía</button></form></article>`; }
 async function dispatchShipment(e) { e.preventDefault(); const form = e.currentTarget; const btn = form.querySelector('button'); await withButtonLoading(btn, async () => { try { await api.patch(`/shipments/${form.dataset.id}/dispatch`, Object.fromEntries(new FormData(form))); toast('Guía registrada y envío en preparación'); await loadSellerShipments(); } catch (err) { toast(err.message, 'error'); } }, 'Guardando guía...'); }
 async function updateShipmentStatus(id, estado) { try { await api.patch(`/shipments/${id}/status`, {estado}); toast('Estado de envío actualizado'); await loadSellerShipments(); } catch (e) { toast(e.message, 'error'); } }
+
+async function loadSellerReturns() {
+  if (!store) { sellerReturnsBox.innerHTML = emptyState('Sin tienda', 'Crea tu tienda para revisar devoluciones.'); return; }
+  sellerReturnsBox.innerHTML = '<p class="muted">Cargando devoluciones...</p>';
+  try { const d = await api.get('/seller/returns'); sellerReturns = d.returns || []; drawSellerReturns(); }
+  catch (e) { sellerReturnsBox.innerHTML = `<p class="text-red-700">${h(e.message)}</p>`; }
+}
+function drawSellerReturns() {
+  if (!sellerReturns.length) { sellerReturnsBox.innerHTML = emptyState('Sin devoluciones', 'No hay solicitudes de devolución para tu tienda.'); return; }
+  sellerReturnsBox.innerHTML = `<table class="table"><thead><tr><th>Solicitud</th><th>Pedido</th><th>Motivo</th><th>Estado</th><th>Monto</th><th>Acciones</th></tr></thead><tbody>${sellerReturns.map((r)=>`<tr><td><b>${h(r.numero_solicitud || `#${r.id}`)}</b><p class="muted text-sm">${formatDate(r.creado_en)}</p></td><td>#${Number(r.pedido_id)||''}<p class="muted text-sm">Comprador #${Number(r.comprador_id)||''}</p></td><td>${h(r.motivo)}<p class="muted text-sm">${h(r.descripcion || '')}</p></td><td><span class="status-badge ${h(r.estado)}">${h(r.estado)}</span></td><td>${money(r.monto_estimado)}</td><td><div class="grid gap-2 min-w-44"><button class="btn btn-secondary seller-return-action" data-id="${Number(r.id)}" data-state="en_revision" type="button">En revisión</button><button class="btn btn-primary seller-return-action" data-id="${Number(r.id)}" data-state="aprobada" type="button">Aprobar</button><button class="btn btn-danger seller-return-action" data-id="${Number(r.id)}" data-state="rechazada" type="button">Rechazar</button></div></td></tr>`).join('')}</tbody></table>`;
+  $$('.seller-return-action').forEach((b)=>{ b.onclick=()=>updateSellerReturn(b.dataset.id,b.dataset.state); });
+}
+async function updateSellerReturn(id, estado) {
+  const respuesta_vendedor = estado === 'en_revision' ? 'Solicitud puesta en revisión por el vendedor.' : await promptDialog({title:'Responder devolución', message:`Respuesta del vendedor para estado ${estado}.`, placeholder:'Respuesta para comprador'});
+  if (respuesta_vendedor === null) return;
+  try { await api.patch(`/seller/returns/${id}/status`, {estado, respuesta_vendedor}); toast('Devolución actualizada'); await loadSellerReturns(); }
+  catch (e) { toast(e.message, 'error'); }
+}
 
 function drawProducts() { if (!store) { productsEl().innerHTML = emptyState('Primero crea tu tienda', 'Cuando tengas una tienda activa, aquí podrás gestionar tus productos.'); return; } if (!products.length) { productsEl().innerHTML = emptyState('Sin productos visibles', 'Crea tu primer producto. Si ocultas o eliminas productos, dejarán de aparecer en el catálogo público.'); return; } productsEl().innerHTML = `<table class="table"><thead><tr><th>Producto</th><th>Stock</th><th>Precio</th><th>Estado</th><th>Imágenes</th><th>Acciones</th></tr></thead><tbody>${products.map((p) => productRow(p)).join('')}</tbody></table>`; $$('.edit-product').forEach((b) => { b.onclick = () => startEdit(products.find((p) => p.id == b.dataset.id)); }); $$('.delete-product').forEach((b) => { b.onclick = () => deleteProduct(b.dataset.id); }); $$('.toggle-visibility').forEach((b) => { b.onclick = () => toggleVisibility(products.find((p) => p.id == b.dataset.id)); }); $$('.del-img').forEach((b) => { b.onclick = () => deleteImage(b.dataset.p, b.dataset.i); }); }
 function productsEl() { return document.getElementById('products'); }

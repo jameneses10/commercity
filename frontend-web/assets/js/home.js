@@ -2,11 +2,13 @@
 import {api, assetUrl} from './api.js';
 import {shell, bindShell, $, money, toast, h, icon, skeletonProducts, emptyState, withButtonLoading} from './ui.js';
 import {addCart} from './cart-store.js';
+import {getToken} from './auth.js';
 
 let page = 1;
 let products = [];
 let categories = [];
 let lastPageProducts = [];
+let favoriteIds = new Set();
 const initialStoreId = new URLSearchParams(location.search).get('store');
 
 async function render() {
@@ -58,6 +60,7 @@ async function loadProducts(reset = false) {
       grid.innerHTML = skeletonProducts(6);
     }
     const d = await api.get(`/products?${buildQuery()}`, {auth: false});
+    if (getToken()) await loadFavorites();
     lastPageProducts = d.products || [];
     products = [...products, ...lastPageProducts];
     drawProducts();
@@ -95,6 +98,29 @@ function drawProducts() {
       toast('Producto agregado al carrito');
     };
   });
+  grid.querySelectorAll('.fav-btn').forEach((b) => { b.onclick = () => toggleFavorite(b.dataset.id); });
+}
+
+async function loadFavorites() {
+  try {
+    const d = await api.get('/favorites');
+    favoriteIds = new Set((d.favorites || []).map((f) => Number(f.producto_id)));
+  } catch { favoriteIds = new Set(); }
+}
+
+async function toggleFavorite(productId) {
+  if (!getToken()) {
+    toast('Inicia sesión para guardar favoritos', 'warn');
+    setTimeout(() => { location.href = 'login.html'; }, 900);
+    return;
+  }
+  const id = Number(productId);
+  const liked = favoriteIds.has(id);
+  try {
+    if (liked) { await api.delete(`/favorites/${id}`); favoriteIds.delete(id); toast('Producto quitado de favoritos'); }
+    else { await api.post(`/favorites/${id}`, {}); favoriteIds.add(id); toast('Producto guardado en favoritos'); }
+    drawProducts();
+  } catch (e) { toast(e.message, 'error'); }
 }
 
 function card(p) {
@@ -102,7 +128,7 @@ function card(p) {
   const id = Number(p.id) || '';
   const fallback = 'assets/img/logo-commercity.png';
   const out = Number(p.stock || 0) <= 0 || p.estado === 'agotado';
-  return `<article class="product-card"><a href="producto.html?id=${id}"><img src="${img}" alt="${h(p.nombre)}" data-fallback-src="${fallback}"></a><div class="mt-4"><a class="pill orange" href="tienda.html?id=${Number(p.tienda_id) || ''}">${h(p.tienda_nombre || 'Vendedor')}</a> <span class="text-amber-500 text-sm">★ ${h(p.calificacion_promedio || 'Nuevo')}</span><h3 class="text-xl font-bold mt-2">${h(p.nombre)}</h3><p class="muted line-clamp-2">${h(p.descripcion || '')}</p><div class="flex justify-between items-center mt-3"><div class="price">${money(p.precio_final || p.precio)}</div><span class="text-sm ${out ? 'text-red-700' : 'text-green-700'}">${out ? 'Agotado' : `Stock ${Number(p.stock) || 0}`}</span></div><div class="product-card-actions"><button class="btn btn-cart add" type="button" data-id="${id}" ${out ? 'disabled' : ''} aria-label="Añadir ${h(p.nombre)} al carrito">${icon('carrito', 'Carrito')} ${out ? 'Agotado' : 'Añadir al carrito'}</button><a class="btn btn-secondary" href="producto.html?id=${id}" aria-label="Ver detalle de ${h(p.nombre)}">Ver detalle</a></div></div></article>`;
+  return `<article class="product-card"><div class="product-media"><a href="producto.html?id=${id}"><img src="${img}" alt="${h(p.nombre)}" data-fallback-src="${fallback}"></a><button class="fav-btn ${favoriteIds.has(id) ? 'active' : ''}" type="button" data-id="${id}" aria-label="${favoriteIds.has(id) ? 'Quitar de favoritos' : 'Guardar en favoritos'}">${icon('heart', 'Favorito')}</button></div><div class="mt-4"><a class="pill orange" href="tienda.html?id=${Number(p.tienda_id) || ''}">${h(p.tienda_nombre || 'Vendedor')}</a> <span class="text-amber-500 text-sm">★ ${h(p.calificacion_promedio || 'Nuevo')}</span><h3 class="text-xl font-bold mt-2">${h(p.nombre)}</h3><p class="muted line-clamp-2">${h(p.descripcion || '')}</p><div class="flex justify-between items-center mt-3"><div class="price">${money(p.precio_final || p.precio)}</div><span class="text-sm ${out ? 'text-red-700' : 'text-green-700'}">${out ? 'Agotado' : `Stock ${Number(p.stock) || 0}`}</span></div><div class="product-card-actions"><button class="btn btn-cart add" type="button" data-id="${id}" ${out ? 'disabled' : ''} aria-label="Añadir ${h(p.nombre)} al carrito">${icon('carrito', 'Carrito')} ${out ? 'Agotado' : 'Añadir al carrito'}</button><a class="btn btn-secondary" href="producto.html?id=${id}" aria-label="Ver detalle de ${h(p.nombre)}">Ver detalle</a></div></div></article>`;
 }
 
 function bindProductImageFallbacks() {

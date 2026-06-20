@@ -35,7 +35,10 @@ const ICON_PATHS = {
   plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
   img: '<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m7 17 4-4 3 3 2-2 3 3"/>',
   login: '<path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M14 4h4a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-4"/>',
-  logout: '<path d="M14 17l5-5-5-5"/><path d="M19 12H8"/><path d="M10 20H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h4"/>'
+  logout: '<path d="M14 17l5-5-5-5"/><path d="M19 12H8"/><path d="M10 20H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h4"/>',
+  heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>',
+  shield: '<path d="M12 3 5 6v5c0 4.55 2.9 8.75 7 10 4.1-1.25 7-5.45 7-10V6z"/>',
+  refund: '<path d="M3 7h13a5 5 0 1 1 0 10H8"/><path d="M7 3 3 7l4 4"/><path d="M9 17l-2 4"/><path d="M14 17l2 4"/>'
 };
 
 const ICON_TITLES = {
@@ -156,3 +159,42 @@ export function preview(input, target) {
     });
   });
 }
+
+export function applyDarkMode(enabled) {
+  document.body.classList.toggle('dark-mode', Boolean(enabled));
+  localStorage.setItem('cc_dark_mode', enabled ? '1' : '0');
+}
+
+export function hydrateDarkMode() {
+  applyDarkMode(localStorage.getItem('cc_dark_mode') === '1');
+}
+
+export function confirmDialog({title = 'Confirmar acción', message = '', confirmText = 'Confirmar', danger = false} = {}) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-backdrop';
+    overlay.innerHTML = `<div class="modal-card"><h2 class="text-2xl font-bold mb-2">${h(title)}</h2><p class="muted mb-5">${h(message)}</p><div class="flex gap-2 justify-end"><button class="btn btn-ghost" data-cancel type="button">Cancelar</button><button class="btn ${danger ? 'btn-danger' : 'btn-primary'}" data-confirm type="button">${h(confirmText)}</button></div></div>`;
+    document.body.appendChild(overlay);
+    const close = (value) => { overlay.remove(); resolve(value); };
+    overlay.querySelector('[data-cancel]').onclick = () => close(false);
+    overlay.querySelector('[data-confirm]').onclick = () => close(true);
+    overlay.addEventListener('click', (event) => { if (event.target === overlay) close(false); });
+    document.addEventListener('keydown', function esc(event) { if (event.key === 'Escape') { document.removeEventListener('keydown', esc); close(false); } }, {once: true});
+  });
+}
+
+export function promptDialog({title = 'Respuesta requerida', message = '', placeholder = '', textarea = true, confirmText = 'Guardar'} = {}) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-backdrop';
+    overlay.innerHTML = `<div class="modal-card"><h2 class="text-2xl font-bold mb-2">${h(title)}</h2><p class="muted mb-4">${h(message)}</p>${textarea ? `<textarea class="input" rows="4" placeholder="${h(placeholder)}"></textarea>` : `<input class="input" placeholder="${h(placeholder)}">`}<div class="flex gap-2 justify-end mt-5"><button class="btn btn-ghost" data-cancel type="button">Cancelar</button><button class="btn btn-primary" data-confirm type="button">${h(confirmText)}</button></div></div>`;
+    document.body.appendChild(overlay);
+    const input = overlay.querySelector('textarea,input');
+    input.focus();
+    const close = (value) => { overlay.remove(); resolve(value); };
+    overlay.querySelector('[data-cancel]').onclick = () => close(null);
+    overlay.querySelector('[data-confirm]').onclick = () => close(input.value.trim());
+  });
+}
+
+hydrateDarkMode();
