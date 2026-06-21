@@ -74,7 +74,7 @@ function autoApiOrigin() {
   if (runtimeOverride) return withoutTrailingSlash(runtimeOverride);
 
   const isLocalHost = ['localhost', '127.0.0.1', '0.0.0.0', '::1'].includes(runtimeHostname);
-  const isStaticDevServer = runtimePort === '8080' || runtimePort === '5500';
+  const isStaticDevServer = runtimePort === '8080' || runtimePort === '8081' || runtimePort === '5500';
 
   if (isLocalHost && isStaticDevServer) {
     return `${runtimeProtocol}//${runtimeHostname}:3000`;
