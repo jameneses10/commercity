@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CommerCity · Conectando compras, creando oportunidades</title>
+
+    <!-- Tailwind + Inter + Poppins -->
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome 6 (iconos) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+            transition: background 0.25s ease, color 0.25s ease;
+            overflow-x: hidden;
+        }
+        body.dark {
+            background: #0f172a;
+            color: #f1f5f9;
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fa8000;
+            border-radius: 8px;
+        }
+        body.dark ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        body.dark ::-webkit-scrollbar-thumb {
+            background: #fa8000;
+        }
+
+        /* ===== TIPOGRAFÍAS ===== */
+        .font-poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+        .font-inter {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ===== BOTONES / BADGES ===== */
+        .btn-primary {
+            background: #fa8000;
+            color: #fff;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background: #e06f00;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(250, 128, 0, 0.35);
+        }
+        .btn-secondary {
+            background: #2276ff;
+            color: #fff;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background: #1a5fd4;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(34, 118, 255, 0.35);
+        }
+        .btn-outline {
+            border: 1.5px solid #e5e7eb;
+            background: transparent;
+            color: #0f172a;
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover {
+            border-color: #fa8000;
+            color: #fa8000;
+            background: rgba(250, 128, 0, 0.06);
+        }
+        body.dark .btn-outline {
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+        body.dark .btn-outline:hover {
+            border-color: #fa8000;
+            color: #fa8000;
+            background: rgba(250, 128, 0, 0.12);
+        }
+
+        /* ===== TARJETAS ===== */
+        .card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        body.dark .card {
+            background: #111827;
+            border-color: #334155;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+        body.dark .sidebar {
+            background: #111827;
+            border-right-color: #334155;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            color: #475569;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .sidebar-item:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .sidebar-item.active {
+            background: #fa8000;
+            color: #fff;
+        }
+        .sidebar-item.active i {
+            color: #fff;
+        }
+        body.dark .sidebar-item {
+            color: #94a3b8;
+        }
+        body.dark .sidebar-item:hover {
+            background: #1e293b;
+            color: #f1f5f9;
+        }
+        body.dark .sidebar-item.active {
+            background: #fa8000;
+            color: #fff;
+        }
+
+        /* ===== HEADER FIJO ===== */
+        .app-header {
+            background: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background 0.25s ease, border-color 0.25s ease;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        body.dark .app-header {
+            background: #111827;
+            border-bottom-color: #334155;
+        }
+
+        /* ===== BÚSQUEDA ===== */
+        .search-input {
+            background: #f1f5f9;
+            border: 1.5px solid transparent;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            width: 100%;
+            color: #0f172a;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #fa8000;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(250, 128, 0, 0.12);
+        }
+        body.dark .search-input {
+            background: #1e293b;
+            color: #f1f5f9;
+            border-color: #334155;
+        }
+        body.dark .search-input:focus {
+            border-color: #fa8000;
+            background: #1e293b;
+            box-shadow: 0 0 0 4px rgba(250, 128, 0, 0.15);
+        }
+
+        /* ===== PRODUCT CARD ===== */
+        .product-card .product-image {
+            border-radius: 12px 12px 0 0;
+            background: #f1f5f9;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #94a3b8;
+            transition: background 0.25s ease;
+        }
+        body.dark .product-card .product-image {
+            background: #1e293b;
+        }
+
+        /* ===== TOGGLES ===== */
+        .toggle-track {
+            width: 44px;
+            height: 24px;
+            background: #cbd5e1;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background 0.25s ease;
+            position: relative;
+        }
+        .toggle-track.active {
+            background: #fa8000;
+        }
+        .toggle-thumb {
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.25s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        .toggle-track.active .toggle-thumb {
+            transform: translateX(20px);
+        }
+        body.dark .toggle-track {
+            background: #334155;
+        }
+
+        /* ===== SCREEN CONTAINER ===== */
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .screen.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== BADGES ===== */
+        .badge-success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        .badge-warning {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+        .badge-error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .badge-info {
+            background: #dbeafe;
+            color: #2276ff;
+        }
+        body.dark .badge-success {
+            background: #14532d;
+            color: #86efac;
+        }
+        body.dark .badge-warning {
+            background: #78350f;
+            color: #fbbf24;
+        }
+        body.dark .badge-error {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+        body.dark .badge-info {
+            background: #1e3a5f;
+            color: #93c5fd;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal-box {
+            background: #ffffff;
+            border-radius: 20px;
+            max-width: 480px;
+            width: 90%;
+            padding: 32px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+            transform: scale(0.96);
+            transition: transform 0.25s ease;
+        }
+        .modal-overlay.open .modal-box {
+            transform: scale(1);
+        }
+        body.dark .modal-box {
+            background: #111827;
+            border: 1px solid #334155;
+        }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 14px 22px;
+            border-radius: 14px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            min-width: 280px;
+            animation: slideUp 0.35s ease;
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+        body.dark .toast {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+        .toast-success {
+            border-left: 4px solid #16a34a;
+        }
+        .toast-error {
+            border-left: 4px solid #dc2626;
+        }
+        .toast-warning {
+            border-left: 4px solid #f59e0b;
+        }
+        .toast-info {
+            border-left: 4px solid #2276ff;
+        }
+        @keyframes slideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== RESPONSIVE HELPERS ===== */
+        .max-w-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ===== SKELETON ===== */
+        .skeleton {
+            background: #e2e8f0;
+            border-radius: 8px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        body.dark .skeleton {
+            background: #1e293b;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* ===== TABLA ===== */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+        }
+        body.dark .table-wrap {
+            border-color: #334155;
+        }
+        .table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .table-wrap th {
+            text-align: left;
+            padding: 14px 16px;
+            background: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .table-wrap td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #0f172a;
+        }
+        body.dark .table-wrap th {
+            background: #1e293b;
+            color: #94a3b8;
+            border-bottom-color: #334155;
+        }
+        body.dark .table-wrap td {
+            border-bottom-color: #1e293b;
+            color: #f1f5f9;
+        }
+        .table-wrap tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===== SECCIÓN ===== */
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #0f172a;
+        }
+        body.dark .section-title {
+            color: #f1f5f9;
+        }
+        .section-sub {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+        body.dark .section-sub {
+            color: #94a3b8;
+        }
+
+        /* ===== MISC ===== */
+        .avatar-sm {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #fa8000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .avatar-md {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #fa8000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .avatar-lg {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #fa8000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.4rem;
+        }
+        .text-primary {
+            color: #fa8000;
+        }
+        .text-secondary {
+            color: #2276ff;
+        }
+        .border-primary {
+            border-color: #fa8000;
+        }
+        .bg-primary {
+            background: #fa8000;
+        }
+        .bg-secondary {
+            background: #2276ff;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .grid-cols-4 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 768px) {
+            .grid-cols-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .max-w-content {
+                padding: 0 16px;
+            }
+            .sidebar {
+                width: 64px !important;
+            }
+            .sidebar .sidebar-label {
+                display: none;
+            }
+            .sidebar-item {
+                justify-content: center;
+                padding: 12px;
+            }
+            .sidebar-item i {
+                font-size: 1.2rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .grid-cols-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============================================================ -->
+    <!--                        MODAL GLOBAL                            -->
+    <!-- ============================================================ -->
+    <div id="globalModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="flex items-start gap-4 mb-4">
+                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xl">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-poppins font-bold text-lg text-[#0f172a] dark:text-white" id="modalTitle">Confirmar acción</h3>
+                    <p class="text-[#64748b] dark:text-[#94a3b8] text-sm mt-1" id="modalBody">¿Estás seguro de que deseas realizar esta acción?</p>
+                </div>
+                <button onclick="closeModal()" class="text-[#94a3b8] hover:text-[#475569] dark:hover:text-[#e2e8f0] text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="flex gap-3 justify-end mt-6">
+                <button onclick="closeModal()" class="px-5 py-2 rounded-xl border border-[#e5e7eb] dark:border-[#334155] text-[#475569] dark:text-[#94a3b8] font-medium hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition">Cancelar</button>
+                <button class="px-5 py-2 rounded-xl btn-primary font-medium" id="modalConfirmBtn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!--                       TOAST CONTAINER                         -->
+    <!-- ============================================================ -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- ============================================================ -->
+    <!--                         HEADER FIJO                           -->
+    <!-- ============================================================ -->
+    <header class="app-header">
+        <div class="max-w-content flex items-center justify-between h-[68px]">
+
+            <!-- LOGO -->
+            <a href="#" onclick="navigateTo('home')" class="flex items-center gap-2 no-underline">
+                <div class="flex items-center">
+                    <!-- Logo visual (simulado) -->
+                    <div class="w-9 h-9 rounded-xl bg-[#fa8000] flex items-center justify-center text-white font-poppins font-bold text-lg shadow-sm">
+                        C
+                    </div>
+                    <span class="font-poppins font-bold text-xl ml-1.5" style="color:#fa8000;">Commer</span>
+                    <span class="font-poppins font-bold text-xl" style="color:#2276ff;">City</span>
+                </div>
+            </a>
+
+            <!-- BÚSQUEDA -->
+            <div class="flex-1 max-w-xl mx-6 relative">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[#94a3b8] text-sm"></i>
+                    <input type="text" placeholder="Buscar productos, tiendas, categorías..." class="search-input pl-10 pr-24 py-2.5" />
+                    <div class="absolute right-1.5 top-1/2 -translate-y-1/2 flex gap-1">
+                        <button class="px-3 py-1 text-xs rounded-full bg-[#fa8000] text-white font-medium hover:bg-[#e06f00] transition">Buscar</button>
+                    </div>
+                </div>
+                <div class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[#111827] border border-[#e5e7eb] dark:border-[#334155] rounded-2xl shadow-xl p-2 hidden" id="searchSuggestions">
+                    <div class="p-2 hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] rounded-xl cursor-pointer flex items-center gap-3">
+                        <i class="fas fa-search text-[#94a3b8]"></i>
+                        <span class="text-sm">Zapatos deportivos</span>
+                    </div>
+                    <div class="p-2 hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] rounded-xl cursor-pointer flex items-center gap-3">
+                        <i class="fas fa-store text-[#94a3b8]"></i>
+                        <span class="text-sm">Tienda TechShop</span>
+                    </div>
+                    <div class="p-2 hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] rounded-xl cursor-pointer flex items-center gap-3">
+                        <i class="fas fa-tag text-[#94a3b8]"></i>
+                        <span class="text-sm">Electrónicos</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NAV DERECHA -->
+            <div class="flex items-center gap-1">
+
+                <!-- Categorías -->
+                <button class="px-4 py-2 rounded-xl text-[#475569] dark:text-[#94a3b8] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition font-medium text-sm flex items-center gap-2">
+                    <i class="fas fa-th-large"></i>
+                    <span class="hidden sm:inline">Categorías</span>
+                </button>
+
+                <!-- Login -->
+                <button onclick="navigateTo('login')" class="px-4 py-2 rounded-xl btn-primary font-medium text-sm flex items-center gap-2">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span class="hidden sm:inline">Iniciar sesión</span>
+                </button>
+
+                <!-- Carrito -->
+                <button onclick="navigateTo('cart')" class="relative p-2.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-[#475569] dark:text-[#94a3b8]">
+                    <i class="fas fa-shopping-cart text-lg"></i>
+                    <span class="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-[#fa8000] text-white text-[10px] font-bold flex items-center justify-center">3</span>
+                </button>
+
+                <!-- Notificaciones -->
+                <button onclick="navigateTo('notifications')" class="relative p-2.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-[#475569] dark:text-[#94a3b8]">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span class="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-[#dc2626] text-white text-[10px] font-bold flex items-center justify-center">5</span>
+                </button>
+
+                <!-- Toggle modo oscuro -->
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-[#475569] dark:text-[#fbbf24] text-lg">
+                    <i class="fas fa-moon" id="darkModeIcon"></i>
+                </button>
+
+                <!-- Perfil (avatar) -->
+                <div class="relative group">
+                    <button class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition">
+                        <div class="avatar-sm">JD</div>
+                        <i class="fas fa-chevron-down text-[#94a3b8] text-xs"></i>
+                    </button>
+                    <div class="absolute right-0 top-full mt-1.5 w-56 bg-white dark:bg-[#111827] border border-[#e5e7eb] dark:border-[#334155] rounded-2xl shadow-xl p-1.5 hidden group-hover:block">
+                        <div class="p-3 border-b border-[#f1f5f9] dark:border-[#1e293b]">
+                            <div class="font-semibold">Juan Díaz</div>
+                            <div class="text-xs text-[#64748b] dark:text-[#94a3b8]">juan@email.com</div>
+                            <div class="mt-1"><span class="text-xs bg-[#fa8000] text-white px-2 py-0.5 rounded-full">Comprador</span></div>
+                        </div>
+                        <a href="#" onclick="navigateTo('profile')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-sm"><i class="fas fa-user w-5 text-[#94a3b8]"></i> Mi perfil</a>
+                        <a href="#" onclick="navigateTo('favorites')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-sm"><i class="fas fa-heart w-5 text-[#94a3b8]"></i> Favoritos</a>
+                        <a href="#" onclick="navigateTo('orders')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-sm"><i class="fas fa-box w-5 text-[#94a3b8]"></i> Mis pedidos</a>
+                        <a href="#" onclick="navigateTo('seller-dashboard')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-sm border-t border-[#f1f5f9] dark:border-[#1e293b] mt-1 pt-2"><i class="fas fa-store w-5 text-[#94a3b8]"></i> Panel vendedor</a>
+                        <a href="#" onclick="navigateTo('admin-dashboard')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-sm"><i class="fas fa-crown w-5 text-[#94a3b8]"></i> Panel admin</a>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-sm text-[#dc2626]"><i class="fas fa-sign-out-alt w-5"></i> Cerrar sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <!--                      CONTENIDO PRINCIPAL                       -->
+    <!-- ============================================================ -->
+    <main class="max-w-content py-6">
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: HOME / INICIO                                    -->
+        <!-- ========================================================== -->
+        <div id="screen-home" class="screen active">
+
+            <!-- Banner / Carrusel -->
+            <div class="relative rounded-2xl overflow-hidden mb-8 bg-gradient-to-r from-[#fa8000] to-[#2276ff] h-52 flex items-center px-10 text-white">
+                <div class="relative z-10">
+                    <h1 class="font-poppins text-3xl font-bold">Bienvenido a CommerCity</h1>
+                    <p class="text-white/80 text-lg mt-1 max-w-lg">Conectando compras, creando oportunidades.</p>
+                    <button class="mt-4 px-6 py-2.5 bg-white text-[#fa8000] font-semibold rounded-xl shadow-lg hover:shadow-xl transition">Explorar productos</button>
+                </div>
+                <div class="absolute right-10 top-1/2 -translate-y-1/2 text-8xl opacity-20">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-white/60"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-white/60"></span>
+                </div>
+            </div>
+
+            <!-- Categorías rápidas -->
+            <div class="flex flex-wrap gap-3 mb-8">
+                <button class="px-5 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#111827] hover:border-[#fa8000] transition text-sm font-medium">Electrónicos</button>
+                <button class="px-5 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#111827] hover:border-[#fa8000] transition text-sm font-medium">Ropa</button>
+                <button class="px-5 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#111827] hover:border-[#fa8000] transition text-sm font-medium">Hogar</button>
+                <button class="px-5 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#111827] hover:border-[#fa8000] transition text-sm font-medium">Deportes</button>
+                <button class="px-5 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#111827] hover:border-[#fa8000] transition text-sm font-medium">Libros</button>
+                <button class="px-5 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#111827] hover:border-[#fa8000] transition text-sm font-medium">Juguetes</button>
+            </div>
+
+            <!-- Grid productos -->
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="section-title">Productos destacados</h2>
+                    <p class="section-sub">Lo más popular de la semana</p>
+                </div>
+                <a href="#" class="text-[#fa8000] font-medium text-sm hover:underline">Ver todos →</a>
+            </div>
+
+            <div class="grid grid-cols-4 gap-5">
+
+                <!-- Producto 1 -->
+                <div class="card product-card overflow-hidden hover:shadow-lg transition">
+                    <div class="product-image"><i class="fas fa-laptop"></i></div>
+                    <div class="p-4">
+                        <div class="flex items-start justify-between">
+                            <h3 class="font-semibold text-sm">Laptop Ultrabook Pro</h3>
+                            <button class="text-[#94a3b8] hover:text-[#dc2626] transition"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="flex items-center gap-1 text-yellow-500 text-xs mt-1">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                            <span class="text-[#64748b] dark:text-[#94a3b8] text-xs ml-1">(42)</span>
+                        </div>
+                        <p class="text-[#64748b] dark:text-[#94a3b8] text-xs mt-1">TechShop</p>
+                        <div class="flex items-center justify-between mt-3">
+                            <span class="font-bold text-lg">$1,299.00</span>
+                            <span class="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full">En stock</span>
+                        </div>
+                        <button class="w-full mt-3 py-2 rounded-xl btn-primary text-sm font-medium">Agregar al carrito</button>
+                    </div>
+                </div>
+
+                <!-- Producto 2 -->
+                <div class="card product-card overflow-hidden hover:shadow-lg transition">
+                    <div class="product-image"><i class="fas fa-headphones"></i></div>
+                    <div class="p-4">
+                        <div class="flex items-start justify-between">
+                            <h3 class="font-semibold text-sm">Audífonos ANC Pro</h3>
+                            <button class="text-[#fa8000] hover:text-[#dc2626] transition"><i class="fas fa-heart"></i></button>
+                        </div>
+                        <div class="flex items-center gap-1 text-yellow-500 text-xs mt-1">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            <span class="text-[#64748b] dark:text-[#94a3b8] text-xs ml-1">(87)</span>
+                        </div>
+                        <p class="text-[#64748b] dark:text-[#94a3b8] text-xs mt-1">AudioWorld</p>
+                        <div class="flex items-center justify-between mt-3">
+                            <span class="font-bold text-lg">$189.00</span>
+                            <span class="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 px-2 py-0.5 rounded-full">Stock bajo</span>
+                        </div>
+                        <button class="w-full mt-3 py-2 rounded-xl btn-primary text-sm font-medium">Agregar al carrito</button>
+                    </div>
+                </div>
+
+                <!-- Producto 3 -->
+                <div class="card product-card overflow-hidden hover:shadow-lg transition">
+                    <div class="product-image"><i class="fas fa-tshirt"></i></div>
+                    <div class="p-4">
+                        <div class="flex items-start justify-between">
+                            <h3 class="font-semibold text-sm">Camiseta Deportiva</h3>
+                            <button class="text-[#94a3b8] hover:text-[#dc2626] transition"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="flex items-center gap-1 text-yellow-500 text-xs mt-1">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                            <span class="text-[#64748b] dark:text-[#94a3b8] text-xs ml-1">(23)</span>
+                        </div>
+                        <p class="text-[#64748b] dark:text-[#94a3b8] text-xs mt-1">SportWear</p>
+                        <div class="flex items-center justify-between mt-3">
+                            <span class="font-bold text-lg">$45.00</span>
+                            <span class="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full">En stock</span>
+                        </div>
+                        <button class="w-full mt-3 py-2 rounded-xl btn-primary text-sm font-medium">Agregar al carrito</button>
+                    </div>
+                </div>
+
+                <!-- Producto 4 -->
+                <div class="card product-card overflow-hidden hover:shadow-lg transition">
+                    <div class="product-image"><i class="fas fa-book"></i></div>
+                    <div class="p-4">
+                        <div class="flex items-start justify-between">
+                            <h3 class="font-semibold text-sm">Libro de Programación</h3>
+                            <button class="text-[#94a3b8] hover:text-[#dc2626] transition"><i class="far fa-heart"></i></button>
+                        </div>
+                        <div class="flex items-center gap-1 text-yellow-500 text-xs mt-1">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                            <span class="text-[#64748b] dark:text-[#94a3b8] text-xs ml-1">(56)</span>
+                        </div>
+                        <p class="text-[#64748b] dark:text-[#94a3b8] text-xs mt-1">BookStore</p>
+                        <div class="flex items-center justify-between mt-3">
+                            <span class="font-bold text-lg">$39.99</span>
+                            <span class="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full">En stock</span>
+                        </div>
+                        <button class="w-full mt-3 py-2 rounded-xl btn-primary text-sm font-medium">Agregar al carrito</button>
+                    </div>
+                </div>
+
+            </div><!-- /grid -->
+
+            <!-- Más productos (scroll infinito simulado) -->
+            <div class="mt-8 text-center">
+                <div class="inline-flex items-center gap-2 text-[#64748b] dark:text-[#94a3b8] text-sm">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Cargando más productos...
+                </div>
+            </div>
+
+        </div><!-- /screen-home -->
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: LOGIN                                            -->
+        <!-- ========================================================== -->
+        <div id="screen-login" class="screen">
+            <div class="max-w-md mx-auto mt-8">
+                <div class="card p-8">
+                    <div class="text-center mb-6">
+                        <div class="flex items-center justify-center gap-2 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-[#fa8000] flex items-center justify-center text-white font-poppins font-bold text-lg">C</div>
+                            <span class="font-poppins font-bold text-2xl" style="color:#fa8000;">Commer</span>
+                            <span class="font-poppins font-bold text-2xl" style="color:#2276ff;">City</span>
+                        </div>
+                        <h2 class="font-poppins font-bold text-2xl">Iniciar sesión</h2>
+                        <p class="text-[#64748b] dark:text-[#94a3b8] text-sm">Ingresa tus credenciales para continuar</p>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); showToast('Bienvenido, Juan!', 'success');">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1.5">Correo electrónico</label>
+                            <input type="email" class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="ejemplo@email.com" value="juan@email.com" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="block text-sm font-medium mb-1.5">Contraseña</label>
+                            <input type="password" class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="••••••••" value="12345678" />
+                        </div>
+                        <div class="flex items-center justify-between mb-4">
+                            <label class="flex items-center gap-2 text-sm text-[#64748b] dark:text-[#94a3b8]">
+                                <input type="checkbox" class="rounded border-[#e5e7eb] dark:border-[#334155]" /> Recordarme
+                            </label>
+                            <a href="#" onclick="navigateTo('recovery')" class="text-sm text-[#fa8000] hover:underline">¿Olvidaste tu contraseña?</a>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-xl btn-primary font-semibold text-lg">Ingresar</button>
+                    </form>
+
+                    <p class="text-center text-sm text-[#64748b] dark:text-[#94a3b8] mt-4">
+                        ¿No tienes cuenta? <a href="#" onclick="navigateTo('register')" class="text-[#fa8000] font-medium hover:underline">Regístrate</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: REGISTRO                                          -->
+        <!-- ========================================================== -->
+        <div id="screen-register" class="screen">
+            <div class="max-w-md mx-auto mt-8">
+                <div class="card p-8">
+                    <div class="text-center mb-6">
+                        <div class="flex items-center justify-center gap-2 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-[#fa8000] flex items-center justify-center text-white font-poppins font-bold text-lg">C</div>
+                            <span class="font-poppins font-bold text-2xl" style="color:#fa8000;">Commer</span>
+                            <span class="font-poppins font-bold text-2xl" style="color:#2276ff;">City</span>
+                        </div>
+                        <h2 class="font-poppins font-bold text-2xl">Crear cuenta</h2>
+                        <p class="text-[#64748b] dark:text-[#94a3b8] text-sm">Únete a la comunidad de CommerCity</p>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); showToast('Cuenta creada con éxito!', 'success');">
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium mb-1.5">Nombre completo</label>
+                            <input type="text" class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="Juan Pérez" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium mb-1.5">Correo electrónico</label>
+                            <input type="email" class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="ejemplo@email.com" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium mb-1.5">Fecha de nacimiento</label>
+                            <input type="date" class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium mb-1.5">Contraseña</label>
+                            <input type="password" class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="••••••••" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium mb-1.5">Confirmar contraseña</label>
+                            <input type="password" class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="••••••••" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium mb-1.5">Rol inicial</label>
+                            <select class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition">
+                                <option>Comprador</option>
+                                <option>Vendedor</option>
+                            </select>
+                        </div>
+                        <div class="flex items-start gap-2 mb-4">
+                            <input type="checkbox" class="mt-1 rounded border-[#e5e7eb] dark:border-[#334155]" />
+                            <span class="text-sm text-[#64748b] dark:text-[#94a3b8]">Acepto los <a href="#" class="text-[#fa8000] hover:underline" onclick="showToast('Términos y condiciones mostrados', 'info')">Términos y Condiciones</a></span>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-xl btn-primary font-semibold text-lg">Registrarse</button>
+                    </form>
+
+                    <p class="text-center text-sm text-[#64748b] dark:text-[#94a3b8] mt-4">
+                        ¿Ya tienes cuenta? <a href="#" onclick="navigateTo('login')" class="text-[#fa8000] font-medium hover:underline">Inicia sesión</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: RECUPERACIÓN CONTRASEÑA                          -->
+        <!-- ========================================================== -->
+        <div id="screen-recovery" class="screen">
+            <div class="max-w-md mx-auto mt-8">
+                <div class="card p-8">
+                    <div class="text-center mb-6">
+                        <h2 class="font-poppins font-bold text-2xl">Recuperar contraseña</h2>
+                        <p class="text-[#64748b] dark:text-[#94a3b8] text-sm">Te enviaremos un enlace para restablecer tu contraseña</p>
+                    </div>
+                    <form onsubmit="event.preventDefault(); showToast('Revisa tu correo para restablecer la contraseña', 'success');">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1.5">Correo electrónico</label>
+                            <input type="email" class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="ejemplo@email.com" />
+                        </div>
+                        <button type="submit" class="w-full py-2.5 rounded-xl btn-primary font-semibold text-lg">Enviar enlace</button>
+                    </form>
+                    <p class="text-center text-sm text-[#64748b] dark:text-[#94a3b8] mt-4">
+                        <a href="#" onclick="navigateTo('login')" class="text-[#fa8000] hover:underline"><i class="fas fa-arrow-left mr-1"></i> Volver al inicio de sesión</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: CARRITO (multi-vendedor)                         -->
+        <!-- ========================================================== -->
+        <div id="screen-cart" class="screen">
+            <div class="flex items-center gap-3 mb-6">
+                <button onclick="navigateTo('home')" class="text-[#64748b] dark:text-[#94a3b8] hover:text-[#fa8000] transition"><i class="fas fa-arrow-left"></i></button>
+                <h2 class="section-title">Mi carrito</h2>
+                <span class="text-[#64748b] dark:text-[#94a3b8] text-sm">(3 productos)</span>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-6">
+
+                <!-- Lista de productos -->
+                <div class="flex-1 space-y-4">
+
+                    <!-- Tienda 1 -->
+                    <div class="card p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-store text-[#fa8000]"></i>
+                            <span class="font-semibold">TechShop</span>
+                            <span class="text-xs text-[#64748b] dark:text-[#94a3b8]">· Envío: $5.00</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-20 h-20 rounded-xl bg-[#f1f5f9] dark:bg-[#1e293b] flex items-center justify-center text-3xl text-[#94a3b8]"><i class="fas fa-laptop"></i></div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold">Laptop Ultrabook Pro</h4>
+                                <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">$1,299.00</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="w-8 h-8 rounded-full border border-[#e5e7eb] dark:border-[#334155] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition">-</button>
+                                <span class="w-8 text-center font-medium">1</span>
+                                <button class="w-8 h-8 rounded-full border border-[#e5e7eb] dark:border-[#334155] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition">+</button>
+                            </div>
+                            <button class="text-[#94a3b8] hover:text-[#dc2626] transition"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Tienda 2 -->
+                    <div class="card p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-store text-[#fa8000]"></i>
+                            <span class="font-semibold">AudioWorld</span>
+                            <span class="text-xs text-[#64748b] dark:text-[#94a3b8]">· Envío: $3.00</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-20 h-20 rounded-xl bg-[#f1f5f9] dark:bg-[#1e293b] flex items-center justify-center text-3xl text-[#94a3b8]"><i class="fas fa-headphones"></i></div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold">Audífonos ANC Pro</h4>
+                                <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">$189.00</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="w-8 h-8 rounded-full border border-[#e5e7eb] dark:border-[#334155] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition">-</button>
+                                <span class="w-8 text-center font-medium">2</span>
+                                <button class="w-8 h-8 rounded-full border border-[#e5e7eb] dark:border-[#334155] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition">+</button>
+                            </div>
+                            <button class="text-[#94a3b8] hover:text-[#dc2626] transition"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Tienda 3 -->
+                    <div class="card p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="fas fa-store text-[#fa8000]"></i>
+                            <span class="font-semibold">SportWear</span>
+                            <span class="text-xs text-[#64748b] dark:text-[#94a3b8]">· Envío: $2.00</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-20 h-20 rounded-xl bg-[#f1f5f9] dark:bg-[#1e293b] flex items-center justify-center text-3xl text-[#94a3b8]"><i class="fas fa-tshirt"></i></div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold">Camiseta Deportiva</h4>
+                                <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">$45.00</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button class="w-8 h-8 rounded-full border border-[#e5e7eb] dark:border-[#334155] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition">-</button>
+                                <span class="w-8 text-center font-medium">1</span>
+                                <button class="w-8 h-8 rounded-full border border-[#e5e7eb] dark:border-[#334155] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition">+</button>
+                            </div>
+                            <button class="text-[#94a3b8] hover:text-[#dc2626] transition"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+
+                    <button class="text-[#64748b] dark:text-[#94a3b8] hover:text-[#dc2626] transition text-sm flex items-center gap-2">
+                        <i class="fas fa-trash-alt"></i> Vaciar carrito
+                    </button>
+                </div>
+
+                <!-- Resumen -->
+                <div class="lg:w-80">
+                    <div class="card p-5 sticky top-20">
+                        <h3 class="font-poppins font-bold text-lg mb-4">Resumen de compra</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between"><span class="text-[#64748b] dark:text-[#94a3b8]">Subtotal</span><span>$1,533.00</span></div>
+                            <div class="flex justify-between"><span class="text-[#64748b] dark:text-[#94a3b8]">Envío</span><span>$10.00</span></div>
+                            <div class="flex justify-between"><span class="text-[#64748b] dark:text-[#94a3b8]">Comisión plataforma</span><span>$153.30</span></div>
+                            <div class="border-t border-[#e5e7eb] dark:border-[#334155] pt-2 mt-2 flex justify-between font-bold text-lg">
+                                <span>Total</span>
+                                <span class="text-[#fa8000]">$1,543.00</span>
+                            </div>
+                        </div>
+                        <button onclick="navigateTo('checkout')" class="w-full mt-4 py-3 rounded-xl btn-primary font-semibold text-lg">Proceder al pago</button>
+                        <button onclick="navigateTo('home')" class="w-full mt-2 py-2 rounded-xl btn-outline text-sm font-medium">Seguir comprando</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: CHECKOUT (pasos)                                 -->
+        <!-- ========================================================== -->
+        <div id="screen-checkout" class="screen">
+            <div class="flex items-center gap-3 mb-6">
+                <button onclick="navigateTo('cart')" class="text-[#64748b] dark:text-[#94a3b8] hover:text-[#fa8000] transition"><i class="fas fa-arrow-left"></i></button>
+                <h2 class="section-title">Checkout</h2>
+            </div>
+
+            <!-- Pasos -->
+            <div class="flex items-center gap-2 mb-8 text-sm">
+                <span class="px-4 py-2 rounded-full bg-[#fa8000] text-white font-semibold">1. Dirección</span>
+                <span class="text-[#94a3b8]">—</span>
+                <span class="px-4 py-2 rounded-full bg-[#f1f5f9] dark:bg-[#1e293b] text-[#64748b] dark:text-[#94a3b8]">2. Revisión</span>
+                <span class="text-[#94a3b8]">—</span>
+                <span class="px-4 py-2 rounded-full bg-[#f1f5f9] dark:bg-[#1e293b] text-[#64748b] dark:text-[#94a3b8]">3. Pago</span>
+                <span class="text-[#94a3b8]">—</span>
+                <span class="px-4 py-2 rounded-full bg-[#f1f5f9] dark:bg-[#1e293b] text-[#64748b] dark:text-[#94a3b8]">4. Confirmación</span>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="flex-1">
+                    <div class="card p-6">
+                        <h3 class="font-poppins font-bold text-lg mb-4">Dirección de envío</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Departamento</label>
+                                <input class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="Selecciona" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Ciudad</label>
+                                <input class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="Ciudad" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Dirección</label>
+                                <input class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="Calle, número, urbanización" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Código postal</label>
+                                <input class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="Código postal" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Teléfono de contacto</label>
+                                <input class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="+57 300 123 4567" />
+                            </div>
+                            <button onclick="navigateTo('payment')" class="w-full mt-2 py-2.5 rounded-xl btn-primary font-semibold">Continuar con la revisión</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-80">
+                    <div class="card p-5 sticky top-20">
+                        <h4 class="font-semibold mb-3">Resumen del pedido</h4>
+                        <div class="text-sm space-y-2">
+                            <div class="flex justify-between"><span class="text-[#64748b] dark:text-[#94a3b8]">Productos (3)</span><span>$1,533.00</span></div>
+                            <div class="flex justify-between"><span class="text-[#64748b] dark:text-[#94a3b8]">Envío</span><span>$10.00</span></div>
+                            <div class="border-t border-[#e5e7eb] dark:border-[#334155] pt-2 mt-2 flex justify-between font-bold">
+                                <span>Total</span>
+                                <span class="text-[#fa8000]">$1,543.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: PAGO SANDBOX                                     -->
+        <!-- ========================================================== -->
+        <div id="screen-payment" class="screen">
+            <div class="max-w-lg mx-auto mt-4">
+                <div class="flex items-center gap-3 mb-6">
+                    <button onclick="navigateTo('checkout')" class="text-[#64748b] dark:text-[#94a3b8] hover:text-[#fa8000] transition"><i class="fas fa-arrow-left"></i></button>
+                    <h2 class="section-title">Pago sandbox</h2>
+                </div>
+                <div class="card p-6">
+                    <div class="flex items-center gap-3 mb-4 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-xl text-sm text-[#2276ff] dark:text-[#93c5fd]">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Ambiente de pruebas · Usa tarjetas de prueba</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Número de tarjeta</label>
+                            <input class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="4242 4242 4242 4242" value="4242 4242 4242 4242" />
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium mb-1">Fecha exp.</label>
+                                <input class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="MM/AA" value="12/26" />
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium mb-1">CVC</label>
+                                <input class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="123" value="123" />
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Nombre en la tarjeta</label>
+                            <input class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="Juan Pérez" value="Juan Pérez" />
+                        </div>
+                        <button onclick="navigateTo('receipt'); showToast('Pago aprobado!', 'success');" class="w-full py-3 rounded-xl btn-primary font-semibold text-lg">Pagar $1,543.00</button>
+                        <button onclick="showToast('Pago rechazado (simulación)', 'error');" class="w-full py-2 rounded-xl btn-outline text-sm font-medium">Simular rechazo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: COMPROBANTE / RECEIPT                           -->
+        <!-- ========================================================== -->
+        <div id="screen-receipt" class="screen">
+            <div class="max-w-lg mx-auto mt-4">
+                <div class="card p-6 text-center">
+                    <div class="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center text-green-600 dark:text-green-300 text-3xl mx-auto mb-4">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h2 class="font-poppins font-bold text-2xl">¡Pago aprobado!</h2>
+                    <p class="text-[#64748b] dark:text-[#94a3b8] text-sm">Tu compra se ha realizado con éxito</p>
+
+                    <div class="mt-6 text-left bg-[#f8fafc] dark:bg-[#1e293b] rounded-xl p-4 text-sm space-y-1.5">
+                        <div class="flex justify-between"><span class="text-[#64748b] dark:text-[#94a3b8]">Comprobante #</span><span class="font-medium">CC-2025-001234</span></div>
+                        <div class="flex justify-between"><span class="text-[#64748b] dark:text-[#94a3b8]">Fecha</span><span>20/06/2025 14:32</span></div>
+                        <div class="flex justify-between"><span class="text-[#64748b] dark:text-[#94a3b8]">Comprador</span><span>Juan Díaz</span></div>
+                        <div class="flex justify-between"><span class="text-[#64748b] dark:text-[#94a3b8]">Total</span><span class="font-bold text-[#fa8000]">$1,543.00</span></div>
+                        <div class="flex justify-between"><span class="text-[#64748b] dark:text-[#94a3b8]">Estado</span><span class="badge-success px-2 py-0.5 rounded-full text-xs">Pagado</span></div>
+                    </div>
+
+                    <div class="flex gap-3 mt-6">
+                        <button class="flex-1 py-2.5 rounded-xl btn-secondary font-medium text-sm"><i class="fas fa-download mr-2"></i>Descargar</button>
+                        <button onclick="navigateTo('orders')" class="flex-1 py-2.5 rounded-xl btn-primary font-medium text-sm">Ver mis pedidos</button>
+                    </div>
+                    <button onclick="navigateTo('home')" class="w-full mt-2 py-2 rounded-xl btn-outline text-sm font-medium">Volver al inicio</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: FAVORITOS                                        -->
+        <!-- ========================================================== -->
+        <div id="screen-favorites" class="screen">
+            <h2 class="section-title mb-1">Mis favoritos</h2>
+            <p class="section-sub mb-6">Productos que has guardado</p>
+
+            <div class="grid grid-cols-4 gap-5">
+                <div class="card product-card overflow-hidden">
+                    <div class="product-image"><i class="fas fa-headphones"></i></div>
+                    <div class="p-4">
+                        <div class="flex items-start justify-between">
+                            <h3 class="font-semibold text-sm">Audífonos ANC Pro</h3>
+                            <button class="text-[#fa8000] hover:text-[#dc2626] transition"><i class="fas fa-heart"></i></button>
+                        </div>
+                        <p class="text-[#64748b] dark:text-[#94a3b8] text-xs">AudioWorld</p>
+                        <div class="flex items-center justify-between mt-3">
+                            <span class="font-bold text-lg">$189.00</span>
+                            <span class="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 px-2 py-0.5 rounded-full">Stock bajo</span>
+                        </div>
+                        <button class="w-full mt-3 py-2 rounded-xl btn-primary text-sm font-medium">Agregar al carrito</button>
+                    </div>
+                </div>
+                <div class="card product-card overflow-hidden">
+                    <div class="product-image"><i class="fas fa-laptop"></i></div>
+                    <div class="p-4">
+                        <div class="flex items-start justify-between">
+                            <h3 class="font-semibold text-sm">Laptop Ultrabook Pro</h3>
+                            <button class="text-[#fa8000] hover:text-[#dc2626] transition"><i class="fas fa-heart"></i></button>
+                        </div>
+                        <p class="text-[#64748b] dark:text-[#94a3b8] text-xs">TechShop</p>
+                        <div class="flex items-center justify-between mt-3">
+                            <span class="font-bold text-lg">$1,299.00</span>
+                            <span class="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full">En stock</span>
+                        </div>
+                        <button class="w-full mt-3 py-2 rounded-xl btn-primary text-sm font-medium">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: MIS PEDIDOS                                      -->
+        <!-- ========================================================== -->
+        <div id="screen-orders" class="screen">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="section-title">Mis pedidos</h2>
+                    <p class="section-sub">Historial de compras</p>
+                </div>
+                <div class="flex gap-2">
+                    <select class="px-4 py-2 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#111827] text-sm focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition">
+                        <option>Todos los estados</option>
+                        <option>Pendiente</option>
+                        <option>Pagado</option>
+                        <option>En camino</option>
+                        <option>Entregado</option>
+                        <option>Cancelado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="card p-5">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <span class="font-semibold">Pedido #CC-2025-001234</span>
+                            <span class="text-sm text-[#64748b] dark:text-[#94a3b8] ml-3">20/06/2025</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="badge-success px-3 py-1 rounded-full text-xs font-medium">Entregado</span>
+                            <span class="font-bold text-[#fa8000]">$1,543.00</span>
+                            <button onclick="navigateTo('order-detail')" class="px-4 py-1.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-sm">Ver detalle</button>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-3 text-sm text-[#64748b] dark:text-[#94a3b8]">
+                        <span><i class="fas fa-store mr-1"></i> TechShop · AudioWorld · SportWear</span>
+                        <span><i class="fas fa-truck mr-1"></i> 2 paquetes</span>
+                    </div>
+                </div>
+
+                <div class="card p-5">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <span class="font-semibold">Pedido #CC-2025-001233</span>
+                            <span class="text-sm text-[#64748b] dark:text-[#94a3b8] ml-3">18/06/2025</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="badge-warning px-3 py-1 rounded-full text-xs font-medium">En camino</span>
+                            <span class="font-bold text-[#fa8000]">$89.00</span>
+                            <button onclick="navigateTo('order-detail')" class="px-4 py-1.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-sm">Ver detalle</button>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-3 text-sm text-[#64748b] dark:text-[#94a3b8]">
+                        <span><i class="fas fa-store mr-1"></i> BookStore</span>
+                        <span><i class="fas fa-truck mr-1"></i> 1 paquete</span>
+                    </div>
+                </div>
+
+                <div class="card p-5">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <span class="font-semibold">Pedido #CC-2025-001232</span>
+                            <span class="text-sm text-[#64748b] dark:text-[#94a3b8] ml-3">15/06/2025</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="badge-info px-3 py-1 rounded-full text-xs font-medium">Pagado</span>
+                            <span class="font-bold text-[#fa8000]">$234.00</span>
+                            <button onclick="navigateTo('order-detail')" class="px-4 py-1.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition text-sm">Ver detalle</button>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-3 text-sm text-[#64748b] dark:text-[#94a3b8]">
+                        <span><i class="fas fa-store mr-1"></i> SportWear</span>
+                        <span><i class="fas fa-truck mr-1"></i> 1 paquete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: DETALLE DE PEDIDO                                -->
+        <!-- ========================================================== -->
+        <div id="screen-order-detail" class="screen">
+            <div class="flex items-center gap-3 mb-6">
+                <button onclick="navigateTo('orders')" class="text-[#64748b] dark:text-[#94a3b8] hover:text-[#fa8000] transition"><i class="fas fa-arrow-left"></i></button>
+                <h2 class="section-title">Detalle del pedido #CC-2025-001234</h2>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6">
+                <div class="col-span-2 space-y-4">
+                    <div class="card p-5">
+                        <h4 class="font-semibold mb-3">Productos</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-[#f1f5f9] dark:bg-[#1e293b] flex items-center justify-center"><i class="fas fa-laptop text-[#94a3b8]"></i></div>
+                                <div class="flex-1"><span class="font-medium">Laptop Ultrabook Pro</span><span class="text-xs text-[#64748b] dark:text-[#94a3b8] block">TechShop · Cant: 1</span></div>
+                                <span class="font-bold">$1,299.00</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-[#f1f5f9] dark:bg-[#1e293b] flex items-center justify-center"><i class="fas fa-headphones text-[#94a3b8]"></i></div>
+                                <div class="flex-1"><span class="font-medium">Audífonos ANC Pro</span><span class="text-xs text-[#64748b] dark:text-[#94a3b8] block">AudioWorld · Cant: 2</span></div>
+                                <span class="font-bold">$378.00</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-[#f1f5f9] dark:bg-[#1e293b] flex items-center justify-center"><i class="fas fa-tshirt text-[#94a3b8]"></i></div>
+                                <div class="flex-1"><span class="font-medium">Camiseta Deportiva</span><span class="text-xs text-[#64748b] dark:text-[#94a3b8] block">SportWear · Cant: 1</span></div>
+                                <span class="font-bold">$45.00</span>
+                            </div>
+                        </div>
+                        <div class="border-t border-[#e5e7eb] dark:border-[#334155] mt-3 pt-3 flex justify-between font-bold">
+                            <span>Total</span>
+                            <span class="text-[#fa8000]">$1,543.00</span>
+                        </div>
+                    </div>
+
+                    <div class="card p-5">
+                        <h4 class="font-semibold mb-3">Seguimiento de paquetes</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3 p-3 bg-[#f8fafc] dark:bg-[#1e293b] rounded-xl">
+                                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                <div class="flex-1"><span class="font-medium">Paquete 1</span><span class="text-xs text-[#64748b] dark:text-[#94a3b8] block">TechShop · Guía: TRK-1234</span></div>
+                                <span class="badge-success px-2 py-0.5 rounded-full text-xs">Entregado</span>
+                                <button onclick="navigateTo('tracking')" class="text-[#fa8000] text-sm hover:underline">Rastrear</button>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 bg-[#f8fafc] dark:bg-[#1e293b] rounded-xl">
+                                <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                <div class="flex-1"><span class="font-medium">Paquete 2</span><span class="text-xs text-[#64748b] dark:text-[#94a3b8] block">AudioWorld · Guía: TRK-5678</span></div>
+                                <span class="badge-warning px-2 py-0.5 rounded-full text-xs">En camino</span>
+                                <button onclick="navigateTo('tracking')" class="text-[#fa8000] text-sm hover:underline">Rastrear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card p-5 sticky top-20">
+                        <h4 class="font-semibold mb-3">Información del pedido</h4>
+                        <div class="text-sm space-y-2">
+                            <div><span class="text-[#64748b] dark:text-[#94a3b8]">Estado:</span> <span class="badge-success px-2 py-0.5 rounded-full text-xs">Entregado</span></div>
+                            <div><span class="text-[#64748b] dark:text-[#94a3b8]">Fecha:</span> 20/06/2025 14:32</div>
+                            <div><span class="text-[#64748b] dark:text-[#94a3b8]">Método de pago:</span> Tarjeta de prueba</div>
+                            <div><span class="text-[#64748b] dark:text-[#94a3b8]">Dirección:</span> Cra 45 # 23-12, Bogotá</div>
+                            <div><span class="text-[#64748b] dark:text-[#94a3b8]">Comprobante:</span> <a href="#" class="text-[#fa8000] hover:underline">CC-2025-001234.pdf</a></div>
+                        </div>
+                        <div class="border-t border-[#e5e7eb] dark:border-[#334155] mt-3 pt-3 flex gap-2">
+                            <button class="flex-1 py-2 rounded-xl btn-secondary text-sm font-medium"><i class="fas fa-headset mr-1"></i> Ayuda</button>
+                            <button onclick="navigateTo('returns')" class="flex-1 py-2 rounded-xl btn-outline text-sm font-medium">Devolver</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: RASTREO DE PAQUETES                              -->
+        <!-- ========================================================== -->
+        <div id="screen-tracking" class="screen">
+            <div class="flex items-center gap-3 mb-6">
+                <button onclick="navigateTo('order-detail')" class="text-[#64748b] dark:text-[#94a3b8] hover:text-[#fa8000] transition"><i class="fas fa-arrow-left"></i></button>
+                <h2 class="section-title">Rastreo de paquete</h2>
+                <span class="text-sm text-[#64748b] dark:text-[#94a3b8]">Guía: TRK-5678</span>
+            </div>
+
+            <div class="max-w-2xl mx-auto">
+                <div class="card p-6">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-[#f1f5f9] dark:bg-[#1e293b] flex items-center justify-center text-2xl"><i class="fas fa-truck text-[#fa8000]"></i></div>
+                        <div>
+                            <h4 class="font-bold">Paquete de AudioWorld</h4>
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">2 productos · Envío estándar</p>
+                        </div>
+                        <span class="ml-auto badge-warning px-3 py-1 rounded-full text-xs font-medium">En camino</span>
+                    </div>
+
+                    <div class="relative pl-8 space-y-6 before:content-[''] before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#e5e7eb] dark:before:bg-[#334155]">
+                        <div class="relative">
+                            <div class="absolute -left-6 top-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-white dark:border-[#111827]"></div>
+                            <p class="font-medium">Entregado</p>
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">20/06/2025 15:45 · Producto recibido</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-6 top-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-white dark:border-[#111827]"></div>
+                            <p class="font-medium">En camino</p>
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">19/06/2025 08:30 · En ruta a destino</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-6 top-0.5 w-3 h-3 rounded-full bg-green-500 border-2 border-white dark:border-[#111827]"></div>
+                            <p class="font-medium">En preparación</p>
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">18/06/2025 14:20 · Paquete en centro logístico</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-6 top-0.5 w-3 h-3 rounded-full bg-[#e5e7eb] dark:bg-[#334155] border-2 border-white dark:border-[#111827]"></div>
+                            <p class="font-medium text-[#64748b] dark:text-[#94a3b8]">Pedido creado</p>
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">18/06/2025 10:00 · Pago aprobado</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: DEVOLUCIONES Y REEMBOLSOS                        -->
+        <!-- ========================================================== -->
+        <div id="screen-returns" class="screen">
+            <h2 class="section-title mb-1">Devoluciones y reembolsos</h2>
+            <p class="section-sub mb-6">Solicitudes de devolución</p>
+
+            <div class="flex gap-4 mb-6">
+                <button class="px-5 py-2 rounded-xl btn-primary text-sm font-medium">Nueva solicitud</button>
+                <button class="px-5 py-2 rounded-xl border border-[#e5e7eb] dark:border-[#334155] text-sm font-medium hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition">Filtrar</button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="card p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="font-semibold">Solicitud #R-2025-001</span>
+                            <span class="text-sm text-[#64748b] dark:text-[#94a3b8] ml-3">Producto: Audífonos ANC Pro</span>
+                        </div>
+                        <span class="badge-warning px-3 py-1 rounded-full text-xs font-medium">En revisión</span>
+                    </div>
+                    <p class="text-sm text-[#64748b] dark:text-[#94a3b8] mt-1">Motivo: Producto defectuoso</p>
+                    <div class="flex gap-2 mt-3">
+                        <button class="px-4 py-1.5 rounded-xl btn-secondary text-xs font-medium">Ver detalle</button>
+                        <button class="px-4 py-1.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] text-xs font-medium hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition">Cancelar</button>
+                    </div>
+                </div>
+                <div class="card p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="font-semibold">Solicitud #R-2025-002</span>
+                            <span class="text-sm text-[#64748b] dark:text-[#94a3b8] ml-3">Producto: Laptop Ultrabook Pro</span>
+                        </div>
+                        <span class="badge-success px-3 py-1 rounded-full text-xs font-medium">Aprobada</span>
+                    </div>
+                    <p class="text-sm text-[#64748b] dark:text-[#94a3b8] mt-1">Motivo: Producto no coincide con la descripción</p>
+                    <div class="flex gap-2 mt-3">
+                        <button class="px-4 py-1.5 rounded-xl btn-secondary text-xs font-medium">Ver detalle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: NOTIFICACIONES                                   -->
+        <!-- ========================================================== -->
+        <div id="screen-notifications" class="screen">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="section-title">Notificaciones</h2>
+                    <p class="section-sub">Mantente al tanto de tu actividad</p>
+                </div>
+                <button class="text-sm text-[#fa8000] hover:underline">Marcar todas como leídas</button>
+            </div>
+
+            <div class="space-y-3">
+                <div class="card p-4 flex items-center gap-4 border-l-4 border-[#fa8000]">
+                    <div class="w-10 h-10 rounded-full bg-[#fa8000]/10 dark:bg-[#fa8000]/20 flex items-center justify-center text-[#fa8000]"><i class="fas fa-shopping-bag"></i></div>
+                    <div class="flex-1">
+                        <p class="font-medium">¡Tu pago fue aprobado!</p>
+                        <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Pedido #CC-2025-001234 · $1,543.00</p>
+                    </div>
+                    <span class="text-xs text-[#94a3b8]">Hace 2h</span>
+                    <button class="text-[#94a3b8] hover:text-[#dc2626]"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="card p-4 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-[#2276ff]"><i class="fas fa-truck"></i></div>
+                    <div class="flex-1">
+                        <p class="font-medium">Tu paquete está en camino</p>
+                        <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Guía TRK-5678 · AudioWorld</p>
+                    </div>
+                    <span class="text-xs text-[#94a3b8]">Hace 5h</span>
+                    <button class="text-[#94a3b8] hover:text-[#dc2626]"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="card p-4 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600"><i class="fas fa-check-circle"></i></div>
+                    <div class="flex-1">
+                        <p class="font-medium">¡Producto entregado!</p>
+                        <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Laptop Ultrabook Pro · TechShop</p>
+                    </div>
+                    <span class="text-xs text-[#94a3b8]">Hace 1d</span>
+                    <button class="text-[#94a3b8] hover:text-[#dc2626]"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="card p-4 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="flex-1">
+                        <p class="font-medium">Stock bajo: Audífonos ANC Pro</p>
+                        <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Quedan 3 unidades</p>
+                    </div>
+                    <span class="text-xs text-[#94a3b8]">Hace 2d</span>
+                    <button class="text-[#94a3b8] hover:text-[#dc2626]"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: PANEL DE USUARIO (perfil)                        -->
+        <!-- ========================================================== -->
+        <div id="screen-profile" class="screen">
+            <div class="flex gap-6">
+                <!-- Sidebar usuario -->
+                <div class="w-64 flex-shrink-0">
+                    <div class="sidebar rounded-2xl p-3 sticky top-20">
+                        <div class="flex items-center gap-3 p-3 border-b border-[#e5e7eb] dark:border-[#334155] mb-2">
+                            <div class="avatar-md">JD</div>
+                            <div>
+                                <div class="font-semibold text-sm">Juan Díaz</div>
+                                <div class="text-xs text-[#64748b] dark:text-[#94a3b8]">Comprador</div>
+                            </div>
+                        </div>
+                        <div class="sidebar-item active"><i class="fas fa-user"></i><span class="sidebar-label">Perfil</span></div>
+                        <div class="sidebar-item"><i class="fas fa-shield-alt"></i><span class="sidebar-label">Seguridad</span></div>
+                        <div class="sidebar-item"><i class="fas fa-map-marker-alt"></i><span class="sidebar-label">Direcciones</span></div>
+                        <div class="sidebar-item"><i class="fas fa-heart"></i><span class="sidebar-label">Favoritos</span></div>
+                        <div class="sidebar-item"><i class="fas fa-box"></i><span class="sidebar-label">Mis pedidos</span></div>
+                        <div class="sidebar-item"><i class="fas fa-undo-alt"></i><span class="sidebar-label">Devoluciones</span></div>
+                        <div class="sidebar-item"><i class="fas fa-bell"></i><span class="sidebar-label">Notificaciones</span></div>
+                        <div class="sidebar-item"><i class="fas fa-sliders-h"></i><span class="sidebar-label">Preferencias</span></div>
+                    </div>
+                </div>
+
+                <!-- Contenido -->
+                <div class="flex-1">
+                    <div class="card p-6">
+                        <h3 class="font-poppins font-bold text-xl mb-4">Mi perfil</h3>
+                        <div class="flex items-center gap-6 mb-6">
+                            <div class="avatar-lg">JD</div>
+                            <div>
+                                <h4 class="font-bold text-lg">Juan Díaz</h4>
+                                <p class="text-[#64748b] dark:text-[#94a3b8] text-sm">juan@email.com</p>
+                                <button class="mt-1 px-4 py-1.5 rounded-xl btn-secondary text-xs font-medium">Cambiar foto</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Nombre</label>
+                                <input class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" value="Juan Díaz" />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Correo</label>
+                                <input class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" value="juan@email.com" />
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-sm font-medium mb-1">Descripción</label>
+                                <textarea class="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" rows="2">Apasionado por la tecnología y los buenos productos.</textarea>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-4">
+                            <button class="px-6 py-2 rounded-xl btn-primary font-medium">Guardar cambios</button>
+                            <button class="px-6 py-2 rounded-xl btn-outline font-medium">Cancelar</button>
+                        </div>
+                        <div class="border-t border-[#e5e7eb] dark:border-[#334155] mt-6 pt-4 flex gap-3">
+                            <button class="text-sm text-[#dc2626] hover:underline flex items-center gap-1"><i class="fas fa-pause"></i> Desactivar cuenta</button>
+                            <button class="text-sm text-[#dc2626] hover:underline flex items-center gap-1"><i class="fas fa-trash-alt"></i> Eliminar cuenta</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: PANEL VENDEDOR - DASHBOARD                      -->
+        <!-- ========================================================== -->
+        <div id="screen-seller-dashboard" class="screen">
+            <div class="flex gap-6">
+                <!-- Sidebar vendedor -->
+                <div class="w-64 flex-shrink-0">
+                    <div class="sidebar rounded-2xl p-3 sticky top-20">
+                        <div class="flex items-center gap-3 p-3 border-b border-[#e5e7eb] dark:border-[#334155] mb-2">
+                            <div class="avatar-md">JD</div>
+                            <div>
+                                <div class="font-semibold text-sm">Juan Díaz</div>
+                                <div class="text-xs text-[#64748b] dark:text-[#94a3b8]">Vendedor</div>
+                            </div>
+                        </div>
+                        <div class="sidebar-item active"><i class="fas fa-chart-pie"></i><span class="sidebar-label">Dashboard</span></div>
+                        <div class="sidebar-item"><i class="fas fa-store"></i><span class="sidebar-label">Mi tienda</span></div>
+                        <div class="sidebar-item"><i class="fas fa-boxes"></i><span class="sidebar-label">Productos</span></div>
+                        <div class="sidebar-item"><i class="fas fa-plus-circle"></i><span class="sidebar-label">Crear producto</span></div>
+                        <div class="sidebar-item"><i class="fas fa-shopping-bag"></i><span class="sidebar-label">Pedidos</span></div>
+                        <div class="sidebar-item"><i class="fas fa-truck"></i><span class="sidebar-label">Envíos</span></div>
+                        <div class="sidebar-item"><i class="fas fa-undo-alt"></i><span class="sidebar-label">Devoluciones</span></div>
+                        <div class="sidebar-item"><i class="fas fa-coins"></i><span class="sidebar-label">Ganancias</span></div>
+                        <div class="sidebar-item"><i class="fas fa-chart-bar"></i><span class="sidebar-label">Reportes</span></div>
+                        <div class="sidebar-item"><i class="fas fa-comment-dots"></i><span class="sidebar-label">Chat</span></div>
+                        <div class="sidebar-item"><i class="fas fa-user"></i><span class="sidebar-label">Perfil</span></div>
+                    </div>
+                </div>
+
+                <!-- Contenido -->
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="section-title">Dashboard vendedor</h2>
+                            <p class="section-sub">Resumen de tu tienda</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <select class="px-4 py-2 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#111827] text-sm focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition">
+                                <option>Últimos 7 días</option>
+                                <option>Últimos 30 días</option>
+                                <option>Último mes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Métricas -->
+                    <div class="grid grid-cols-4 gap-4 mb-6">
+                        <div class="card p-4">
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Ventas totales</p>
+                            <p class="font-poppins font-bold text-2xl">$12,450</p>
+                            <span class="text-xs text-green-600 dark:text-green-400"><i class="fas fa-arrow-up"></i> +12%</span>
+                        </div>
+                        <div class="card p-4">
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Pedidos</p>
+                            <p class="font-poppins font-bold text-2xl">48</p>
+                            <span class="text-xs text-green-600 dark:text-green-400"><i class="fas fa-arrow-up"></i> +8%</span>
+                        </div>
+                        <div class="card p-4">
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Productos activos</p>
+                            <p class="font-poppins font-bold text-2xl">23</p>
+                            <span class="text-xs text-yellow-600 dark:text-yellow-400"><i class="fas fa-exclamation-triangle"></i> 3 sin stock</span>
+                        </div>
+                        <div class="card p-4">
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Calificación</p>
+                            <p class="font-poppins font-bold text-2xl">4.8 ★</p>
+                            <span class="text-xs text-green-600 dark:text-green-400">Excelente reputación</span>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de pedidos recientes -->
+                    <div class="card p-5">
+                        <h4 class="font-semibold mb-3">Pedidos recientes</h4>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr><th>Pedido</th><th>Comprador</th><th>Total</th><th>Estado</th><th>Fecha</th><th>Acción</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="font-medium">#CC-2025-001234</td><td>María López</td><td>$1,299.00</td><td><span class="badge-success px-2 py-0.5 rounded-full text-xs">Entregado</span></td><td>20/06/25</td><td><button class="text-[#fa8000] text-sm hover:underline">Ver</button></td></tr>
+                                    <tr><td class="font-medium">#CC-2025-001233</td><td>Carlos Gómez</td><td>$189.00</td><td><span class="badge-warning px-2 py-0.5 rounded-full text-xs">En camino</span></td><td>19/06/25</td><td><button class="text-[#fa8000] text-sm hover:underline">Ver</button></td></tr>
+                                    <tr><td class="font-medium">#CC-2025-001232</td><td>Ana Torres</td><td>$45.00</td><td><span class="badge-info px-2 py-0.5 rounded-full text-xs">Pagado</span></td><td>18/06/25</td><td><button class="text-[#fa8000] text-sm hover:underline">Ver</button></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: PANEL ADMINISTRADOR - DASHBOARD                 -->
+        <!-- ========================================================== -->
+        <div id="screen-admin-dashboard" class="screen">
+            <div class="flex gap-6">
+                <!-- Sidebar admin -->
+                <div class="w-64 flex-shrink-0">
+                    <div class="sidebar rounded-2xl p-3 sticky top-20">
+                        <div class="flex items-center gap-3 p-3 border-b border-[#e5e7eb] dark:border-[#334155] mb-2">
+                            <div class="avatar-md bg-[#2276ff]">AD</div>
+                            <div>
+                                <div class="font-semibold text-sm">Admin</div>
+                                <div class="text-xs text-[#64748b] dark:text-[#94a3b8]">Administrador</div>
+                            </div>
+                        </div>
+                        <div class="sidebar-item active"><i class="fas fa-chart-pie"></i><span class="sidebar-label">Dashboard</span></div>
+                        <div class="sidebar-item"><i class="fas fa-users"></i><span class="sidebar-label">Usuarios</span></div>
+                        <div class="sidebar-item"><i class="fas fa-store"></i><span class="sidebar-label">Tiendas</span></div>
+                        <div class="sidebar-item"><i class="fas fa-boxes"></i><span class="sidebar-label">Productos</span></div>
+                        <div class="sidebar-item"><i class="fas fa-shopping-bag"></i><span class="sidebar-label">Pedidos</span></div>
+                        <div class="sidebar-item"><i class="fas fa-tags"></i><span class="sidebar-label">Categorías</span></div>
+                        <div class="sidebar-item"><i class="fas fa-chart-bar"></i><span class="sidebar-label">Reportes</span></div>
+                        <div class="sidebar-item"><i class="fas fa-flag"></i><span class="sidebar-label">Moderación</span></div>
+                        <div class="sidebar-item"><i class="fas fa-history"></i><span class="sidebar-label">Logs / Auditoría</span></div>
+                        <div class="sidebar-item"><i class="fas fa-cog"></i><span class="sidebar-label">Configuración</span></div>
+                    </div>
+                </div>
+
+                <!-- Contenido -->
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="section-title">Dashboard administrador</h2>
+                            <p class="section-sub">Visión general de la plataforma</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <select class="px-4 py-2 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#111827] text-sm focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition">
+                                <option>Hoy</option>
+                                <option>Esta semana</option>
+                                <option>Este mes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Métricas -->
+                    <div class="grid grid-cols-4 gap-4 mb-6">
+                        <div class="card p-4">
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Usuarios totales</p>
+                            <p class="font-poppins font-bold text-2xl">1,284</p>
+                            <span class="text-xs text-green-600 dark:text-green-400"><i class="fas fa-arrow-up"></i> +5%</span>
+                        </div>
+                        <div class="card p-4">
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Tiendas activas</p>
+                            <p class="font-poppins font-bold text-2xl">156</p>
+                            <span class="text-xs text-green-600 dark:text-green-400"><i class="fas fa-arrow-up"></i> +3%</span>
+                        </div>
+                        <div class="card p-4">
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Productos</p>
+                            <p class="font-poppins font-bold text-2xl">3,842</p>
+                            <span class="text-xs text-green-600 dark:text-green-400"><i class="fas fa-arrow-up"></i> +8%</span>
+                        </div>
+                        <div class="card p-4">
+                            <p class="text-sm text-[#64748b] dark:text-[#94a3b8]">Ventas totales</p>
+                            <p class="font-poppins font-bold text-2xl">$78,450</p>
+                            <span class="text-xs text-green-600 dark:text-green-400"><i class="fas fa-arrow-up"></i> +12%</span>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de usuarios recientes -->
+                    <div class="card p-5">
+                        <h4 class="font-semibold mb-3">Usuarios recientes</h4>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Fecha</th><th>Acción</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td class="font-medium">María López</td><td>maria@email.com</td><td>Comprador</td><td><span class="badge-success px-2 py-0.5 rounded-full text-xs">Activo</span></td><td>20/06/25</td><td><button class="text-[#fa8000] text-sm hover:underline">Ver</button></td></tr>
+                                    <tr><td class="font-medium">Carlos Gómez</td><td>carlos@email.com</td><td>Vendedor</td><td><span class="badge-warning px-2 py-0.5 rounded-full text-xs">Pendiente</span></td><td>19/06/25</td><td><button class="text-[#fa8000] text-sm hover:underline">Ver</button></td></tr>
+                                    <tr><td class="font-medium">Ana Torres</td><td>ana@email.com</td><td>Comprador</td><td><span class="badge-success px-2 py-0.5 rounded-full text-xs">Activo</span></td><td>18/06/25</td><td><button class="text-[#fa8000] text-sm hover:underline">Ver</button></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  PANTALLA: CHAT (comprador-vendedor)                        -->
+        <!-- ========================================================== -->
+        <div id="screen-chat" class="screen">
+            <h2 class="section-title mb-1">Chat</h2>
+            <p class="section-sub mb-6">Conversación con TechShop</p>
+
+            <div class="flex gap-6">
+                <div class="w-64 flex-shrink-0">
+                    <div class="card p-3 space-y-1">
+                        <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition cursor-pointer">
+                            <div class="w-10 h-10 rounded-full bg-[#fa8000] flex items-center justify-center text-white font-bold">T</div>
+                            <div class="flex-1"><p class="font-medium text-sm">TechShop</p><p class="text-xs text-[#64748b] dark:text-[#94a3b8]">En línea</p></div>
+                            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        </div>
+                        <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition cursor-pointer">
+                            <div class="w-10 h-10 rounded-full bg-[#2276ff] flex items-center justify-center text-white font-bold">A</div>
+                            <div class="flex-1"><p class="font-medium text-sm">AudioWorld</p><p class="text-xs text-[#64748b] dark:text-[#94a3b8]">Fuera de línea</p></div>
+                            <span class="w-2 h-2 rounded-full bg-[#94a3b8]"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1">
+                    <div class="card p-5 h-[480px] flex flex-col">
+                        <div class="flex-1 overflow-y-auto space-y-3 pr-2">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-[#fa8000] flex items-center justify-center text-white text-xs font-bold">T</div>
+                                <div class="bg-[#f1f5f9] dark:bg-[#1e293b] rounded-2xl rounded-tl-none px-4 py-2.5 max-w-[70%]">
+                                    <p class="text-sm">Hola, ¿cómo puedo ayudarte con tu pedido?</p>
+                                    <span class="text-[10px] text-[#94a3b8] block mt-1">10:30</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 flex-row-reverse">
+                                <div class="w-8 h-8 rounded-full bg-[#2276ff] flex items-center justify-center text-white text-xs font-bold">JD</div>
+                                <div class="bg-[#fa8000] text-white rounded-2xl rounded-tr-none px-4 py-2.5 max-w-[70%]">
+                                    <p class="text-sm">Hola, quería consultar sobre el estado de mi envío.</p>
+                                    <span class="text-[10px] text-white/70 block mt-1">10:32</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-[#fa8000] flex items-center justify-center text-white text-xs font-bold">T</div>
+                                <div class="bg-[#f1f5f9] dark:bg-[#1e293b] rounded-2xl rounded-tl-none px-4 py-2.5 max-w-[70%]">
+                                    <p class="text-sm">Claro, tu paquete está en camino y llegará en 2 días hábiles.</p>
+                                    <span class="text-[10px] text-[#94a3b8] block mt-1">10:33</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 flex-row-reverse">
+                                <div class="w-8 h-8 rounded-full bg-[#2276ff] flex items-center justify-center text-white text-xs font-bold">JD</div>
+                                <div class="bg-[#fa8000] text-white rounded-2xl rounded-tr-none px-4 py-2.5 max-w-[70%]">
+                                    <p class="text-sm">¡Genial! Muchas gracias por la información.</p>
+                                    <span class="text-[10px] text-white/70 block mt-1">10:35</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border-t border-[#e5e7eb] dark:border-[#334155] pt-3 flex gap-2">
+                            <input class="flex-1 px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white focus:border-[#fa8000] focus:ring-2 focus:ring-[#fa8000]/20 outline-none transition" placeholder="Escribe un mensaje..." />
+                            <button class="px-5 py-2.5 rounded-xl btn-primary"><i class="fas fa-paper-plane"></i></button>
+                            <button class="px-4 py-2.5 rounded-xl border border-[#e5e7eb] dark:border-[#334155] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b] transition"><i class="fas fa-paperclip"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================================== -->
+        <!--  ESTADOS VACIOS / SKELETON / SIN RESULTADOS (demo)          -->
+        <!-- ========================================================== -->
+        <div id="screen-empty" class="screen">
+            <div class="text-center py-16">
+                <div class="text-6xl text-[#94a3b8] mb-4"><i class="fas fa-box-open"></i></div>
+                <h3 class="font-poppins font-bold text-2xl">No hay productos</h3>
+                <p class="text-[#64748b] dark:text-[#94a3b8]">Comienza agregando tu primer producto.</p>
+                <button class="mt-4 px-6 py-2.5 rounded-xl btn-primary">Agregar producto</button>
+            </div>
+        </div>
+
+        <!-- Skeleton demo -->
+        <div id="screen-skeleton" class="screen">
+            <div class="grid grid-cols-4 gap-5">
+                <div class="card p-4"><div class="skeleton h-40 w-full rounded-xl"></div><div class="skeleton h-4 w-3/4 mt-3"></div><div class="skeleton h-3 w-1/2 mt-2"></div><div class="skeleton h-6 w-1/3 mt-3"></div></div>
+                <div class="card p-4"><div class="skeleton h-40 w-full rounded-xl"></div><div class="skeleton h-4 w-3/4 mt-3"></div><div class="skeleton h-3 w-1/2 mt-2"></div><div class="skeleton h-6 w-1/3 mt-3"></div></div>
+                <div class="card p-4"><div class="skeleton h-40 w-full rounded-xl"></div><div class="skeleton h-4 w-3/4 mt-3"></div><div class="skeleton h-3 w-1/2 mt-2"></div><div class="skeleton h-6 w-1/3 mt-3"></div></div>
+                <div class="card p-4"><div class="skeleton h-40 w-full rounded-xl"></div><div class="skeleton h-4 w-3/4 mt-3"></div><div class="skeleton h-3 w-1/2 mt-2"></div><div class="skeleton h-6 w-1/3 mt-3"></div></div>
+            </div>
+        </div>
+
+    </main>
+
+
+    <!-- ============================================================ -->
+    <!--                     FOOTER (simple)                           -->
+    <!-- ============================================================ -->
+    <footer class="border-t border-[#e5e7eb] dark:border-[#334155] mt-12 py-8 bg-white dark:bg-[#111827]">
+        <div class="max-w-content flex flex-wrap items-center justify-between gap-4 text-sm text-[#64748b] dark:text-[#94a3b8]">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-[#fa8000] flex items-center justify-center text-white font-poppins font-bold text-xs">C</div>
+                <span class="font-poppins font-bold" style="color:#fa8000;">Commer</span><span class="font-poppins font-bold" style="color:#2276ff;">City</span>
+                <span class="ml-2">© 2025 · Conectando compras, creando oportunidades.</span>
+            </div>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-[#fa8000] transition">Términos</a>
+                <a href="#" class="hover:text-[#fa8000] transition">Privacidad</a>
+                <a href="#" class="hover:text-[#fa8000] transition">Ayuda</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ============================================================ -->
+    <!--                        JAVASCRIPT                             -->
+    <!-- ============================================================ -->
+    <script>
+        // ===============================
+        // NAVEGACIÓN ENTRE PANTALLAS
+        // ===============================
+        const screens = {
+            home: 'screen-home',
+            login: 'screen-login',
+            register: 'screen-register',
+            recovery: 'screen-recovery',
+            cart: 'screen-cart',
+            checkout: 'screen-checkout',
+            payment: 'screen-payment',
+            receipt: 'screen-receipt',
+            favorites: 'screen-favorites',
+            orders: 'screen-orders',
+            'order-detail': 'screen-order-detail',
+            tracking: 'screen-tracking',
+            returns: 'screen-returns',
+            notifications: 'screen-notifications',
+            profile: 'screen-profile',
+            'seller-dashboard': 'screen-seller-dashboard',
+            'admin-dashboard': 'screen-admin-dashboard',
+            chat: 'screen-chat',
+            empty: 'screen-empty',
+            skeleton: 'screen-skeleton'
+        };
+
+        let currentScreen = 'home';
+
+        function navigateTo(screenId) {
+            // Ocultar todas
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            // Mostrar la solicitada
+            const target = document.getElementById(screens[screenId]);
+            if (target) {
+                target.classList.add('active');
+                currentScreen = screenId;
+            }
+            // Cerrar dropdown de perfil
+            document.querySelectorAll('.group .absolute').forEach(el => el.classList.add('hidden'));
+            // Scroll al top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ===============================
+        // MODO OSCURO / CLARO
+        // ===============================
+        let darkMode = false;
+
+        function toggleDarkMode() {
+            darkMode = !darkMode;
+            document.body.classList.toggle('dark', darkMode);
+            const icon = document.getElementById('darkModeIcon');
+            icon.className = darkMode ? 'fas fa-sun' : 'fas fa-moon';
+            localStorage.setItem('commercity-dark', darkMode ? 'true' : 'false');
+        }
+
+        // Restaurar preferencia
+        if (localStorage.getItem('commercity-dark') === 'true') {
+            darkMode = true;
+            document.body.classList.add('dark');
+            document.getElementById('darkModeIcon').className = 'fas fa-sun';
+        }
+
+        // ===============================
+        // MODAL GLOBAL
+        // ===============================
+        function openModal(title, body, confirmText, onConfirm) {
+            document.getElementById('modalTitle').textContent = title || 'Confirmar acción';
+            document.getElementById('modalBody').textContent = body || '¿Estás seguro?';
+            const btn = document.getElementById('modalConfirmBtn');
+            btn.textContent = confirmText || 'Confirmar';
+            btn.onclick = function() {
+                closeModal();
+                if (onConfirm) onConfirm();
+            };
+            document.getElementById('globalModal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('globalModal').classList.remove('open');
+        }
+
+        // Cerrar modal con Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // ===============================
+        // TOASTS
+        // ===============================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-times-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
+            const colors = {
+                success: 'toast-success',
+                error: 'toast-error',
+                warning: 'toast-warning',
+                info: 'toast-info'
+            };
+            toast.className = `toast ${colors[type] || 'toast-info'}`;
+            toast.innerHTML = `<i class="fas ${icons[type] || 'fa-info-circle'} text-${type === 'success' ? 'green' : type === 'error' ? 'red' : type === 'warning' ? 'yellow' : 'blue'}-500"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(40px)';
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
+        }
+
+        // ===============================
+        // BÚSQUEDA CON SUGERENCIAS
+        // ===============================
+        const searchInput = document.querySelector('.search-input');
+        const suggestions = document.getElementById('searchSuggestions');
+
+        searchInput.addEventListener('focus', () => {
+            suggestions.classList.remove('hidden');
+        });
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => suggestions.classList.add('hidden'), 200);
+        });
+        searchInput.addEventListener('input', () => {
+            if (searchInput.value.length > 1) {
+                suggestions.classList.remove('hidden');
+            } else {
+                suggestions.classList.add('hidden');
+            }
+        });
+
+        // ===============================
+        // DEMO: mostramos home por defecto
+        // ===============================
+        navigateTo('home');
+
+        // ===============================
+        // KEYBOARD SHORTCUT: Ctrl+K para buscar
+        // ===============================
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+
+        console.log('🏙️ CommerCity UI · Conectando compras, creando oportunidades.');
+        console.log('📦 Módulos disponibles: Home, Login, Register, Recovery, Cart, Checkout, Payment, Receipt, Favorites, Orders, OrderDetail, Tracking, Returns, Notifications, Profile, SellerDashboard, AdminDashboard, Chat, Empty, Skeleton');
+        console.log('🌓 Modo oscuro disponible con el botón 🌙/☀️');
+    </script>
+
+</body>
+</html>
