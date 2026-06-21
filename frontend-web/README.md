@@ -8,7 +8,7 @@ La Fase 6.9 cerró el ciclo de frontend web previo a decidir Fase 7 móvil.
 
 Estado actual:
 
-- Frontend moderno con línea visual glassmorphism.
+- Frontend moderno con línea visual sólida de marketplace.
 - Integración real con backend Express/MySQL.
 - Autenticación JWT en `localStorage` para MVP académico.
 - Registro/login comprador, vendedor y admin.

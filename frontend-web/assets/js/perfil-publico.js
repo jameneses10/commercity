@@ -44,7 +44,7 @@ function draw() {
 }
 
 function listPeople(rows, empty) {
-  return rows.length ? `<div class="grid gap-2">${rows.map((u) => `<a class="p-3 rounded-2xl bg-white/70" href="perfil-publico.html?id=${Number(u.id) || ''}"><b>${h(u.nombre)}</b><p class="muted text-sm">${h(u.rol || '')}</p></a>`).join('')}</div>` : emptyState(empty, 'La lista se actualizará cuando existan seguimientos.');
+  return rows.length ? `<div class="grid gap-2">${rows.map((u) => `<a class="p-3 rounded-2xl bg-white" href="perfil-publico.html?id=${Number(u.id) || ''}"><b>${h(u.nombre)}</b><p class="muted text-sm">${h(u.rol || '')}</p></a>`).join('')}</div>` : emptyState(empty, 'La lista se actualizará cuando existan seguimientos.');
 }
 
 function productCard(p) {

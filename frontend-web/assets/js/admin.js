@@ -255,7 +255,7 @@ async function loadLogs() {
 }
 
 function drawLogs() {
-  logsBox.innerHTML = logs.length ? `<div class="grid gap-2">${logs.slice(0, 12).map((l) => `<div class="p-3 rounded-2xl bg-white/70"><b>${h(l.accion || 'acción')}</b><p class="text-sm">Usuario: ${h(l.usuario_nombre || l.usuario_id || 'sistema')} · Módulo: ${h(l.entidad || l.modulo || '')}</p><p class="muted text-sm">${formatDate(l.created_at || l.fecha)}</p></div>`).join('')}</div>` : emptyState('Sin logs', 'Aún no hay eventos de auditoría para mostrar.');
+  logsBox.innerHTML = logs.length ? `<div class="grid gap-2">${logs.slice(0, 12).map((l) => `<div class="p-3 rounded-2xl bg-white"><b>${h(l.accion || 'acción')}</b><p class="text-sm">Usuario: ${h(l.usuario_nombre || l.usuario_id || 'sistema')} · Módulo: ${h(l.entidad || l.modulo || '')}</p><p class="muted text-sm">${formatDate(l.created_at || l.fecha)}</p></div>`).join('')}</div>` : emptyState('Sin logs', 'Aún no hay eventos de auditoría para mostrar.');
 }
 
 async function search() {

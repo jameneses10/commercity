@@ -21,32 +21,23 @@ export function money(n) {
   return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(Number(n || 0));
 }
 
-const ICON_PATHS = {
-  home: '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-5.5h5V20"/>',
-  buscar: '<path d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="6.5"/>',
-  carrito: '<path d="M4 5h2.2l2.05 10.2a2 2 0 0 0 2 1.6h6.6a2 2 0 0 0 1.95-1.55L20 9H7.05"/><circle cx="10" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/>',
-  chat: '<path d="M5 6.5A3.5 3.5 0 0 1 8.5 3h7A3.5 3.5 0 0 1 19 6.5v5A3.5 3.5 0 0 1 15.5 15H11l-4.5 4v-4.2A3.5 3.5 0 0 1 5 11.5z"/>',
-  noti: '<path d="M18 9.6A6 6 0 0 0 6 9.6c0 6-2 6.9-2 6.9h16s-2-.9-2-6.9"/><path d="M10 20a2 2 0 0 0 4 0"/>',
-  perfil: '<circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>',
-  tienda: '<path d="M4 10h16l-1.5-5h-13z"/><path d="M6 10v10h12V10"/><path d="M9 20v-6h6v6"/>',
-  admin: '<path d="M12 3 5 6v5c0 4.55 2.9 8.75 7 10 4.1-1.25 7-5.45 7-10V6z"/><path d="M9.5 12.2 11.3 14l3.7-4"/>',
-  pedidos: '<path d="M7 7h10v10H7z"/><path d="M9 3h6v4H9z"/><path d="M9 12h6"/><path d="M9 15h4"/>',
-  config: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.05.05-1.9 3.29-.07-.02a1.65 1.65 0 0 0-1.9.44l-.08.08-3.8-2.2.02-.11a1.65 1.65 0 0 0-.95-1.75h-.1l-3.8 2.2-.08-.08a1.65 1.65 0 0 0-1.9-.44l-.07.02-1.9-3.29.05-.05A1.65 1.65 0 0 0 4.6 15l-.02-.1v-4l.02-.1a1.65 1.65 0 0 0-.33-1.82l-.05-.05 1.9-3.29.07.02a1.65 1.65 0 0 0 1.9-.44l.08-.08 3.8 2.2-.02.11a1.65 1.65 0 0 0 .95 1.75h.1l3.8-2.2.08.08a1.65 1.65 0 0 0 1.9.44l.07-.02 1.9 3.29-.05.05a1.65 1.65 0 0 0-.33 1.82l.02.1v4z"/>',
-  plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
-  img: '<rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m7 17 4-4 3 3 2-2 3 3"/>',
-  login: '<path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M14 4h4a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-4"/>',
-  logout: '<path d="M14 17l5-5-5-5"/><path d="M19 12H8"/><path d="M10 20H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h4"/>',
-  heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>',
-  shield: '<path d="M12 3 5 6v5c0 4.55 2.9 8.75 7 10 4.1-1.25 7-5.45 7-10V6z"/>',
-  refund: '<path d="M3 7h13a5 5 0 1 1 0 10H8"/><path d="M7 3 3 7l4 4"/><path d="M9 17l-2 4"/><path d="M14 17l2 4"/>'
+const ICON_FILES = {
+  home: 'cc-home.svg', buscar: 'cc-search.svg', carrito: 'cc-shopping-cart.svg', chat: 'cc-chat-messages.svg',
+  noti: 'cc-notification-bell.svg', perfil: 'cc-user-profile.svg', tienda: 'cc-store.svg', admin: 'cc-admin-dashboard.svg',
+  pedidos: 'cc-order-history.svg', config: 'cc-settings-general.svg', plus: 'cc-action-add-circle.svg', img: 'cc-image-upload-camera.svg',
+  login: 'cc-login.svg', logout: 'cc-logout.svg', heart: 'cc-favorites-wishlist.svg', shield: 'cc-privacy-security.svg',
+  refund: 'cc-refund.svg', returns: 'cc-return-request.svg', shipping: 'cc-delivery-truck.svg', bank: 'cc-bank-account.svg',
+  logs: 'cc-audit-logs.svg', categories: 'cc-categories.svg', products: 'cc-products-management.svg', users: 'cc-users-management.svg',
+  reports: 'cc-report-content.svg', security: 'cc-security-lock.svg', evidence: 'cc-evidence-upload.svg'
 };
 
 const ICON_TITLES = {
-  home: 'Home', buscar: 'Buscar', carrito: 'Carrito', chat: 'Chat', noti: 'Notificaciones', perfil: 'Perfil', tienda: 'Tienda', admin: 'Administración', pedidos: 'Pedidos', config: 'Configuración', plus: 'Agregar', img: 'Imagen', login: 'Ingresar', logout: 'Cerrar sesión'
+  home: 'Home', buscar: 'Buscar', carrito: 'Carrito', chat: 'Chat', noti: 'Notificaciones', perfil: 'Perfil', tienda: 'Tienda', admin: 'Administración', pedidos: 'Pedidos', config: 'Configuración', plus: 'Agregar', img: 'Imagen', login: 'Ingresar', logout: 'Cerrar sesión', heart: 'Favoritos', refund: 'Reembolsos', returns: 'Devoluciones', shipping: 'Envíos', bank: 'Cuenta bancaria', logs: 'Logs', categories: 'Categorías', products: 'Productos', users: 'Usuarios', reports: 'Reportes', security: 'Seguridad', evidence: 'Evidencias'
 };
 
 export function icon(name, title = ICON_TITLES[name] || 'Icono') {
-  return `<svg class="cc-icon" viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false"><title>${h(title)}</title>${ICON_PATHS[name] || '<circle cx="12" cy="12" r="3"/>'}</svg>`;
+  const file = ICON_FILES[name] || 'cc-notifications.svg';
+  return `<img class="cc-icon" src="assets/icons/${file}" alt="${h(title)}" title="${h(title)}" loading="lazy">`;
 }
 
 function navLink({active, key, href, label}) {
@@ -116,7 +107,7 @@ export function bindShell() {
     try {
       const d = await api.get('/notifications');
       const list = (d.notifications || []).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-      p.innerHTML = `<div class="flex justify-between items-center mb-3"><h3 class="font-bold">Notificaciones</h3><button id="closeNoti" class="text-sm muted" type="button">Cerrar</button></div><div class="grid gap-2 max-h-96 overflow-auto">${list.map((n) => `<div class="p-3 rounded-2xl ${n.leida ? 'bg-white/70' : 'bg-orange-50 border border-orange-200'}"><b>${h(n.titulo || n.tipo)}</b><p class="text-sm muted">${h(n.mensaje || '')}</p><p class="text-xs muted mt-1">${n.created_at ? new Date(n.created_at).toLocaleString('es-CO') : ''}</p><div class="flex gap-2 mt-2"><button data-id="${Number(n.id) || ''}" class="read text-blue-600 text-sm" type="button">Marcar leída</button><button data-id="${Number(n.id) || ''}" class="del-noti text-red-600 text-sm" type="button">Eliminar</button></div></div>`).join('') || '<p class="muted">Sin notificaciones</p>'}</div><div class="grid grid-cols-2 gap-2 mt-3"><button id="readAll" class="btn btn-secondary" type="button">Marcar todas</button><button id="refreshNoti" class="btn btn-ghost" type="button">Actualizar</button></div><p class="field-hint mt-2">Actualización periódica cada 30 segundos mientras navegas.</p>`;
+      p.innerHTML = `<div class="flex justify-between items-center mb-3"><h3 class="font-bold">Notificaciones</h3><button id="closeNoti" class="text-sm muted" type="button">Cerrar</button></div><div class="grid gap-2 max-h-96 overflow-auto">${list.map((n) => `<div class="p-3 rounded-2xl ${n.leida ? 'bg-white' : 'bg-orange-100 border border-orange-200'}"><b>${h(n.titulo || n.tipo)}</b><p class="text-sm muted">${h(n.mensaje || '')}</p><p class="text-xs muted mt-1">${n.created_at ? new Date(n.created_at).toLocaleString('es-CO') : ''}</p><div class="flex gap-2 mt-2"><button data-id="${Number(n.id) || ''}" class="read text-blue-600 text-sm" type="button">Marcar leída</button><button data-id="${Number(n.id) || ''}" class="del-noti text-red-600 text-sm" type="button">Eliminar</button></div></div>`).join('') || '<p class="muted">Sin notificaciones</p>'}</div><div class="grid grid-cols-2 gap-2 mt-3"><button id="readAll" class="btn btn-secondary" type="button">Marcar todas</button><button id="refreshNoti" class="btn btn-ghost" type="button">Actualizar</button></div><p class="field-hint mt-2">Actualización periódica cada 30 segundos mientras navegas.</p>`;
       $('#closeNoti', p).onclick = () => p.classList.add('hidden');
       $('#refreshNoti', p).onclick = renderNotifications;
       $$('.read', p).forEach((b) => { b.onclick = () => api.patch(`/notifications/${b.dataset.id}/read`, {}).then(async () => { toast('Notificación leída'); await updateNotificationCount(); await renderNotifications(); }).catch((e) => toast(e.message, 'error')); });

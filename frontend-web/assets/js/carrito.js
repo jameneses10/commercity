@@ -58,7 +58,7 @@ function drawCart() {
 }
 
 function drawSummary() {
-  summary.innerHTML = `<h2 class="text-2xl font-bold mb-4">Resumen del Pedido</h2><p>Subtotal local: <b>${money(total())}</b></p><p>Envío: <b class="text-green-600">Gratis</b></p><div class="p-4 bg-orange-50 rounded-2xl my-4"><p>Comisión plataforma estimada (10%): <b>${money(total() * .1)}</b></p><p>Pago vendedores estimado (90%): <b class="text-blue-600">${money(total() * .9)}</b></p></div><p class="price">${money(validated?.total ?? total())}</p><button id="validate" class="btn btn-secondary w-full mt-3" type="button">Validar carrito</button>${lastReceipt ? '<button id="showReceipt" class="btn btn-ghost w-full mt-3" type="button">Ver comprobante</button>' : ''}`;
+  summary.innerHTML = `<h2 class="text-2xl font-bold mb-4">Resumen del Pedido</h2><p>Subtotal local: <b>${money(total())}</b></p><p>Envío: <b class="text-green-600">Gratis</b></p><div class="p-4 bg-orange-100 rounded-2xl my-4"><p>Comisión plataforma estimada (10%): <b>${money(total() * .1)}</b></p><p>Pago vendedores estimado (90%): <b class="text-blue-600">${money(total() * .9)}</b></p></div><p class="price">${money(validated?.total ?? total())}</p><button id="validate" class="btn btn-secondary w-full mt-3" type="button">Validar carrito</button>${lastReceipt ? '<button id="showReceipt" class="btn btn-ghost w-full mt-3" type="button">Ver comprobante</button>' : ''}`;
   validate.onclick = () => validateCart();
   $('#showReceipt')?.addEventListener('click', () => receiptBox.scrollIntoView({behavior: 'smooth'}));
 }
