@@ -1,0 +1,243 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed": "#c2e8ff",
+                    "primary-container": "#fa8000",
+                    "on-primary-fixed": "#301400",
+                    "tertiary-fixed-dim": "#75d1ff",
+                    "secondary-container": "#096df6",
+                    "inverse-primary": "#ffb785",
+                    "surface-container-low": "#f3f3f6",
+                    "on-tertiary-container": "#003d53",
+                    "on-error-container": "#93000a",
+                    "surface-container-highest": "#e2e2e5",
+                    "inverse-surface": "#2f3133",
+                    "tertiary-container": "#00aee5",
+                    "secondary": "#0055c6",
+                    "inverse-on-surface": "#f0f0f3",
+                    "tertiary": "#006688",
+                    "surface-container": "#eeeef0",
+                    "on-secondary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#f9f9fc",
+                    "on-surface": "#1a1c1e",
+                    "on-secondary-fixed": "#001945",
+                    "primary-fixed": "#ffdcc6",
+                    "surface-dim": "#dadadc",
+                    "on-tertiary-fixed": "#001e2b",
+                    "on-primary-fixed-variant": "#713700",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#004d67",
+                    "secondary-fixed-dim": "#b0c6ff",
+                    "secondary-fixed": "#d9e2ff",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#954a00",
+                    "outline": "#8b7263",
+                    "on-secondary-container": "#fefcff",
+                    "on-primary-container": "#5b2b00",
+                    "surface-container-high": "#e8e8ea",
+                    "on-background": "#1a1c1e",
+                    "surface-variant": "#e2e2e5",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed-variant": "#00429c",
+                    "primary": "#954a00",
+                    "background": "#f9f9fc",
+                    "on-surface-variant": "#574235",
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#ffb785",
+                    "surface": "#f9f9fc",
+                    "outline-variant": "#dec1af"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "md": "24px",
+                    "container-max": "1280px",
+                    "lg": "48px",
+                    "base": "8px",
+                    "xl": "80px",
+                    "sm": "12px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Poppins"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Poppins"],
+                    "display-lg": ["Poppins"],
+                    "body-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "headline-lg": ["Poppins"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #F4F7FA; /* Base Ground color from Style Guidance */
+            color: #1A1C1E;
+        }
+        .content-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            box-shadow: 4px 4px 0px #D1D9E6; /* Hard shadow as per guidance */
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-surface-container-lowest dark:bg-surface-dim w-full border-b-2 border-primary-container shadow-sm sticky top-0 z-50">
+<div class="flex justify-between items-center px-gutter py-sm max-w-container-max mx-auto">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold dark:text-primary-fixed-dim"><span style="color: rgb(250, 128, 0);" class="">Commer</span><span style="color: rgb(34, 118, 255);" class="">city</span></span>
+<nav class="hidden md:flex gap-md items-center">
+
+
+
+
+</nav>
+</div>
+<div class="flex items-center gap-sm">
+
+<button class="active:scale-95 transition-transform p-base text-primary dark:text-primary-fixed-dim">
+
+</button>
+
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-lg">
+<!-- Breadcrumb / Back Navigation -->
+<div class="mb-md">
+<button class="flex items-center gap-xs text-secondary font-label-lg text-label-lg group active:scale-95 transition-all" onclick="history.back()">
+<span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                Volver
+            </button>
+</div>
+<!-- Document Container -->
+<div class="max-w-4xl mx-auto">
+<article class="content-card p-lg md:p-xl rounded-lg">
+<!-- Header Section -->
+<header class="border-b-2 border-primary-container pb-md mb-lg">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Términos y Condiciones de Uso</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Última actualización: 21 de junio de 2026</p>
+</header>
+<!-- Document Content -->
+<div class="space-y-lg text-on-surface">
+<!-- Section 1: Introduction -->
+<section class="space-y-sm">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined">info</span>
+                            1. Introducción
+                        </h2>
+<p class="font-body-md text-body-md leading-relaxed">
+                            Bienvenido a Commercity. Al acceder o utilizar nuestra plataforma, usted acepta estar legalmente vinculado por los términos y condiciones descritos en este documento. Commercity es un mercado digital diseñado para facilitar el intercambio comercial entre empresas y consumidores, proporcionando un entorno seguro, industrial y profesional. Si no está de acuerdo con alguna parte de estos términos, le solicitamos que no utilice nuestros servicios.
+                        </p>
+</section>
+<!-- Section 2: Use of Platform -->
+<section class="space-y-sm">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined">gavel</span>
+                            2. Uso de la Plataforma
+                        </h2>
+<p class="font-body-md text-body-md leading-relaxed">
+                            El acceso a Commercity requiere la creación de una cuenta de usuario veroficada. Usted es responsable de mantener la confidencialidad de sus credenciales y de todas las actividades que ocurran bajo su cuenta. La plataforma debe ser utilizada únicamente para fines comerciales lícitos. Queda estrictamente prohibido:
+                        </p>
+<ul class="list-disc pl-md space-y-xs font-body-md text-body-md">
+<li class="">Publicar productos o servicios ilegales o que infrinjan derechos de terceros.</li>
+<li class="">Realizar actividades fraudulentas o intentos de manipulación del mercado.</li>
+<li class="">Interferir con el funcionamiento técnico de la infraestructura de Commercity.</li>
+</ul>
+</section>
+<!-- Section 3: Intellectual Property -->
+<section class="space-y-sm">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined">copyright</span>
+                            3. Propiedad Intelectual
+                        </h2>
+<p class="font-body-md text-body-md leading-relaxed">
+                            Todo el contenido presente en Commercity, incluyendo pero no limitado a logotipos, textos, gráficos, interfaces y código de software, es propiedad exclusiva de Commercity Marketplace o de sus licenciantes y está protegido por las leyes de propiedad intelectual internacionales. La marca "Commercity" y su estética corporativa no pueden ser replicadas sin autorización expresa por escrito.
+                        </p>
+</section>
+<!-- Section 4: Privacy -->
+<section class="space-y-sm">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-sm">
+<span class="material-symbols-outlined">shield_lock</span>
+                            4. Privacidad y Datos
+                        </h2>
+<p class="font-body-md text-body-md leading-relaxed">
+                            Su privacidad es nuestra prioridad. El tratamiento de sus datos personales se rige por nuestra Política de Privacidad integral. Al utilizar Commercity, usted consiente la recopilación y uso de información técnica necesaria para la optimización de la experiencia de usuario y la seguridad de las transacciones comerciales. Implementamos cifrado de grado industrial para proteger su información financiera.
+                        </p>
+</section>
+<!-- Additional Context Block -->
+<div class="bg-surface-container-low p-md border-l-4 border-secondary mt-lg">
+<p class="font-label-lg text-label-lg text-secondary italic">
+                            Nota: Commercity se reserva el derecho de modificar estos términos en cualquier momento. Los cambios serán notificados a través de la plataforma y entrarán en vigor inmediatamente después de su publicación.
+                        </p>
+</div>
+</div>
+<!-- Footer Action -->
+<footer class="mt-xl pt-lg border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-md">
+
+<div class="flex gap-md">
+
+
+</div>
+</footer>
+</article>
+</div>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="bg-surface-container-highest dark:bg-inverse-surface w-full mt-auto border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter py-lg max-w-container-max mx-auto">
+<div class="flex flex-col gap-xs mb-md md:mb-0">
+<span class="font-headline-md text-headline-md font-bold text-primary-container dark:text-primary-fixed-dim"><span style="color: rgb(250, 128, 0);" class="">Commer</span><span style="color: rgb(34, 118, 255);" class="">city</span></span>
+<p class="font-label-sm text-label-sm text-on-surface-variant dark:text-on-surface-variant">© 2026 Commercity Marketplace | Todos los Derechos Reservados.</p>
+</div>
+<nav class="flex flex-wrap justify-center gap-md">
+
+
+
+
+
+</nav>
+</div>
+</footer>
+<script>
+        // Micro-interaction for back button
+        document.querySelector('button[onclick="history.back()"]').addEventListener('click', (e) => {
+            console.log('Navigating back to previous context...');
+        });
+    </script>
+</body></html>
