@@ -57,6 +57,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .brand span:last-child, .brand-text span:last-child { color: var(--blue); }
 .brand-logo { width: 46px; height: 46px; object-fit: contain; border-radius: 14px; background: var(--orange-soft); border: 1px solid #fed7aa; padding: 5px; }
 .nav { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+
+.nav-group { display: inline-flex; align-items: center; gap: 8px; padding: 6px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel-soft); }
+.nav-account { background: var(--panel); }
+
 .nav-icon, .icon-btn {
   width: 44px;
   height: 44px;
@@ -212,4 +216,34 @@ dialog::backdrop { background: #111827; }
   .card, .auth-card, dialog.card { padding: 18px; border-radius: 20px; }
   .grid-products { grid-template-columns: 1fr; }
   .bubble { max-width: 92%; }
+}
+
+
+/* Fase 6.12B refinamiento visual desktop */
+@media (min-width: 1025px) {
+  .container, .cc-container { width: min(1320px, 100%); padding: 32px 22px; }
+  .topbar { padding: 12px clamp(18px, 4vw, 52px); }
+  .nav { gap: 14px; }
+  .nav-group { display: inline-flex; align-items: center; gap: 8px; padding: 6px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel-soft); }
+  .nav-account { background: var(--panel); }
+  .nav-icon, .icon-btn { width: 40px; height: 40px; border-color: var(--panel-soft); }
+  .hero { padding: clamp(30px, 5vw, 58px); }
+  .hero h1 { font-size: clamp(34px, 5vw, 56px); line-height: 1.02; }
+  .grid-products { grid-template-columns: repeat(auto-fill, minmax(245px, 1fr)); gap: 24px; align-items: stretch; }
+  .product-card { display: flex; flex-direction: column; min-height: 100%; }
+  .product-card img, .product-media img { aspect-ratio: 4 / 3; border-radius: 18px; }
+  .dashboard { grid-template-columns: 300px minmax(0, 1fr); }
+  .dashboard > main { width: 100%; max-width: 100%; padding: 34px clamp(24px, 3vw, 46px); }
+  .dashboard > main.container { width: 100%; margin: 0; }
+  .sidebar { padding: 28px 22px; }
+  .stats { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+  .stat-value { font-family: 'Poppins', 'Inter', sans-serif; font-size: clamp(1.45rem, 2.4vw, 2.2rem); font-weight: 900; color: var(--blue); margin-top: 8px; }
+  .table th, .table td { padding: 15px 14px; }
+  .chat-layout { grid-template-columns: 360px minmax(0, 1fr); min-height: 74vh; }
+  .messages { min-height: 470px; max-height: 64vh; padding: 20px; }
+  .profile-layout { grid-template-columns: 280px minmax(0, 1fr); gap: 24px; }
+}
+@media (max-width: 768px) {
+  .nav { width: 100%; }
+  .nav-group { display: inline-flex; max-width: 100%; overflow-x: auto; }
 }
