@@ -3,7 +3,7 @@
  *
  * Escenarios soportados:
  * 1) Desarrollo en el servidor o por túnel SSH:
- *    - Frontend: http://localhost:8080 / 8081 / 8082
+ *    - Frontend: http://localhost:8080
  *    - API:      http://localhost:3000/api/v1
  *
  * 2) Prueba por IP pública/dominio sin proxy:
@@ -74,7 +74,7 @@ function autoApiOrigin() {
   if (runtimeOverride) return withoutTrailingSlash(runtimeOverride);
 
   const isLocalHost = ['localhost', '127.0.0.1', '0.0.0.0', '::1'].includes(runtimeHostname);
-  const isStaticDevServer = runtimePort === '8080' || runtimePort === '8081' || runtimePort === '8082' || runtimePort === '5500';
+  const isStaticDevServer = runtimePort === '8080' || runtimePort === '5500';
 
   if (isLocalHost && isStaticDevServer) {
     return `${runtimeProtocol}//${runtimeHostname}:3000`;
