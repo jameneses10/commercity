@@ -15,7 +15,7 @@ async function render() {
   bindShell();
   try {
     const d = await api.get(`/products/${id}`, {auth: false});
-    product = d.product;
+    product = d.product || d.producto || d;
     const rev = await api.get(`/products/${id}/reviews`, {auth: false}).catch(() => ({reviews: []}));
     reviews = rev.reviews || [];
     await loadFavoriteState();
