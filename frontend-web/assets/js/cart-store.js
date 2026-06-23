@@ -1,2 +1,0 @@
-
-const KEY='cc_modern_cart'; export const cart=()=>JSON.parse(localStorage.getItem(KEY)||'[]'); export const saveCart=i=>localStorage.setItem(KEY,JSON.stringify(i)); export function addCart(p,q=1){const items=cart(); const id=p.id||p.producto_id; const f=items.find(x=>x.producto_id==id); if(f) f.cantidad+=q; else items.push({producto_id:id,nombre:p.nombre,precio:Number(p.precio_final||p.precio||0),imagen_url:p.imagenes?.[0]?.url_imagen||p.imagen_url,tienda:p.tienda_nombre||p.tienda||'Tienda',cantidad:q}); saveCart(items)} export const clearCart=()=>saveCart([]);

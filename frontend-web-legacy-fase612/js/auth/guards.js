@@ -1,2 +1,0 @@
-import {getUser,isLoggedIn} from './session.js';
-export function requireAuth(role){ if(!isLoggedIn()){ location.href='login.html'; return null; } const u=getUser(); if(role&&u.rol!==role){ document.body.innerHTML='<main class="cc-container py-20"><div class="cc-card p-8"><h1 class="text-2xl font-bold text-red-600">Acceso denegado</h1><p>No tienes permisos para esta página.</p><a class="btn-primary inline-block mt-4" href="../index.html">Volver al inicio</a></div></main>'; return null;} return u; }
