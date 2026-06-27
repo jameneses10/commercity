@@ -1,0 +1,342 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Pago Realizado - Commercity</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#75d1ff",
+                        "tertiary-fixed": "#c2e8ff",
+                        "outline-variant": "#dec1af",
+                        "surface-variant": "#e2e2e5",
+                        "error": "#ba1a1a",
+                        "secondary": "#0055c6",
+                        "primary": "#954a00",
+                        "on-background": "#1a1c1e",
+                        "tertiary-container": "#00aee5",
+                        "on-primary-fixed": "#301400",
+                        "background": "#f9f9fc",
+                        "on-primary-container": "#5b2b00",
+                        "inverse-surface": "#2f3133",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#d9e2ff",
+                        "on-surface": "#1a1c1e",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#954a00",
+                        "tertiary": "#006688",
+                        "surface-bright": "#f9f9fc",
+                        "on-tertiary-fixed-variant": "#004d67",
+                        "secondary-fixed-dim": "#b0c6ff",
+                        "primary-fixed": "#ffdcc6",
+                        "surface-container": "#eeeef0",
+                        "primary-fixed-dim": "#ffb785",
+                        "surface-container-low": "#f3f3f6",
+                        "on-secondary-fixed": "#001945",
+                        "inverse-primary": "#ffb785",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e8e8ea",
+                        "primary-container": "#fa8000",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#713700",
+                        "on-secondary-fixed-variant": "#00429c",
+                        "on-surface-variant": "#574235",
+                        "surface-container-highest": "#e2e2e5",
+                        "secondary-container": "#096df6",
+                        "outline": "#8b7263",
+                        "on-tertiary-container": "#003d53",
+                        "on-secondary-container": "#fefcff",
+                        "surface-dim": "#dadadc",
+                        "surface": "#f9f9fc",
+                        "on-tertiary-fixed": "#001e2b",
+                        "inverse-on-surface": "#f0f0f3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "md": "24px",
+                        "xl": "80px",
+                        "lg": "48px",
+                        "xs": "4px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Poppins"],
+                        "display-lg": ["Poppins"],
+                        "headline-lg-mobile": ["Poppins"],
+                        "label-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Poppins"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .bicolor-logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+        }
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+        }
+        .check-icon {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            border-radius: 50%;
+            box-sizing: content-box;
+            border: 4px solid #4caf50;
+        }
+        .check-icon::before {
+            top: 3px;
+            left: -2px;
+            width: 30px;
+            transform-origin: 100% 50%;
+            border-radius: 100px 0 0 100px;
+        }
+        .check-icon::after {
+            top: 0;
+            left: 30px;
+            width: 60px;
+            transform-origin: 0 50%;
+            border-radius: 0 100px 100px 0;
+            animation: rotate-circle 4.25s ease-in;
+        }
+        .check-icon::before, .check-icon::after {
+            content: '';
+            height: 100px;
+            position: absolute;
+            background: #FFFFFF;
+            transform: rotate(-45deg);
+        }
+        .icon-line {
+            height: 5px;
+            background-color: #4caf50;
+            display: block;
+            border-radius: 2px;
+            position: absolute;
+            z-index: 10;
+        }
+        .icon-line.line-tip {
+            top: 46px;
+            left: 14px;
+            width: 25px;
+            transform: rotate(45deg);
+            animation: icon-line-tip 0.75s;
+        }
+        .icon-line.line-long {
+            top: 38px;
+            right: 8px;
+            width: 47px;
+            transform: rotate(-45deg);
+            animation: icon-line-long 0.75s;
+        }
+        .icon-circle {
+            top: -4px;
+            left: -4px;
+            z-index: 10;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            position: absolute;
+            box-sizing: content-box;
+            border: 4px solid rgba(76, 175, 80, 0.5);
+        }
+        .icon-fix {
+            top: 8px;
+            width: 5px;
+            left: 26px;
+            z-index: 1;
+            height: 85px;
+            position: absolute;
+            transform: rotate(-45deg);
+            background-color: #FFFFFF;
+        }
+        @keyframes icon-line-tip {
+            0% { width: 0; left: 1px; top: 19px; }
+            54% { width: 0; left: 1px; top: 19px; }
+            70% { width: 50px; left: -8px; top: 37px; }
+            84% { width: 17px; left: 21px; top: 48px; }
+            100% { width: 25px; left: 14px; top: 46px; }
+        }
+        @keyframes icon-line-long {
+            0% { width: 0; right: 46px; top: 54px; }
+            65% { width: 0; right: 46px; top: 54px; }
+            84% { width: 55px; right: 0px; top: 35px; }
+            100% { width: 47px; right: 8px; top: 38px; }
+        }
+
+        .hard-shadow {
+            box-shadow: 4px 4px 0px 0px #D1D9E6;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md text-body-md">
+<!-- Top Navigation Bar (Updated from SCREEN_19) -->
+<header class="sticky top-0 z-50 bg-surface-container-lowest shadow-sm border-b-2 border-primary-container h-20">
+<nav class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-full gap-md">
+<!-- Logo -->
+<div class="flex-shrink-0">
+<a class="bicolor-logo text-headline-md" href="#">
+<span class="text-[#fa8000]">Commer</span><span class="text-[#2276ff]">city</span>
+</a>
+</div>
+<!-- Search Bar -->
+<div class="hidden md:flex flex-grow max-w-2xl">
+<div class="relative w-full">
+<input class="w-full bg-surface-container-low border-outline-variant border rounded-xl py-2 pl-10 pr-4 focus:ring-2 focus:ring-secondary focus:border-transparent transition-all outline-none" placeholder="Buscar productos, marcas y más..." type="text">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+</div>
+</div>
+<!-- Links -->
+<div class="hidden lg:flex items-center gap-md">
+<a class="text-secondary font-bold border-b-3 border-secondary pb-1 font-label-lg text-label-lg" href="#">Categorías</a>
+</div>
+<!-- Action Icons -->
+<div class="flex items-center gap-sm md:gap-md">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors relative">
+<span class="material-symbols-outlined text-primary">shopping_cart</span>
+<span class="absolute top-1 right-1 bg-secondary text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">2</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">chat</span>
+</button><button class="p-2 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">person</span>
+</button>
+</div>
+</nav>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex items-center justify-center py-lg px-base">
+<div class="max-w-xl w-full flex flex-col items-center text-center">
+<!-- Success Animation -->
+<div class="mb-lg">
+<div class="success-checkmark">
+<div class="check-icon">
+<span class="icon-line line-tip"></span>
+<span class="icon-line line-long"></span>
+<div class="icon-circle"></div>
+<div class="icon-fix"></div>
+</div>
+</div>
+</div>
+<!-- Headings -->
+<h1 class="font-headline-lg text-headline-lg mb-xs text-on-background">¡Gracias por tu compra!</h1>
+<p class="text-on-surface-variant font-body-lg text-body-lg mb-lg">Tu pedido <span class="font-bold text-secondary">#ORD-8825</span> ha sido procesado exitosamente.</p>
+<!-- Order Summary Card -->
+<div class="w-full bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-lg text-left hard-shadow mb-lg" style="opacity: 1; transform: translateY(0px); transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Delivery Date -->
+<div>
+<div class="flex items-center gap-xs text-on-surface-variant mb-xs">
+<span class="material-symbols-outlined text-secondary" style="font-size: 20px;">local_shipping</span>
+<span class="font-label-lg text-label-lg">Fecha de entrega estimada</span>
+</div>
+<p class="font-headline-md text-headline-md text-on-surface">Jueves, 24 Oct</p>
+</div>
+<!-- Shipping Address -->
+<div>
+<div class="flex items-center gap-xs text-on-surface-variant mb-xs">
+<span class="material-symbols-outlined text-secondary" style="font-size: 20px;">location_on</span>
+<span class="font-label-lg text-label-lg">Dirección de envío</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">Calle Principal 123, Lima</p>
+</div>
+<!-- Payment Method -->
+<div>
+<div class="flex items-center gap-xs text-on-surface-variant mb-xs">
+<span class="material-symbols-outlined text-secondary" style="font-size: 20px;">credit_card</span>
+<span class="font-label-lg text-label-lg">Método de pago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface flex items-center gap-xs">
+                            Visa <span class="text-on-surface-variant">**** 1234</span>
+</p>
+</div>
+<!-- Order Total -->
+<div>
+<div class="flex items-center gap-xs text-on-surface-variant mb-xs">
+<span class="material-symbols-outlined text-secondary" style="font-size: 20px;">receipt_long</span>
+<span class="font-label-lg text-label-lg">Total del pedido</span>
+</div>
+<p class="font-headline-md text-headline-md text-primary">$1,250.00</p>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row gap-md w-full sm:w-auto">
+<button class="bg-primary-container text-on-primary px-lg py-sm rounded-lg font-label-lg text-label-lg uppercase tracking-wide hover:brightness-110 active:scale-95 transition-all duration-200 flex items-center justify-center gap-xs">
+                    Seguir Comprando
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="border-2 border-secondary text-secondary bg-transparent px-lg py-sm rounded-lg font-label-lg text-label-lg uppercase tracking-wide hover:bg-secondary hover:text-white active:scale-95 transition-all duration-200">
+                    Ver mis pedidos
+                </button>
+</div>
+<!-- Info text -->
+<p class="mt-lg text-on-surface-variant font-label-sm text-label-sm max-w-md mx-auto">
+                Hemos enviado una confirmación de pedido a tu correo electrónico. Si tienes alguna duda, contacta a nuestro equipo de soporte técnico.
+            </p>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low/50 border-t border-outline-variant/20 mt-auto"><div class="max-w-container-max mx-auto px-md md:px-xl grid grid-cols-1 md:grid-cols-2 gap-md items-center py-4"><div class="flex flex-col gap-xs"><div class="font-headline-md text-headline-md font-bold scale-90 origin-left"><span class="text-[#fa8000]">Commer</span><span class="text-secondary">city</span></div><div class="font-label-sm text-label-sm text-on-surface-variant/80">© 2026 Commercity Marketplace | Todos los Derechos Reservados</div></div></div></footer>
+<!-- Micro-interaction script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Subtle entrance for the summary card
+            const card = document.querySelector('.hard-shadow');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 500);
+        });
+    </script>
+
+
+</body></html>

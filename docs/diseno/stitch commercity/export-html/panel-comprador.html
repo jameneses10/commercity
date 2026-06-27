@@ -1,0 +1,336 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Commercity | Panel del Comprador</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#ffb785",
+                        "tertiary-fixed-dim": "#75d1ff",
+                        "on-tertiary-fixed": "#001e2b",
+                        "on-secondary-fixed": "#001945",
+                        "secondary-container": "#096df6",
+                        "surface-bright": "#f9f9fc",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#e2e2e5",
+                        "primary-fixed": "#ffdcc6",
+                        "surface": "#f9f9fc",
+                        "surface-dim": "#dadadc",
+                        "secondary-fixed": "#d9e2ff",
+                        "tertiary": "#006688",
+                        "on-surface-variant": "#574235",
+                        "secondary-fixed-dim": "#b0c6ff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#003d53",
+                        "on-primary-container": "#5b2b00",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#954a00",
+                        "tertiary-container": "#00aee5",
+                        "primary": "#fa8000",
+                        "surface-container-highest": "#e2e2e5",
+                        "on-secondary-container": "#fefcff",
+                        "on-error-container": "#93000a",
+                        "background": "#F4F7FA",
+                        "on-background": "#1a1c1e",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#301400",
+                        "on-tertiary-fixed-variant": "#004d67",
+                        "surface-container-high": "#e8e8ea",
+                        "on-secondary-fixed-variant": "#00429c",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f3f3f6",
+                        "surface-container": "#eeeef0",
+                        "on-surface": "#1a1c1e",
+                        "tertiary-fixed": "#c2e8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#713700",
+                        "primary-container": "#fa8000",
+                        "outline": "#8b7263",
+                        "inverse-primary": "#ffb785",
+                        "inverse-on-surface": "#f0f0f3",
+                        "outline-variant": "#dec1af",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#2f3133",
+                        "secondary": "#2276ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "2xl": "1rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "base": "8px",
+                        "gutter": "24px",
+                        "lg": "48px",
+                        "md": "24px",
+                        "container-max": "1280px",
+                        "xs": "4px",
+                        "xl": "80px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Poppins"],
+                        "headline-lg": ["Poppins"],
+                        "display-lg": ["Poppins"],
+                        "body-md": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hard-shadow {
+            box-shadow: 4px 4px 0px 0px #D1D9E6;
+        }
+    </style>
+</head>
+<body class="bg-[#F4F7FA] font-body-md text-on-surface min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full h-16 bg-surface-container-lowest border-b-2 border-primary z-50 px-gutter flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-md">
+<h1 class="font-headline-md text-headline-md font-bold">
+<span class="text-[#fa8000]">Commer</span><span class="text-[#2276ff]">city</span>
+</h1>
+<div class="hidden md:flex relative ml-lg group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-secondary transition-colors">search</span>
+<input class="pl-10 pr-4 py-2 w-64 lg:w-96 bg-surface-container-low border border-outline-variant rounded-full text-label-lg focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all" placeholder="Buscar productos, marcas y más..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-sm"><button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full">
+  <span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full">
+  <span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full">
+  <span class="material-symbols-outlined" data-icon="chat">chat</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full relative">
+  <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+  <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="flex items-center gap-sm border-l border-outline-variant pl-sm ml-xs">
+  <div class="hidden lg:block text-right">
+    <p class="text-label-lg font-bold">Jorge Meneses</p>
+    <p class="text-label-sm text-on-surface-variant">Comprador</p>
+  </div>
+  <div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden">
+    <img alt="Alex Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYXmINNDPg0pOZKYj-yBqYNzzVTB-0fgXjD2dwpOvDvlwzPQfbVcsF44KUN7I84FGSbPsF53y_6nhGldRmWKqbGRut59_w7jNvSPYDqMC_14eaMSo-kXGD2gBrnydbfp5-O8kl4bWkqMgzCOhdNOCWIMPBZnhQkhDEyWLJ63l4e53CkcAAhossAaJFUCsQCM4gLd6SdDXQaZwf-pPP0lHnfPlGvpiLsTnxt5SpbIWOXwcpCBjdLup1zhoS8heX9cF0FLOUe2Kt88s">
+  </div>
+</div></div>
+</header>
+<div class="flex flex-1 pt-16">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col w-64 h-[calc(100vh-64px)] sticky top-16 bg-surface-container-lowest border-r border-outline-variant py-lg shrink-0">
+<div class="px-gutter mb-lg">
+<h2 class="font-headline-md text-headline-lg font-bold text-primary">Mi Cuenta</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Gestión Personal</p>
+</div>
+<nav class="flex-1 flex flex-col gap-xs px-sm overflow-y-auto">
+<a class="flex items-center gap-sm bg-secondary text-on-secondary rounded-full px-4 py-3 transition-transform active:translate-x-1 shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-lg text-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container rounded-full px-4 py-3 transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="package_2">package_2</span>
+<span class="font-label-lg text-label-lg">Mis Pedidos</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container rounded-full px-4 py-3 transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="font-label-lg text-label-lg">Mis Favoritos</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container rounded-full px-4 py-3 transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+<span class="font-label-lg text-label-lg">Direcciones</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container rounded-full px-4 py-3 transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="assignment_return">assignment_return</span>
+<span class="font-label-lg text-label-lg">Devoluciones</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container rounded-full px-4 py-3 transition-all active:translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-lg text-label-lg">Mi Perfil</span>
+</a>
+</nav>
+<div class="mt-auto px-sm flex flex-col gap-xs">
+
+<a class="flex items-center gap-sm bg-error text-on-error rounded-full px-4 py-3 transition-all hover:opacity-90" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-lg text-label-lg">Cerrar Sesión</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 p-gutter max-w-container-max mx-auto w-full">
+<!-- Welcome Heading -->
+<header class="mb-lg">
+<h2 class="text-[40px] font-bold text-black tracking-tight">Hola, <span class="text-black">Jorge Meneses</span></h2>
+<p class="text-body-md text-on-surface-variant">Bienvenido a tu centro de control de Commercity.</p>
+</header>
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md mb-lg">
+<div class="bg-white p-md rounded-2xl border border-outline-variant hard-shadow flex flex-col gap-xs group hover:border-secondary transition-all">
+<div class="flex justify-between items-center">
+<span class="text-label-lg text-on-surface-variant font-medium">Pedidos Activos</span>
+<div class="p-2 bg-secondary-fixed text-secondary rounded-xl">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</div>
+</div>
+<p class="font-headline-md text-headline-md text-on-background">2</p>
+<a class="text-secondary text-label-sm font-bold mt-2 hover:underline flex items-center gap-1" href="#">Ver detalles <span class="material-symbols-outlined text-[14px]">chevron_right</span></a>
+</div>
+<div class="bg-white p-md rounded-2xl border border-outline-variant hard-shadow flex flex-col gap-xs group hover:border-primary transition-all">
+<div class="flex justify-between items-center">
+<span class="text-label-lg text-on-surface-variant font-medium">Mis Favoritos</span>
+<div class="p-2 bg-primary-fixed text-primary rounded-xl">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</div>
+</div>
+<p class="font-headline-md text-headline-md text-on-background">12</p>
+<a class="text-secondary text-label-sm font-bold mt-2 hover:underline flex items-center gap-1" href="#">Ver lista <span class="material-symbols-outlined text-[14px]">chevron_right</span></a>
+</div>
+<div class="bg-white p-md rounded-2xl border border-outline-variant hard-shadow flex flex-col gap-xs group hover:border-tertiary transition-all">
+<div class="flex justify-between items-center">
+<span class="text-label-lg text-on-surface-variant font-medium">Método de Pago&nbsp;</span>
+<div class="p-2 bg-tertiary-fixed text-tertiary rounded-xl">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+</div>
+</div>
+<p class="font-headline-md text-headline-md text-on-background">**** 4278</p>
+<a class="text-secondary text-label-sm font-bold mt-2 hover:underline flex items-center gap-1" href="#">Modificar<span class="material-symbols-outlined text-[14px]">chevron_right</span></a>
+</div>
+<div class="bg-white p-md rounded-2xl border border-outline-variant hard-shadow flex flex-col gap-xs group hover:border-primary transition-all">
+<div class="flex justify-between items-center">
+<span class="text-label-lg text-on-surface-variant font-medium">Envío Predeterminado</span>
+<div class="p-2 bg-surface-container-high text-on-surface-variant rounded-xl">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</div>
+</div>
+<p class="text-label-lg font-bold truncate">Calle 32 # 4b-84...</p>
+<a class="text-secondary text-label-sm font-bold mt-2 hover:underline flex items-center gap-1" href="#">Cambiar dirección <span class="material-symbols-outlined text-[14px]">chevron_right</span></a>
+</div>
+</div>
+<!-- Pedidos Recientes Section -->
+<section class="bg-white rounded-2xl border border-outline-variant hard-shadow overflow-hidden mb-lg">
+<div class="p-md border-b border-outline-variant flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-on-background">Pedidos Recientes</h2>
+<button class="text-secondary font-label-lg font-bold hover:underline">Ver todos los pedidos</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-lowest text-on-surface-variant font-label-lg uppercase tracking-wider text-[11px]">
+<tr>
+<th class="px-md py-4 font-bold border-b border-outline-variant">ID PEDIDO</th>
+<th class="px-md py-4 font-bold border-b border-outline-variant">PRODUCTO</th>
+<th class="px-md py-4 font-bold border-b border-outline-variant">FECHA</th>
+<th class="px-md py-4 font-bold border-b border-outline-variant">ESTADO</th>
+<th class="px-md py-4 font-bold border-b border-outline-variant text-right">TOTAL</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="px-md py-6 font-bold text-primary">#ORD-8821</td>
+<td class="px-md py-6">
+<div class="flex items-center gap-sm">
+<div class="w-12 h-12 bg-surface-container rounded-xl overflow-hidden border border-outline-variant">
+<img alt="Nike Air Max" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDO4zZoRgRjB1WoSK13m0YwSIdeXizscHSUUWEoewpVw4irNPNIf8MuuhBsA6NRcvu7IH0EdmfU1Ln4cP95irU7Lgmcmc63zLEmZXppbv136aVHLHeGP8u6ooAAdkQ9Uwehe1w1eFxm92LEN7Evh1dRnfFld9KIIEYiU7ptzHnt7f8iGiCYKA1-hsuGrVnq-viQm9QVZkRA2xidMwsHVi3EIZ-diXkI2dYDt9qdCLvyUW-vuaXlzizDPiwLrlfwQhmF9IQjdbs7fC4">
+</div>
+<span class="font-medium text-on-background">Nike Air Max Performance</span>
+</div>
+</td>
+<td class="px-md py-6 font-medium text-on-surface-variant">Oct 12, 2023</td>
+<td class="px-md py-6">
+<span class="px-4 py-1.5 bg-green-100 text-green-800 rounded-full text-[12px] font-bold uppercase tracking-tight">ENTREGADO</span>
+</td>
+<td class="px-md py-6 text-right font-bold text-on-background">$120.00</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group cursor-pointer">
+<td class="px-md py-6 font-bold text-primary">#ORD-8819</td>
+<td class="px-md py-6">
+<div class="flex items-center gap-sm">
+<div class="w-12 h-12 bg-surface-container rounded-xl overflow-hidden border border-outline-variant">
+<img alt="Workstation Pro" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAy1gnmmeP9hETRnbw4gcfeppA7LH-VEMDhkmg2WI8xzV2UIiRrjqhk5R-s6_DTygHTj3SmCsdrFTZjtevM66NdoiIxbC9x9qsJNxOpukfcmx22h-VTpeHFk-pjOlFahDNUVQRR4xb17JFHhlaNdyfTBr-rkIJv6Tu4EYGC7y3IpKKKFc5MzqpEwWvSRrQ9We6_d0vkEmWVjcEw5VKgJQIMfDrRFTSwRpFsCc3hH3R_kWefhyiYf5OJ1rs9D236rC3c8PJEWdl9i6E">
+</div>
+<span class="font-medium text-on-background">Workstation Pro Tower</span>
+</div>
+</td>
+<td class="px-md py-6 font-medium text-on-surface-variant">Oct 15, 2023</td>
+<td class="px-md py-6">
+<span class="px-4 py-1.5 bg-blue-100 text-blue-800 rounded-full text-[12px] font-bold uppercase tracking-tight">EN CAMINO</span>
+</td>
+<td class="px-md py-6 text-right font-bold text-on-background">$2,450.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Sugerencias para ti Section -->
+<section>
+<div class="flex items-center justify-between mb-md">
+
+<div class="flex gap-2">
+
+
+</div>
+</div>
+
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest py-md border-t border-outline-variant shadow-sm mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center px-gutter gap-md max-w-container-max mx-auto w-full">
+<div class="flex items-center gap-sm">
+<span class="font-label-lg text-label-lg font-bold"><span class="text-[#fa8000]">Commer</span><span class="text-[#2276ff]">city</span></span>
+<p class="text-on-surface-variant font-label-sm text-label-sm">© 2026 Commercity | Todos los Derechos Reservados</p>
+</div>
+<div class="flex gap-lg">
+
+
+
+</div>
+</div>
+</footer>
+<script>
+        document.querySelectorAll('.bg-white.rounded-2xl').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('-translate-y-1');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('-translate-y-1');
+            });
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>

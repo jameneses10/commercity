@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mensajes | CommerCity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="chat">
+<main class="cc-container cc-section"><h1 class="text-4xl font-bold mb-5">Mensajes</h1><section class="cc-chat"><aside class="cc-card"><h2 class="text-xl font-bold mb-3">Conversaciones</h2><div class="cc-side-link active"><img class="cc-icon" src="assets/icons/cc-chat-messages.svg" alt="Chat">Soporte CommerCity</div><div class="cc-side-link">Vendedor verificado</div></aside><section class="cc-card"><div id="chatMessages" class="grid gap-3 mb-5"><div class="cc-message">Hola, ¿en qué podemos ayudarte?</div><div class="cc-message mine">Quiero consultar un producto.</div></div><form id="chatForm" class="flex gap-3"><input class="cc-input" placeholder="Escribe un mensaje, emoji o consulta"><button class="cc-btn" type="submit">Enviar</button></form></section></section></main>
+<script type="module" src="js/main.js"></script>
+<script type="module" src="js/chat.js"></script>
+</body>
+</html>

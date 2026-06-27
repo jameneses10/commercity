@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inicio de sesión | CommerCity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="login">
+<main class="cc-container cc-layout-auth"><section class="cc-auth-panel"><img class="cc-logo mb-4" src="assets/img/Logo - Commercity.png" alt="Logo CommerCity"><h1 class="text-4xl font-bold">Bienvenido de nuevo</h1><p class="mt-3">Accede como comprador, vendedor o administrador y continúa gestionando oportunidades.</p><div class="grid gap-3 mt-6"><div class="cc-alert ok">Redirección automática por rol</div><div class="cc-alert">Sesión protegida con token JWT</div></div></section><section class="cc-card"><h2 class="text-3xl font-bold mb-2">Inicio de sesión</h2><p class="cc-muted mb-5">Ingresa con tus credenciales registradas.</p><div id="formMsg" class="mb-3"></div><form id="loginForm" class="cc-form"><label class="cc-label">Correo electrónico<input class="cc-input" type="email" name="correo" autocomplete="email" required></label><label class="cc-label">Contraseña<input class="cc-input" type="password" name="password" autocomplete="current-password" required></label><label class="cc-check"><input type="checkbox" name="remember"> <span>Recordarme en este dispositivo</span></label><button class="cc-btn" type="submit">Ingresar</button><div class="cc-form-links"><a class="cc-text-link" href="recovery-password.html">¿Olvidaste tu contraseña?</a><p class="cc-muted">¿No tienes cuenta? <a class="cc-text-link" href="register.html">Regístrate</a></p></div></form></section></main>
+<script type="module" src="js/main.js"></script>
+<script type="module">import {initLogin} from './js/auth.js'; initLogin();</script>
+</body>
+</html>

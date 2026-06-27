@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inicio | CommerCity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="home">
+<main><section class="cc-hero cc-carousel" data-carousel aria-label="Carrusel principal CommerCity">
+  <div class="cc-container">
+    <div class="cc-carousel-frame">
+      <button class="cc-carousel-arrow cc-carousel-prev" type="button" data-carousel-prev aria-label="Ver promoción anterior" title="Anterior">‹</button>
+      <div class="cc-carousel-track">
+        <article class="cc-carousel-slide active" data-carousel-slide>
+          <div class="cc-carousel-copy">
+            <span class="cc-eyebrow"><img class="cc-icon" src="assets/icons/cc-home.svg" alt=""> Marketplace oficial ADSO-35</span>
+            <h1 class="cc-title">Impulsando el comercio del futuro</h1>
+            <p class="cc-subtitle">Descubre productos, tiendas verificadas y oportunidades en CommerCity.</p>
+            <a class="cc-btn" href="productos.html" title="Comprar ahora">Comprar ahora</a>
+          </div>
+          <div class="cc-carousel-visual" aria-hidden="true">
+            <img class="cc-carousel-logo" src="assets/img/Logo - Commercity.png" alt="">
+            <div class="cc-carousel-icon-grid">
+              <span><img class="cc-icon" src="assets/icons/cc-product-card.svg" alt=""></span>
+              <span><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>
+              <span><img class="cc-icon" src="assets/icons/cc-secure-payment.svg" alt=""></span>
+              <span><img class="cc-icon" src="assets/icons/cc-store.svg" alt=""></span>
+            </div>
+          </div>
+        </article>
+        <article class="cc-carousel-slide" data-carousel-slide>
+          <div class="cc-carousel-copy">
+            <span class="cc-eyebrow"><img class="cc-icon" src="assets/icons/cc-store-shopping-bag.svg" alt=""> Marketplace confiable</span>
+            <h1 class="cc-title">Conectando compras, creando oportunidades</h1>
+            <p class="cc-subtitle">Compra productos reales, gestiona pedidos y descubre vendedores locales.</p>
+            <a class="cc-btn" href="productos.html" title="Explorar marketplace">Explorar marketplace</a>
+          </div>
+          <div class="cc-carousel-visual" aria-hidden="true">
+            <div class="cc-carousel-stat"><b>Productos</b><span>Catálogo real</span></div>
+            <div class="cc-carousel-stat"><b>Pedidos</b><span>Seguimiento</span></div>
+            <div class="cc-carousel-stat"><b>Envíos</b><span>Estados claros</span></div>
+          </div>
+        </article>
+        <article class="cc-carousel-slide" data-carousel-slide>
+          <div class="cc-carousel-copy">
+            <span class="cc-eyebrow"><img class="cc-icon" src="assets/icons/cc-seller-dashboard.svg" alt=""> Panel vendedor</span>
+            <h1 class="cc-title">Vende y administra tu tienda</h1>
+            <p class="cc-subtitle">Publica productos, revisa pedidos, envíos, reseñas y reputación desde tu panel.</p>
+            <a class="cc-btn" href="vendedor.html" title="Ir al panel vendedor">Ir al panel vendedor</a>
+          </div>
+          <div class="cc-carousel-visual" aria-hidden="true">
+            <img class="cc-carousel-logo" src="assets/icons/cc-seller-dashboard.svg" alt="">
+            <div class="cc-carousel-icon-grid">
+              <span><img class="cc-icon" src="assets/icons/cc-product-grid.svg" alt=""></span>
+              <span><img class="cc-icon" src="assets/icons/cc-orders-management.svg" alt=""></span>
+              <span><img class="cc-icon" src="assets/icons/cc-delivery-truck.svg" alt=""></span>
+              <span><img class="cc-icon" src="assets/icons/cc-store-reputation.svg" alt=""></span>
+            </div>
+          </div>
+        </article>
+      </div>
+      <button class="cc-carousel-arrow cc-carousel-next" type="button" data-carousel-next aria-label="Ver promoción siguiente" title="Siguiente">›</button>
+      <div class="cc-carousel-dots" role="tablist" aria-label="Indicadores del carrusel">
+        <button class="active" type="button" data-carousel-dot="0" aria-label="Ver slide 1"></button>
+        <button type="button" data-carousel-dot="1" aria-label="Ver slide 2"></button>
+        <button type="button" data-carousel-dot="2" aria-label="Ver slide 3"></button>
+      </div>
+    </div>
+  </div>
+</section><section class="cc-section cc-market-strip"><div class="cc-container cc-grid cols-4"><div class="cc-card cc-mini-feature"><img class="cc-icon" src="assets/icons/cc-secure-payment.svg" alt="Pago"><b>Compra segura</b><span>Validación y pagos sandbox.</span></div><div class="cc-card cc-mini-feature"><img class="cc-icon" src="assets/icons/cc-store.svg" alt="Tienda"><b>Tiendas locales</b><span>Catálogo por vendedor.</span></div><div class="cc-card cc-mini-feature"><img class="cc-icon" src="assets/icons/cc-delivery-truck.svg" alt="Envío"><b>Envíos</b><span>Estados y guías.</span></div><div class="cc-card cc-mini-feature"><img class="cc-icon" src="assets/icons/cc-chat-messages.svg" alt="Chat"><b>Mensajes</b><span>Atención directa.</span></div></div></section><section class="cc-section"><div class="cc-container"><div class="cc-section-title"><div><h2 class="text-3xl font-bold">Categorías destacadas</h2><p class="cc-muted">Explora líneas comerciales con navegación clara y sólida.</p></div><a class="cc-btn outline" href="productos.html">Ver todas</a></div><div class="cc-grid cols-4" data-categories></div></div></section><section class="cc-section"><div class="cc-container"><div class="cc-section-title"><div><h2 class="text-3xl font-bold">Productos recomendados</h2><p class="cc-muted">Productos reales desde /api/v1 cuando la API está disponible.</p></div><a class="cc-btn" href="productos.html">Catálogo completo</a></div><div class="cc-grid cols-4" data-products></div></div></section></main>
+<script type="module" src="js/main.js"></script>
+
+</body>
+</html>

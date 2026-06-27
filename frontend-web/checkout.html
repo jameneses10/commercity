@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout | CommerCity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="carrito">
+<main class="cc-container cc-section"><h1 class="text-4xl font-bold mb-5">Proceso de pago</h1><div class="cc-grid cols-2"><section class="grid gap-5"><div class="cc-card"><h2 class="text-2xl font-bold mb-3">Resumen de productos</h2><div class="grid gap-3"><div class="flex justify-between"><span>Productos seleccionados</span><b>3</b></div><div class="flex justify-between"><span>Subtotal estimado</span><b>$ 371.900</b></div><div class="flex justify-between"><span>Envío</span><b>$ 12.000</b></div></div></div><form id="checkoutForm" class="cc-card cc-form"><h2 class="text-2xl font-bold">Dirección y pago sandbox</h2><label class="cc-label">Dirección de entrega<select class="cc-select" required><option>Seleccionar dirección guardada</option><option>Calle principal # 12-45</option></select></label><label class="cc-label">Método de pago<select class="cc-select" required><option>Tarjeta sandbox</option><option>Billetera CommerCity sandbox</option></select></label><label class="cc-label">Número de tarjeta sandbox<input class="cc-input" placeholder="4242 4242 4242 4242"></label><button class="cc-btn" type="submit">Preparar pago seguro</button><div id="payMsg"></div></form></section><aside class="cc-card"><h2 class="text-2xl font-bold">Resumen del pedido</h2><p class="cc-muted mt-2">Antes de confirmar, revisa productos, dirección y método de pago.</p><div class="cc-stat mt-5"><b>Total estimado</b><span class="cc-price">$ 383.900</span></div><div class="cc-alert ok mt-5">Operación preparada para pagos sandbox del backend. No se confirma compra desde esta maqueta inicial.</div><div class="cc-alert mt-3">Tus datos viajan por el proxy /api de Nginx hacia el backend local.</div></aside></div></main>
+<script type="module" src="js/main.js"></script>
+<script type="module" src="js/payments.js"></script>
+</body>
+</html>

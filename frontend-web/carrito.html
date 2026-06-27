@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carrito | CommerCity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="carrito">
+<main class="cc-container cc-section"><div class="cc-section-title"><div><h1 class="text-4xl font-bold">Carrito de compras</h1><p class="cc-muted">Resumen previo al checkout.</p></div></div><div class="cc-grid cols-2"><section class="cc-card"><h2 class="text-2xl font-bold mb-4">Productos seleccionados</h2><div class="cc-alert">El carrito local se conectará progresivamente con la API de carrito.</div><div id="cartMsg" class="mt-4"></div><button id="validateCart" class="cc-btn mt-4">Validar carrito</button></section><aside class="cc-card"><h2 class="text-2xl font-bold">Resumen</h2><p class="cc-price mt-3">$ 0</p><p class="cc-muted">Subtotal local antes de confirmar productos reales.</p><a class="cc-btn w-full mt-5" href="checkout.html">Continuar a pago</a></aside></div></main>
+<script type="module" src="js/main.js"></script>
+<script type="module" src="js/cart.js"></script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Commercity - Iniciar Sesión</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#dadadc",
+                    "on-surface-variant": "#574235",
+                    "tertiary-container": "#00aee5",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#00429c",
+                    "on-tertiary-container": "#003d53",
+                    "outline": "#8b7263",
+                    "tertiary": "#006688",
+                    "primary": "#fa8000",
+                    "background": "#f9f9fc",
+                    "secondary": "#2276ff",
+                    "surface-container-high": "#e8e8ea",
+                    "secondary-container": "#096df6",
+                    "secondary-fixed": "#d9e2ff",
+                    "on-surface": "#1a1c1e",
+                    "on-secondary-container": "#fefcff",
+                    "on-background": "#1a1c1e",
+                    "on-tertiary-fixed-variant": "#004d67",
+                    "on-primary-fixed": "#301400",
+                    "on-error-container": "#93000a",
+                    "surface-container-highest": "#e2e2e5",
+                    "surface-tint": "#fa8000",
+                    "inverse-surface": "#2f3133",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#001945",
+                    "surface": "#f9f9fc",
+                    "tertiary-fixed": "#c2e8ff",
+                    "surface-variant": "#e2e2e5",
+                    "on-primary-container": "#5b2b00",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed": "#001e2b",
+                    "surface-container-low": "#f3f3f6",
+                    "inverse-primary": "#ffb785",
+                    "surface-bright": "#f9f9fc",
+                    "surface-container": "#eeeef0",
+                    "on-primary-fixed-variant": "#713700",
+                    "error": "#ba1a1a",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#ffb785",
+                    "tertiary-fixed-dim": "#75d1ff",
+                    "primary-fixed": "#ffdcc6",
+                    "secondary-fixed-dim": "#b0c6ff",
+                    "primary-container": "#fa8000",
+                    "outline-variant": "#dec1af"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem",
+                    "2xl": "1rem"
+            },
+            "spacing": {
+                    "lg": "48px",
+                    "gutter": "24px",
+                    "base": "8px",
+                    "md": "24px",
+                    "container-max": "1280px",
+                    "sm": "12px",
+                    "xs": "4px",
+                    "xl": "80px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Poppins"],
+                    "label-lg": ["Inter"],
+                    "display-lg": ["Poppins"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Poppins"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Poppins"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f9f9fc;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            transition: color 0.3s ease;
+        }
+        .soft-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+        .custom-checkbox:checked {
+            background-color: #fa8000;
+            border-color: #fa8000;
+        }
+        .input-focus-icon:focus-within .material-symbols-outlined {
+            color: #2276ff;
+        }
+        .glass-aura {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-surface-dim w-full border-b-2 border-primary-container shadow-sm sticky top-0 z-50">
+<div class="flex justify-between items-center px-gutter py-sm max-w-container-max mx-auto">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold dark:text-primary-fixed-dim"><span style="color: rgb(250, 128, 0);" class="">Commer</span><span style="color: rgb(34, 118, 255);" class="">city</span></span>
+<nav class="hidden md:flex gap-md items-center">
+</nav>
+</div>
+<div class="flex items-center gap-sm">
+<button class="active:scale-95 transition-transform p-base text-primary dark:text-primary-fixed-dim">
+</button>
+</div>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center py-xl px-md">
+<div class="w-full max-w-[1100px] grid grid-cols-1 lg:grid-cols-2 bg-surface-container-lowest border border-outline-variant/40 rounded-2xl soft-shadow overflow-hidden">
+<!-- Left Side: Branding/Visual -->
+<div class="hidden lg:flex flex-col justify-center p-xl bg-gradient-to-br from-primary via-[#ff9933] to-secondary relative overflow-hidden">
+<!-- Abstract Glassmorphism Background -->
+<div class="absolute top-[-10%] left-[-10%] w-64 h-64 rounded-full bg-white/20 blur-3xl"></div>
+<div class="absolute bottom-[-5%] right-[-5%] w-80 h-80 rounded-full bg-secondary/30 blur-3xl"></div>
+<div class="absolute top-1/4 right-1/4 w-32 h-32 rounded-full bg-white/10 blur-2xl"></div>
+<div class="relative z-10 glass-aura p-lg rounded-2xl">
+<h1 class="font-display-lg text-display-lg text-white mb-md leading-tight">
+                        Impulsando el <span class="text-white/90 underline decoration-white/30">Comercio</span> del Futuro.
+                    </h1>
+<p class="font-body-lg text-body-lg text-white/90 mb-lg max-w-md">
+                        Únete a la plataforma de mercado más confiable y robusta. Gestiona tus ventas y compras con total seguridad y eficiencia.
+                    </p>
+</div>
+</div>
+<!-- Right Side: Login Form -->
+<div class="p-md md:p-xl flex flex-col justify-center bg-white">
+<div class="mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs font-bold">Bienvenido de nuevo</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Ingresa tus credenciales para acceder a tu cuenta.</p>
+</div>
+<!-- Form -->
+<form class="space-y-md" onsubmit="return false;">
+<div class="space-y-xs group">
+<label class="font-label-lg text-label-lg font-semibold text-on-surface block" for="email">Correo Electrónico</label>
+<div class="relative input-focus-icon">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline/60 group-focus-within:text-secondary">mail</span>
+<input class="w-full pl-12 pr-md py-3.5 bg-surface-container-low/30 border border-outline-variant/60 rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/10 outline-none transition-all duration-300 font-body-md text-body-md shadow-inner" id="email" placeholder="nombre@ejemplo.com" type="email">
+</div>
+</div>
+<div class="space-y-xs group">
+<label class="font-label-lg text-label-lg font-semibold text-on-surface block" for="password">Contraseña</label>
+<div class="relative input-focus-icon">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline/60 group-focus-within:text-secondary">lock</span>
+<input class="w-full pl-12 pr-12 py-3.5 bg-surface-container-low/30 border border-outline-variant/60 rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/10 outline-none transition-all duration-300 font-body-md text-body-md shadow-inner" id="password" placeholder="••••••••" type="password">
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline/60 hover:text-secondary transition-colors" id="toggle-password" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between py-xs">
+<label class="flex items-center gap-xs cursor-pointer group">
+<input class="w-5 h-5 custom-checkbox rounded-md border border-outline-variant focus:ring-0 focus:ring-offset-0 transition-all" type="checkbox">
+<span class="font-label-lg text-label-lg text-on-surface-variant group-hover:text-on-surface transition-colors">Recuérdame</span>
+</label>
+<a class="font-label-lg text-label-lg text-secondary font-semibold hover:text-secondary/80 transition-colors" href="#">¿Olvidaste tu contraseña?</a>
+</div>
+<button type="submit" class="w-full bg-primary text-white py-4 rounded-2xl font-label-lg text-label-lg font-bold tracking-widest hover:brightness-110 hover:scale-[1.01] active:scale-[0.95] transition-all duration-300 shadow-lg shadow-primary/20">Iniciar Sesión</button>
+</form>
+<div class="mt-xl text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        ¿No tienes cuenta? <a class="text-secondary font-bold hover:underline decoration-secondary/30 underline-offset-4" href="#">Regístrate</a>
+</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low/50 border-t border-outline-variant/20 mt-auto">
+<div class="max-w-container-max mx-auto px-md md:px-xl grid grid-cols-1 md:grid-cols-2 gap-md items-center py-4"><div class="flex flex-col gap-xs">
+<div class="font-headline-md text-headline-md font-bold scale-90 origin-left"><span class="text-primary">Commer</span><span class="text-secondary">city</span></div>
+<div class="font-label-sm text-label-sm text-on-surface-variant/80">© 2026 Commercity Marketplace | Todos los Derechos Reservados</div>
+</div>
+<div class="flex flex-wrap gap-md justify-center">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-all" href="#">Términos y Condiciones</a>
+</div></div>
+</footer>
+<script>
+        // Toggle password visibility interaction
+        const visibilityBtn = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
+        if (visibilityBtn && passwordInput) {
+            visibilityBtn.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                visibilityBtn.querySelector('.material-symbols-outlined').textContent = isPassword ? 'visibility_off' : 'visibility';
+            });
+        }
+    </script>
+
+
+
+
+
+
+
+
+</body></html>

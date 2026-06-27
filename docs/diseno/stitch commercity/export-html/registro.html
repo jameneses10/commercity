@@ -1,0 +1,284 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Commercity - Registro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#dadadc",
+                      "on-surface-variant": "#574235",
+                      "tertiary-container": "#00aee5",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed-variant": "#00429c",
+                      "on-tertiary-container": "#003d53",
+                      "outline": "#8b7263",
+                      "tertiary": "#006688",
+                      "primary": "#fa8000",
+                      "background": "#f9f9fc",
+                      "secondary": "#2276ff",
+                      "surface-container-high": "#e8e8ea",
+                      "secondary-container": "#096df6",
+                      "secondary-fixed": "#d9e2ff",
+                      "on-surface": "#1a1c1e",
+                      "on-secondary-container": "#fefcff",
+                      "on-background": "#1a1c1e",
+                      "on-tertiary-fixed-variant": "#004d67",
+                      "on-primary-fixed": "#301400",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#e2e2e5",
+                      "surface-tint": "#fa8000",
+                      "inverse-surface": "#2f3133",
+                      "on-error": "#ffffff",
+                      "on-secondary-fixed": "#001945",
+                      "surface": "#f9f9fc",
+                      "tertiary-fixed": "#c2e8ff",
+                      "surface-variant": "#e2e2e5",
+                      "on-primary-container": "#5b2b00",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-fixed": "#001e2b",
+                      "surface-container-low": "#f3f3f6",
+                      "inverse-primary": "#ffb785",
+                      "surface-bright": "#f9f9fc",
+                      "surface-container": "#eeeef0",
+                      "on-primary-fixed-variant": "#713700",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "primary-fixed-dim": "#ffb785",
+                      "tertiary-fixed-dim": "#75d1ff",
+                      "primary-fixed": "#ffdcc6",
+                      "secondary-fixed-dim": "#b0c6ff",
+                      "primary-container": "#fa8000",
+                      "outline-variant": "#dec1af"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "2xl": "1rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "md": "24px",
+                      "container-max": "1280px",
+                      "lg": "48px",
+                      "base": "8px",
+                      "xl": "80px",
+                      "sm": "12px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Poppins"],
+                      "label-lg": ["Inter"],
+                      "display-lg": ["Poppins"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Poppins"],
+                      "label-sm": ["Inter"],
+                      "headline-lg": ["Poppins"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .soft-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+        .glass-aura {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .custom-checkbox:checked {
+            background-color: #fa8000;
+            border-color: #fa8000;
+        }
+        input::-webkit-calendar-picker-indicator {
+            filter: invert(0.4);
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-background min-h-screen flex flex-col">
+<!-- TopNavBar Identical to Login -->
+<header class="bg-surface-container-lowest dark:bg-surface-dim w-full border-b-2 border-primary-container shadow-sm sticky top-0 z-50">
+<div class="flex justify-between items-center px-gutter py-sm max-w-container-max mx-auto">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold dark:text-primary-fixed-dim">
+<span style="color: #fa8000;" class="">Commer</span><span style="color: #2276ff;" class="">city</span>
+</span>
+<nav class="hidden md:flex gap-md items-center">
+</nav>
+</div>
+<div class="flex items-center gap-sm">
+<button class="active:scale-95 transition-transform p-base text-primary dark:text-primary-fixed-dim">
+</button>
+</div>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center py-xl px-md">
+<!-- Registration Card -->
+<div class="w-full max-w-[1100px] grid grid-cols-1 lg:grid-cols-2 bg-surface-container-lowest border border-outline-variant/40 rounded-2xl soft-shadow overflow-hidden">
+<!-- Left Side: Branding/Visual (Matching Login Style) -->
+<div class="hidden lg:flex flex-col justify-center p-xl bg-gradient-to-br from-primary via-[#ff9933] to-secondary relative overflow-hidden">
+<!-- Abstract Glassmorphism Background -->
+<div class="absolute top-[-10%] left-[-10%] w-64 h-64 rounded-full bg-white/20 blur-3xl"></div>
+<div class="absolute bottom-[-5%] right-[-5%] w-80 h-80 rounded-full bg-secondary/30 blur-3xl"></div>
+<div class="absolute top-1/4 right-1/4 w-32 h-32 rounded-full bg-white/10 blur-2xl"></div>
+<div class="relative z-10 glass-aura p-lg rounded-2xl">
+<h1 class="font-display-lg text-display-lg text-white mb-md leading-tight">
+                        Únete a la <span class="text-white/90 underline decoration-white/30">Revolución</span> del Comercio.
+                    </h1>
+<p class="font-body-lg text-body-lg text-white/90 mb-lg max-w-md">
+                        Descubre la plataforma de marketplace más confiable diseñada para el crecimiento de tu negocio y la seguridad de tus compras.
+                    </p>
+</div>
+</div>
+<!-- Right Side: Form -->
+<div class="p-md md:p-xl flex flex-col justify-center bg-white">
+<div class="mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs font-bold">Crear una cuenta</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Completa los datos para comenzar tu experiencia.</p>
+</div>
+<form action="#" class="space-y-md" onsubmit="event.preventDefault();">
+<!-- Account Type Selectors -->
+<div class="space-y-xs">
+<label class="block font-label-lg text-label-lg text-on-surface font-semibold">Tipo de Cuenta</label>
+<div class="grid grid-cols-2 gap-sm">
+<label class="cursor-pointer relative group">
+<input checked="" class="peer sr-only" name="account_type" type="radio" value="buyer">
+<div class="flex flex-col items-center gap-xs p-base border border-outline-variant/60 rounded-xl transition-all peer-checked:border-secondary peer-checked:bg-secondary/5 hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline/60 peer-checked:text-secondary group-hover:text-secondary transition-colors">shopping_cart</span>
+<span class="font-label-lg text-on-surface-variant peer-checked:text-on-surface">Comprador</span>
+</div>
+</label>
+<label class="cursor-pointer relative group">
+<input class="peer sr-only" name="account_type" type="radio" value="seller">
+<div class="flex flex-col items-center gap-xs p-base border border-outline-variant/60 rounded-xl transition-all peer-checked:border-primary peer-checked:bg-primary/5 hover:bg-surface-container-low/50">
+<span class="material-symbols-outlined text-outline/60 peer-checked:text-primary group-hover:text-primary transition-colors">store</span>
+<span class="font-label-lg text-on-surface-variant peer-checked:text-on-surface">Vendedor</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Form Fields -->
+<div class="space-y-sm">
+<!-- Full Name -->
+<div class="space-y-xs group">
+<label class="block font-label-lg text-label-lg text-on-surface font-semibold" for="full_name">Nombre Completo</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline/60 group-focus-within:text-secondary">person</span>
+<input class="w-full pl-12 pr-4 py-3.5 bg-surface-container-low/30 border border-outline-variant/60 rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/10 outline-none transition-all duration-300 font-body-md text-body-md shadow-inner" id="full_name" placeholder="Juan Pérez" required="" type="text">
+</div>
+</div>
+<!-- Email -->
+<div class="space-y-xs group">
+<label class="block font-label-lg text-label-lg text-on-surface font-semibold" for="email">Correo Electrónico</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline/60 group-focus-within:text-secondary">mail</span>
+<input class="w-full pl-12 pr-4 py-3.5 bg-surface-container-low/30 border border-outline-variant/60 rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/10 outline-none transition-all duration-300 font-body-md text-body-md shadow-inner" id="email" placeholder="ejemplo@correo.com" required="" type="email">
+</div>
+</div>
+<!-- Birthdate -->
+<div class="space-y-xs group">
+<label class="block font-label-lg text-label-lg text-on-surface font-semibold" for="birthdate">Fecha de Nacimiento</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline/60 group-focus-within:text-secondary">calendar_today</span>
+<input class="w-full pl-12 pr-4 py-3.5 bg-surface-container-low/30 border border-outline-variant/60 rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/10 outline-none transition-all duration-300 font-body-md text-body-md shadow-inner" id="birthdate" required="" type="date">
+</div>
+</div>
+<!-- Passwords Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-sm">
+<div class="space-y-xs group">
+<label class="block font-label-lg text-label-lg text-on-surface font-semibold" for="password">Contraseña</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline/60 group-focus-within:text-secondary">lock</span>
+<input class="w-full pl-12 pr-4 py-3.5 bg-surface-container-low/30 border border-outline-variant/60 rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/10 outline-none transition-all duration-300 font-body-md text-body-md shadow-inner" id="password" placeholder="••••••••" required="" type="password">
+</div>
+</div>
+<div class="space-y-xs group">
+<label class="block font-label-lg text-label-lg text-on-surface font-semibold" for="confirm_password">Confirmar</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline/60 group-focus-within:text-secondary">lock_reset</span>
+<input class="w-full pl-12 pr-4 py-3.5 bg-surface-container-low/30 border border-outline-variant/60 rounded-xl focus:border-secondary focus:ring-2 focus:ring-secondary/10 outline-none transition-all duration-300 font-body-md text-body-md shadow-inner" id="confirm_password" placeholder="••••••••" required="" type="password">
+</div>
+</div>
+</div>
+</div>
+<!-- Terms Checkbox -->
+<div class="flex items-start gap-xs py-sm">
+<input class="mt-1 w-5 h-5 custom-checkbox rounded-md border border-outline-variant focus:ring-0 focus:ring-offset-0 transition-all cursor-pointer" id="terms" required="" type="checkbox">
+<label class="font-label-lg text-label-lg text-on-surface-variant leading-tight cursor-pointer" for="terms">
+                            Acepto los <a class="text-secondary font-bold hover:underline decoration-secondary/30 underline-offset-4" href="#">Términos y Condiciones</a> de Commercity.
+                        </label>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-primary text-white py-4 rounded-2xl font-label-lg text-label-lg font-bold tracking-widest hover:brightness-110 hover:scale-[1.01] active:scale-[0.95] transition-all duration-300 shadow-lg shadow-primary/20" type="submit">
+                        Crear Cuenta
+                    </button>
+<!-- Bottom Link -->
+<div class="mt-lg text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                            ¿Ya tienes cuenta? <a class="text-secondary font-bold hover:underline decoration-secondary/30 underline-offset-4" href="#">Inicia Sesión</a>
+</p>
+</div>
+</form>
+</div>
+</div>
+</main>
+<!-- Compact Footer (Identical to Login) -->
+<footer class="bg-surface-container-low/50 border-t border-outline-variant/20 mt-auto">
+<div class="max-w-container-max mx-auto px-md md:px-xl grid grid-cols-1 md:grid-cols-2 gap-md items-center py-4">
+<div class="flex flex-col gap-xs">
+<div class="font-headline-md text-headline-md font-bold scale-90 origin-left">
+<span class="text-primary">Commer</span><span class="text-secondary">city</span>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant/80">© 2026 Commercity Marketplace | Todos los Derechos Reservados</div>
+</div>
+<div class="flex flex-wrap gap-md justify-center md:justify-end">
+
+</div>
+</div>
+</footer>
+<script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin align-middle mr-2">sync</span> Procesando...';
+            
+            setTimeout(() => {
+                btn.innerHTML = '<span class="material-symbols-outlined align-middle mr-2">check_circle</span> ¡Cuenta Creada!';
+                btn.classList.replace('bg-primary', 'bg-green-600');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                    btn.classList.replace('bg-green-600', 'bg-primary');
+                }, 2000);
+            }, 1500);
+        });
+    </script>
+
+
+</body></html>

@@ -1,0 +1,7 @@
+import { API_BASE_URL } from './config.js';
+export function token(){ return localStorage.getItem('cc_token') || ''; }
+export function currentUser(){ try { return JSON.parse(localStorage.getItem('cc_user') || 'null'); } catch { return null; } }
+export function saveSession(data){ const payload=data.data || data; const jwt=payload.token || data.token; const user=payload.user || data.user; if(jwt) localStorage.setItem('cc_token', jwt); if(user) localStorage.setItem('cc_user', JSON.stringify(user)); return {token:jwt,user}; }
+export function clearSession(){ localStorage.removeItem('cc_token'); localStorage.removeItem('cc_user'); }
+async function request(path, options={}){ const headers = {'Accept':'application/json', ...(options.headers || {})}; const body=options.body; if(body && !(body instanceof FormData)) headers['Content-Type']='application/json'; const res=await fetch(`${API_BASE_URL}${path}`, { ...options, headers, body: body && !(body instanceof FormData) ? JSON.stringify(body) : body }); let data={}; try{ data=await res.json(); }catch{} if(!res.ok){ throw new Error(data.message || data.error || `Solicitud no completada ${res.status}`); } return data; }
+export const api={ get:(p)=>request(p), post:(p,b)=>request(p,{method:'POST',body:b}), patch:(p,b)=>request(p,{method:'PATCH',body:b}), delete:(p)=>request(p,{method:'DELETE'}), form:(p,b,method='POST')=>request(p,{method,body:b}) };

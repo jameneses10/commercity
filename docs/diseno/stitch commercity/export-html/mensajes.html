@@ -1,0 +1,386 @@
+<!DOCTYPE html><html class="light" lang="es" style="width: 1280px; height: 1024px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Commercity | Centro de Mensajería</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Load Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#713700",
+                    "surface-container-low": "#f3f3f6",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-container": "#fefcff",
+                    "on-primary-container": "#5b2b00",
+                    "error-container": "#ffdad6",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#75d1ff",
+                    "on-surface-variant": "#574235",
+                    "inverse-primary": "#ffb785",
+                    "primary": "#954a00",
+                    "tertiary": "#006688",
+                    "on-tertiary-container": "#003d53",
+                    "surface-dim": "#dadadc",
+                    "outline-variant": "#dec1af",
+                    "on-tertiary-fixed-variant": "#004d67",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#b0c6ff",
+                    "on-primary-fixed": "#301400",
+                    "primary-fixed-dim": "#ffb785",
+                    "tertiary-fixed": "#c2e8ff",
+                    "surface-tint": "#954a00",
+                    "on-background": "#1a1c1e",
+                    "on-secondary-fixed-variant": "#00429c",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#ffdcc6",
+                    "surface-container-highest": "#e2e2e5",
+                    "outline": "#8b7263",
+                    "background": "#f9f9fc",
+                    "secondary": "#0055c6",
+                    "surface-bright": "#f9f9fc",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed": "#001945",
+                    "secondary-fixed": "#d9e2ff",
+                    "on-surface": "#1a1c1e",
+                    "surface-container": "#eeeef0",
+                    "on-error": "#ffffff",
+                    "surface-container-high": "#e8e8ea",
+                    "surface": "#f9f9fc",
+                    "primary-container": "#fa8000",
+                    "inverse-surface": "#2f3133",
+                    "inverse-on-surface": "#f0f0f3",
+                    "tertiary-container": "#00aee5",
+                    "on-tertiary-fixed": "#001e2b",
+                    "secondary-container": "#096df6",
+                    "surface-variant": "#e2e2e5",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "2xl": "1rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "md": "24px",
+                    "lg": "48px",
+                    "sm": "12px",
+                    "gutter": "24px",
+                    "xs": "4px",
+                    "xl": "80px",
+                    "container-max": "1280px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Poppins"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "headline-md": ["Poppins"],
+                    "display-lg": ["Poppins"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+        .chat-bubble-shadow {
+            box-shadow: 4px 4px 0px 0px rgba(209, 217, 230, 1);
+        }
+        .active-chat-border {
+            border-left: 4px solid #FA8000;
+        }
+        .bicolor-logo {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased overflow-hidden h-screen flex flex-col">
+<!-- Top Navigation Bar (Replaced with Header from SCREEN_19) -->
+<header class="sticky top-0 z-50 bg-surface-container-lowest shadow-sm border-b-2 border-primary-container h-20">
+<nav class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-full gap-md">
+<!-- Logo -->
+<div class="flex-shrink-0">
+<a class="bicolor-logo text-headline-md" href="#">
+<span class="text-[#fa8000]">Commer</span><span class="text-[#2276ff]">city</span>
+</a>
+</div>
+<!-- Search Bar -->
+<div class="hidden md:flex flex-grow max-w-2xl">
+<div class="relative w-full">
+
+
+</div>
+</div>
+<!-- Links -->
+<div class="hidden lg:flex items-center gap-md">
+
+</div>
+<!-- Action Icons -->
+<div class="flex items-center gap-sm md:gap-md">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors relative">
+<span class="material-symbols-outlined text-primary">shopping_cart</span>
+<span class="absolute top-1 right-1 bg-secondary text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">2</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-primary">
+<span class="material-symbols-outlined">chat</span>
+</button><button class="p-2 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">person</span>
+</button>
+</div>
+</nav>
+</header>
+<!-- Main Content Area: Chat Layout -->
+<main class="flex-grow flex overflow-hidden max-w-container-max mx-auto w-full bg-surface-container-lowest">
+<!-- Sidebar: Conversations List -->
+<aside class="w-full md:w-[380px] flex flex-col border-r border-surface-container-highest">
+<!-- Sidebar Header -->
+<div class="p-md border-b border-surface-container-highest flex flex-col gap-sm">
+<div class="flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-on-surface">Mensajes</h2>
+<button class="p-xs text-secondary hover:bg-secondary-fixed rounded-lg transition-colors">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all" placeholder="Buscar conversaciones..." type="text">
+</div>
+</div>
+<!-- List -->
+<div class="flex-grow overflow-y-auto custom-scrollbar">
+<!-- Active Chat Item -->
+<div class="flex items-center gap-sm p-md bg-secondary-fixed/30 active-chat-border cursor-pointer transition-colors hover:bg-secondary-fixed/50">
+<div class="relative flex-shrink-0">
+<div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a male tech entrepreneur with short dark hair and a neat beard, wearing a high-quality blue polo shirt. He is smiling warmly in a bright, modern office with soft-focus glass walls and plants in the background. The aesthetic is clean, professional, and reliable, typical of a high-end marketplace seller." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA1DFfrEWKCHibtdEMd8oBnO1EfBnn1mqcyZnGzk_99gKAdXivKIVqIRAGLuXMAV1fghAgh1MzaEJwW-LJl2SkHUUYm2NsW0Hj1M_KFlQO2QfVQl6CWCRhUcaev665nbxXQPRCATWJFHuRuUzM9KWN31lYbcUeHQTbxKayG6ADfDz8ITg8Atawyg9ZVpJC7sfo45SKDbFda8M86CiSUZaS9sOA3bgzAOAgFR7XzxS88237qeYhSKLLn7FgGzjPcTVSMnJGLX19qw8">
+</div>
+<div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white"></div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Marcos Tech Store</span>
+<span class="text-[11px] font-medium text-on-surface-variant">10:42 AM</span>
+</div>
+<p class="text-sm text-on-surface-variant truncate font-medium">Claro, el pedido ya está en camino. Te envío el código...</p>
+</div>
+</div>
+<!-- Chat Items -->
+<div class="flex items-center gap-sm p-md cursor-pointer transition-colors hover:bg-surface-container-high">
+<div class="relative flex-shrink-0">
+<div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A detailed portrait of a mature woman with stylish glasses and an elegant beige sweater, representing a high-end boutique owner. She is in a boutique shop setting with warm, artisanal lighting and organized shelves of textile products behind her. The image exudes professionality and trust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4SsWVsZ6V80F9ztsBSRibTnwNPkMPI9ZnWeFhpo2DkjWfQn3eEtpkRhC9hpZkwujkMKz7WgLve7rMQO6ZtdM7cn9fRBvZ7zNGFGDTPmaw5qKaFRRz5ktTcDe0frhg1uh40jn0Vem0ZufyJqZpoBmQusmF1Wy3bZ_Qb62auxsb4gfS7nmI3q2wTM8aB6Ko1GOWLim7J6yxxAEcs9vP9e2Nbw5M2Kgz_SOaiO61_AKvHR23fVrk-RVTEsLNJc-2sMM0Awp9V_rtATk">
+</div>
+<div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-surface-container-highest rounded-full border-2 border-white"></div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Boutique Artesanal</span>
+<span class="text-[11px] font-medium text-on-surface-variant">Ayer</span>
+</div>
+<p class="text-sm text-on-surface-variant truncate">¿Podrías confirmarme la talla deseada?</p>
+</div>
+</div>
+<!-- Chat Items -->
+<div class="flex items-center gap-sm p-md cursor-pointer transition-colors hover:bg-surface-container-high opacity-70">
+<div class="relative flex-shrink-0">
+<div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male delivery manager wearing a professional navy blue uniform with a subtle company logo. He looks trustworthy and organized, holding a digital tablet. The background shows a clean, modern logistics warehouse with industrial shelving and natural daylight. Vibrant and professional colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7-y0hbxLR2zE04P5v8UEeSva0A1bEs6rIgl0cF3mVTguxpxsFf7ZiX0vdlUghAAxa88KHrwhTllrQFsktgKJW1C-Zy0XWSvooUlPQZEyNFmD0hEQYtmNTUgz8N0vEfOb-g0WPyA1ErdxQtauZTL8sQyEv1iVxG2tca1dDw1iL4eXIScGIEtNz9xpZKjIK9vsavOLwsmQ4IAnXwfipgrFpRGVrfzcRqJGQZ_Fye6C0UbU9WdzbmqczM16OxPp-AkMacVcTriF-3Tw">
+</div>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Logística Express</span>
+<span class="text-[11px] font-medium text-on-surface-variant">Lun</span>
+</div>
+<p class="text-sm text-on-surface-variant truncate">Tu paquete ha sido entregado satisfactoriamente.</p>
+</div>
+</div>
+<!-- More Chat items as needed... -->
+</div>
+</aside>
+<!-- Chat Area: Messaging Canvas -->
+<section class="hidden md:flex flex-col flex-grow bg-surface relative">
+<!-- Chat Header -->
+<div class="h-20 px-md border-b border-surface-container-highest flex items-center justify-between bg-surface-container-lowest">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of Marcos Tech Store representative, same man from sidebar. Professional male tech entrepreneur, warm lighting, high-definition solid look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDadSJpv6Bz7anT7a3fsB2DRz-MPAZLxj7yGBhwkur4pKS_bo2x5xBt-BeO3UjkjEga5zgXJvxJlAnHV98AE4rNMiKm_aFLgs0R1GQGX0i0VB6_6_Bz2xkzQUlNO1z9rWAHok65m8eDQpitjdzZJTnmFne6YZxQqutgz7pc-_TvIqYM_9275nY6MG9hVypdSlQPVKxE6o5M6kLHuUoK-B9KKzQTi5iRxRPfTDrDhOjADYboqGO9OstiV6GMy00rMzHoYBlf0vrPCAs">
+</div>
+<div>
+<h3 class="font-label-lg text-label-lg text-on-surface">Marcos Tech Store</h3>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 bg-green-500 rounded-full"></span>
+<span class="text-xs font-medium text-green-600">En línea ahora</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-xs">
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-colors">
+
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-colors">
+
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">info</span>
+</button>
+</div>
+</div>
+<!-- Messages Area -->
+<div class="flex-grow overflow-y-auto p-lg flex flex-col gap-md custom-scrollbar bg-surface/50">
+<div class="flex justify-center">
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-xs font-bold text-on-surface-variant uppercase tracking-wider">Hoy</span>
+</div>
+<!-- Receiver Message -->
+<div class="flex gap-sm max-w-[80%]">
+<div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1">
+<img class="w-full h-full object-cover" data-alt="Marcos portrait thumbnail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARxa0sf4bNkcKf6dibb2WvFD0DSihSqGbePei8yDVZygEZE8XOng5fO5jrcWCGq54pDC8JTeM1wvlaJyhqeJDsr3t9-NAwVo5zSV4yw4fZyXmNEu30ly3w1linrBljkr56Nne3T4PaUDP7GOcApwOCK4zf92qqFU-RwK820L2nF6h7LBr5V8Kz7Y4IhuEQfikLb3Xr35Lv7kW1M5vhYq-9i6d61GcecJqlRY1LZa_4_NziBX1G03AA1HhilMU8KuOpeQ_NgJ_fPHw">
+</div>
+<div class="flex flex-col gap-1">
+<div class="bg-surface-container-lowest p-md rounded-xl rounded-tl-none border border-surface-container-highest chat-bubble-shadow">
+<p class="text-body-md">Hola, ¡buenos días! He revisado tu solicitud sobre el MacBook Air M2.</p>
+</div>
+<span class="text-[11px] text-on-surface-variant ml-1">10:35 AM</span>
+</div>
+</div>
+<!-- Receiver Message with Attachment -->
+<div class="flex gap-sm max-w-[80%]">
+<div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1">
+<img class="w-full h-full object-cover" data-alt="Marcos portrait thumbnail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuATt0he6Z2gbTI-XQC04O6-C1jDP1WOWsW-2jsEyVqtEm2Z91ncmx-wfnFQrbfSnotKD7HRxdkb817sB_xyrP894kEFKk4szJM-Gzm5h_xm-xMymUXeMuL5XJWQXBK3jn4LdkP3cltxcbkmOjMS6yD2H1ua27Cmoaay19qm3nGjzKuHPWCpA3vCFmbuK6r7YzbzIzc2L9wlNYxdWKJTv2cD0AYAA6waDvOw2FIOCMHzola_WwOWnnqaOIpohOwR38AGRAlmGsi5pkQ">
+</div>
+<div class="flex flex-col gap-1">
+<div class="bg-surface-container-lowest p-md rounded-xl rounded-tl-none border border-surface-container-highest chat-bubble-shadow">
+<p class="text-body-md mb-sm">Aquí tienes la foto del estado actual del empaque original.</p>
+<div class="rounded-lg overflow-hidden border border-outline-variant max-w-[300px]">
+<img class="w-full h-auto" data-alt="A premium commercial product photo of a MacBook Air box resting on a clean, professional white desk. The lighting is bright and industrial, with sharp shadows and high contrast. The packaging is pristine and reflects a high-trust marketplace transaction. Professional studio quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQOhEXmF0oSf30d1gBH-w-nrCJW7MErA6s1kjtVGJvOhb92hHJJRgBlSHKvfvFvezg1v1YwBZ8d85nnKEWjfzqkoNfF0RtZcjAfo9AR2-s8CDRepzoUdmX3iK0tw_EBQRdQ_PYANlp_iTJaoxxReHMoFq68Bjv5ZdJDxCWI06yatuPb6JtGOleC5S4ddsvdv0SgYskXzx17h2Y-glIJln1BHfTSIBtTcoXpHDPCXoDIXFwVFa8jajhSmleQpm4GaCRTocP2WEPxJA">
+</div>
+</div>
+<span class="text-[11px] text-on-surface-variant ml-1">10:36 AM</span>
+</div>
+</div>
+<!-- Sender Message (User) -->
+<div class="flex flex-row-reverse gap-sm max-w-[80%] self-end">
+<div class="flex flex-col items-end gap-1">
+<div class="bg-secondary p-md rounded-xl rounded-tr-none border border-secondary shadow-sm">
+<p class="text-body-md text-white">¡Excelente! Se ve impecable. ¿Podrías confirmarme si el envío incluye el seguro por pérdida?</p>
+</div>
+<div class="flex items-center gap-1">
+<span class="text-[11px] text-on-surface-variant">10:40 AM</span>
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: &quot;FILL&quot; 1;">done_all</span>
+</div>
+</div>
+</div>
+<!-- Receiver Message -->
+<div class="flex gap-sm max-w-[80%]">
+<div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1">
+<img class="w-full h-full object-cover" data-alt="Marcos portrait thumbnail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7J8wVyBBDr7Pzt2NPgIrQWFzkFtx9e178v8Hmav1wkng9TvJTzksbebaf3t9hJPTAPFr617kqnxJmr6Bwzpxoj7LeyS4FSr84DHOBxQRrtiXgNOwQONaWUk4Mgw5VitCuC9QMJbrAbxMtZ0G7ol78gVxa1t7Ys7Wa5onMc-eMuqGuU3MHidJIbZkSbAYLIWr5mCaqQ04xtVX7PUsYv7njUmnAONVUhtQNLRZQ8FzOItu78pdnUfdjd389eNnR0mW8v2kI1tDH2ys">
+</div>
+<div class="flex flex-col gap-1">
+<div class="bg-surface-container-lowest p-md rounded-xl rounded-tl-none border border-surface-container-highest chat-bubble-shadow">
+<p class="text-body-md">Claro, el pedido ya está en camino. Te envío el código de seguimiento en un momento. El seguro está incluido en nuestra tarifa premium.</p>
+</div>
+<span class="text-[11px] text-on-surface-variant ml-1">10:42 AM</span>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-md bg-surface-container-lowest border-t border-surface-container-highest">
+<div class="max-w-4xl mx-auto flex items-end gap-sm">
+<div class="flex gap-xs mb-1">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">
+<span class="material-symbols-outlined">sentiment_satisfied</span>
+</button>
+</div>
+<div class="flex-grow relative">
+<textarea class="w-full px-4 py-3 bg-surface-container border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all resize-none max-h-32 custom-scrollbar" placeholder="Escribe un mensaje..." rows="1" style="height:48px;overflow-y:hidden;"></textarea>
+</div>
+<button class="flex-shrink-0 p-3 bg-primary-container text-white rounded-xl hover:shadow-lg active:scale-95 transition-all flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">send</span>
+</button>
+</div>
+<div class="mt-2 text-center">
+
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low/50 border-t border-outline-variant/20 mt-auto">
+<div class="max-w-container-max mx-auto px-md md:px-xl grid grid-cols-1 md:grid-cols-2 gap-md items-center py-4">
+<div class="flex flex-col gap-xs">
+<div class="font-headline-md text-headline-md font-bold scale-90 origin-left"><span class="text-[#fa8000]">Commer</span><span class="text-[#2276ff]">city</span></div>
+<div class="font-label-sm text-label-sm text-on-surface-variant/80">© 2026 Commercity Marketplace | Todos los Derechos Reservados</div>
+</div>
+<div class="flex flex-wrap gap-md justify-center md:justify-end">
+
+
+
+
+</div>
+</div>
+</footer>
+<script>
+        // Simple auto-resize for textarea
+        const tx = document.getElementsByTagName("textarea");
+        for (let i = 0; i < tx.length; i++) {
+            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+            tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput() {
+            this.style.height = "auto";
+            this.style.height = (this.scrollHeight) + "px";
+            if (this.scrollHeight > 128) {
+                this.style.overflowY = "auto";
+            } else {
+                this.style.overflowY = "hidden";
+            }
+        }
+    </script>
+
+
+</body></html>
