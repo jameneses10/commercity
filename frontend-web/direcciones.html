@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mis direcciones | CommerCity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="comprador">
+<main class="cc-container cc-section cc-buyer-page"><div class="cc-section-title"><div><span class="cc-chip orange"><img class="cc-icon" src="assets/icons/cc-address-location.svg" alt=""> Envíos</span><h1 class="text-4xl font-bold mt-3">Mis direcciones</h1><p class="cc-muted">Gestiona direcciones de entrega. La conexión real queda preparada.</p></div><button class="cc-btn" type="button" data-scroll-target="addressForm">Agregar dirección</button></div><section class="cc-grid cols-2"><article class="cc-card cc-address-card"><span class="cc-chip orange">Principal</span><h2 class="text-2xl font-bold mt-3">Casa</h2><p class="cc-muted">Bogotá, Chapinero · Calle 10 # 20-30</p><p><b>Teléfono:</b> 300 000 0000</p><div class="cc-card-actions-row"><button class="cc-btn outline" type="button">Editar</button><button class="cc-btn secondary" type="button">Eliminar</button><button class="cc-btn" type="button">Marcar como principal</button></div></article><article class="cc-card cc-address-card"><span class="cc-chip blue">Alterna</span><h2 class="text-2xl font-bold mt-3">Oficina</h2><p class="cc-muted">Medellín, El Poblado · Carrera 43A # 12-34</p><p><b>Teléfono:</b> 301 000 0000</p><div class="cc-card-actions-row"><button class="cc-btn outline" type="button">Editar</button><button class="cc-btn secondary" type="button">Eliminar</button><button class="cc-btn" type="button">Marcar como principal</button></div></article></section><section class="cc-card cc-empty-state mt-5"><img class="cc-icon-lg" src="assets/icons/cc-address-location.svg" alt=""><h2 class="text-2xl font-bold">Estado vacío preparado</h2><p class="cc-muted">Si no hay direcciones reales, aquí se mostrará la invitación a crear la primera dirección.</p></section><section class="cc-card mt-5" id="addressForm"><h2 class="text-2xl font-bold mb-4">Formulario preparado</h2><div id="addressMsg"></div><form class="cc-form cc-form-grid" novalidate data-visual-form="addressMsg"><label class="cc-label">Nombre de la dirección<input class="cc-input" required></label><label class="cc-label">Departamento<input class="cc-input" required></label><label class="cc-label">Ciudad<input class="cc-input" required></label><label class="cc-label">Dirección<input class="cc-input" required></label><label class="cc-label">Barrio<input class="cc-input"></label><label class="cc-label">Referencia<input class="cc-input"></label><label class="cc-label">Teléfono<input class="cc-input" required></label><button class="cc-btn" type="submit">Guardar dirección</button></form><p class="cc-muted mt-3">Endpoint real de direcciones pendiente de conexión.</p></section></main>
+<script type="module" src="js/main.js"></script>
+<script type="module" src="js/phase617.js"></script>
+</body>
+</html>
