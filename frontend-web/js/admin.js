@@ -1,5 +1,5 @@
 export function initAdmin(){
-  const note = document.querySelector('[data-admin-note]');
-  if (note) note.textContent = 'Vista administrativa preparada para auditoría y conexión de módulos reales.';
+  const note=document.querySelector('[data-admin-note]');
+  if(note) note.textContent='Vista administrativa preparada';
 }
 initAdmin();

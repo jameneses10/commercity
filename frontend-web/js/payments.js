@@ -1,3 +1,6 @@
-import { showMessage } from './ui.js';
-export function initPayment(){ const form=document.querySelector('#checkoutForm'); if(form) form.addEventListener('submit',e=>{e.preventDefault(); showMessage('#payMsg','Pago sandbox preparado. No se creó pedido en esta maqueta inicial.',true);}); }
-initPayment();
+const button=document.querySelector('[data-payment-prepare]');
+const message=document.querySelector('[data-payment-message]');
+button?.addEventListener('click',()=>{
+  message?.classList.remove('cc-hidden');
+  if(message) message.textContent='Pago seguro preparado en modo sandbox. Revisa la confirmación antes de continuar.';
+});
