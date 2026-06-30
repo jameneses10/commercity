@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Detalle de conversación | CommerCity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="chat">
+<main class="cc-container cc-section cc-chat-detail-page"><div class="cc-section-title"><div><span class="cc-chip orange"><img class="cc-icon" src="assets/icons/cc-chat-messages.svg" alt=""> Conversación</span><h1 class="text-4xl font-bold mt-3">Detalle de conversación</h1><p class="cc-muted">Seguimiento visual de mensajes, adjuntos y acciones de soporte.</p></div><a class="cc-btn outline" href="chat.html">Volver a chat</a></div><section class="cc-chat-detail-shell"><article class="cc-card cc-chat-detail-main"><header class="cc-chat-detail-top"><div><h2 class="text-3xl font-bold">Soporte CommerCity</h2><p class="cc-muted">Rol: soporte · Estado visual: en línea · Pedido relacionado: #CC-3001</p></div><span class="cc-chip blue">Caso activo</span></header><div class="cc-detail-messages" id="detailMessages"><div class="cc-detail-message incoming"><b>Soporte</b><p>Hola, revisaremos tu caso de devolución y la evidencia adjunta.</p><small>10:20 a. m.</small></div><div class="cc-detail-message own"><b>Tú</b><p>Gracias. El producto llegó con empaque dañado.</p><small>10:22 a. m.</small></div><div class="cc-detail-message incoming"><b>Soporte</b><p>Recibimos el soporte visual.</p><span class="cc-attachment"><img class="cc-icon" src="assets/icons/cc-product-image-upload.svg" alt=""> evidencia-empaque.jpg</span><small>10:24 a. m.</small></div></div><div id="chatDetailMessage"></div><form class="cc-detail-composer" id="chatDetailForm" novalidate><button class="cc-icon-btn" type="button" data-emoji-toggle title="Emojis" aria-label="Emojis">🙂</button><label class="cc-file-btn"><img class="cc-icon" src="assets/icons/cc-product-image-upload.svg" alt=""><input type="file" id="chatAttachment"></label><input class="cc-input" id="chatDetailInput" placeholder="Escribe un mensaje"><button class="cc-btn" type="submit"><img class="cc-icon" src="assets/icons/cc-send-message.svg" alt="">Enviar</button></form><div class="cc-emoji-panel hidden" id="emojiPanel"><button type="button">🙂</button><button type="button">👍</button><button type="button">✅</button><button type="button">📦</button><button type="button">💬</button></div></article><aside class="cc-card cc-detail-side"><h2>Detalle del caso</h2><p><b>Contacto:</b> Soporte CommerCity</p><p><b>Producto:</b> Morral urbano</p><p><b>Pedido:</b> #CC-3001</p><p><b>Estado:</b> En revisión</p><div class="cc-card-actions-row"><button class="cc-btn secondary" type="button" data-visual-status="Conversación reportada visualmente.">Reportar conversación</button><button class="cc-btn" type="button" data-visual-status="Conversación marcada como resuelta visualmente.">Marcar como resuelta</button></div><div id="conversationActionMessage"></div></aside></section></main><script type="module" src="js/main.js"></script>
+<script type="module" src="js/phase620.js"></script>
+</body>
+</html>
