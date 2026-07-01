@@ -1,4 +1,5 @@
 import { currentUser, clearSession } from './api.js';
+import { UPLOADS_BASE_URL } from './config.js';
 export const money = (value)=> new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(Number(value)||0);
 export const icon = (name, label='') => `<img class="cc-icon" src="assets/icons/${name}" alt="${label}">`;
 function accountHref(user){ if(!user) return 'login.html'; if(user.rol==='administrador') return 'admin.html'; if(user.rol==='vendedor') return 'vendedor.html'; return 'comprador.html'; }
@@ -61,7 +62,17 @@ export function initHomeCarousel(){
 export function footer(){ return `<footer class="cc-footer"><div class="cc-container grid md:grid-cols-3 gap-6"><div><h3 class="text-xl font-bold">CommerCity</h3><p>Marketplace académico y comercial para compradores, vendedores y administradores.</p></div><div><h3 class="font-bold">Ayuda</h3><p><a href="help.html">Centro de ayuda</a> · <a href="soporte.html">Soporte</a> · <a href="terms.html">Términos</a> · <a href="privacy.html">Privacidad</a> · <a href="recovery-password.html">Recuperar acceso</a></p></div><div><h3 class="font-bold">Navegación</h3><p><a href="productos.html">Productos</a> · <a href="categorias.html">Categorías</a> · <a href="carrito.html">Carrito</a> · <a href="chat.html">Chat</a></p></div></div></footer>`; }
 export function mountShell(active){ applyTheme(); document.body.insertAdjacentHTML('afterbegin', header(active)); document.body.insertAdjacentHTML('beforeend', footer()); bindHeaderActions(); applyTheme(); }
 export function bindHeaderActions(){ document.querySelectorAll('[data-theme-toggle]').forEach(b=>b.addEventListener('click',toggleTheme)); document.querySelectorAll('[data-logout]').forEach(b=>b.addEventListener('click',()=>{clearSession(); location.href='login.html';})); }
-export function productCard(p){ const id=p.id || p.producto_id || 0; const name=p.nombre || 'Producto CommerCity'; return `<article class="cc-product"><div class="cc-product-media"><img src="assets/icons/cc-product-card.svg" alt="Producto"></div><div class="cc-product-body"><span class="cc-chip">${p.categoria_nombre || 'Marketplace'}</span><h3 class="text-xl font-bold">${name}</h3><p class="cc-muted">${p.tienda_nombre || 'Tienda CommerCity'}</p><p class="cc-price">${money(p.precio)}</p><div class="grid grid-cols-2 gap-2 mt-auto"><a class="cc-btn outline" href="producto-detalle.html?id=${id}">Ver</a><button class="cc-btn" data-cart="${id}"><span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir</button></div></div></article>`; }
+export function productCard(p){
+  const id=p.id || p.producto_id || p.product_id || 0;
+  const name=p.nombre || p.name || 'Producto CommerCity';
+  const category=p.categoria_nombre || p.category_name || p.categoria || p.categoria_slug || 'Marketplace';
+  const store=p.tienda_nombre || p.store_name || p.vendedor_nombre || 'Tienda CommerCity';
+  const price=p.precio_final || p.precio || p.price || 0;
+  const firstImage=Array.isArray(p.imagenes) ? p.imagenes[0] : null;
+  const rawImage=p.imagen_url || p.image_url || firstImage?.url || firstImage?.ruta || 'assets/icons/cc-product-card.svg';
+  const image=String(rawImage).startsWith('/uploads') ? `${UPLOADS_BASE_URL}${String(rawImage).replace('/uploads','')}` : String(rawImage).startsWith('/') ? `${UPLOADS_BASE_URL}/${String(rawImage).replace(/^\/+/, '')}` : rawImage;
+  return `<article class="cc-product"><div class="cc-product-media"><img src="${image}" alt="${name}"></div><div class="cc-product-body"><span class="cc-chip">${category}</span><h3 class="text-xl font-bold">${name}</h3><p class="cc-muted">${store}</p><p class="cc-price">${money(price)}</p><div class="grid grid-cols-2 gap-2 mt-auto"><a class="cc-btn outline" href="producto-detalle.html?id=${id}">Ver</a><button class="cc-btn" data-cart="${id}"><span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir</button></div></div></article>`;
+}
 export function showMessage(target, message, ok=false){ const el=document.querySelector(target); if(el) el.innerHTML=`<div class="cc-alert ${ok?'ok':'bad'}">${message}</div>`; }
 export function guardRole(allowed=[]){ const user=currentUser(); if(!user){ location.href='login.html'; return null; } if(allowed.length && !allowed.includes(user.rol)){ location.href='index.html'; return null; } return user; }
 export function bindLogout(){ document.querySelectorAll('[data-logout]').forEach(b=>b.addEventListener('click',()=>{clearSession(); location.href='login.html';})); }

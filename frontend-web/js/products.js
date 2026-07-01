@@ -1,5 +1,6 @@
 import { api } from './api.js';
 import { productCard, money } from './ui.js';
+import { UPLOADS_BASE_URL } from './config.js';
 
 const fallbackProducts = [
   { id: 101, nombre: 'Morral urbano CommerCity', precio: 129900, categoria_nombre: 'Moda', tienda_nombre: 'Tienda local verificada', calificacion: 4.8 },
@@ -21,28 +22,36 @@ const fallbackCategories = [
 
 let catalogProducts = [];
 let catalogCategories = [];
+let usingProductFallback = false;
+let usingCategoryFallback = false;
 
-function productFallbackCard(product) {
-  return `<article class="cc-product"><div class="cc-product-media"><img src="assets/icons/cc-product-card.svg" alt="Producto destacado"></div><div class="cc-product-body"><span class="cc-chip orange">Vista previa</span><h3 class="text-xl font-bold">${product.nombre}</h3><p class="cc-muted">${product.tienda_nombre}</p><p class="cc-price">${money(product.precio)}</p><p class="cc-muted text-sm">Producto de muestra visual mientras se restablece la conexión pública con la API.</p><div class="grid grid-cols-2 gap-2 mt-auto"><a class="cc-btn outline" href="producto-detalle.html?id=${product.id}">Ver detalle</a><button class="cc-btn"><span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir</button></div></div></article>`;
-}
-
-function categoryCard(category) {
-  return `<a class="cc-card cc-category-card" href="productos.html?categoria=${category.id}"><img class="cc-icon" src="assets/icons/cc-categories.svg" alt="Categoría"><span><b>${category.nombre}</b><small>Explorar ofertas y tiendas</small></span></a>`;
+function esc(value){
+  return String(value ?? '').replace(/[&<>"]/g, char=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[char]));
 }
 
 function normalizeList(data, key) {
-  const payload = data.data || data;
+  const payload = data?.data || data || {};
   if (Array.isArray(payload)) return payload;
   if (Array.isArray(payload[key])) return payload[key];
-  if (Array.isArray(data[key])) return data[key];
+  if (Array.isArray(data?.[key])) return data[key];
   return [];
 }
 
 function productCategoryId(product){ return String(product.categoria_id || product.category_id || product.id_categoria || ''); }
-function productCategoryName(product){ return String(product.categoria_nombre || product.category_name || product.categoria || ''); }
-function productStoreName(product){ return String(product.tienda_nombre || product.vendedor_nombre || product.store_name || product.seller_name || ''); }
-function productRating(product){ return Number(product.calificacion || product.rating || product.reputacion || product.reputation || 0); }
-function productPrice(product){ return Number(product.precio || product.price || 0); }
+function productCategoryName(product){ return String(product.categoria_nombre || product.category_name || product.categoria || product.categoria_slug || 'Categoría general'); }
+function productStoreName(product){ return String(product.tienda_nombre || product.vendedor_nombre || product.store_name || product.seller_name || 'Tienda CommerCity'); }
+function productRating(product){ return Number(product.calificacion || product.rating || product.calificacion_promedio || product.reputacion || product.reputation || 0); }
+function productPrice(product){ return Number(product.precio_final || product.precio || product.price || 0); }
+function productImage(product){
+  const direct=product.imagen_url || product.image_url || product.imagen || '';
+  const first=Array.isArray(product.imagenes) ? product.imagenes[0] : null;
+  const fromList=first?.url || first?.ruta || first?.path || '';
+  const value=direct || fromList;
+  if(!value) return 'assets/icons/cc-product-card.svg';
+  if(String(value).startsWith('http') || String(value).startsWith('assets/')) return value;
+  if(String(value).startsWith('/uploads')) return `${UPLOADS_BASE_URL}${String(value).replace('/uploads','')}`;
+  return `${UPLOADS_BASE_URL}/${String(value).replace(/^\/+/, '')}`;
+}
 
 function matchesCategory(product, category){
   if(!category) return true;
@@ -83,7 +92,8 @@ function setInitialFilters(){
 
 function renderNoResults(box, filters){
   box.innerHTML = `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-search.svg" alt=""><h2 class="text-2xl font-bold">No encontramos productos para tu búsqueda.</h2><p class="cc-muted">Ajusta el texto, cambia la categoría o limpia los filtros para volver al catálogo completo.</p><button class="cc-btn" type="button" data-clear-filters>Limpiar filtros</button></section>`;
-  document.querySelector('[data-filter-summary]').textContent = `Sin resultados para “${filters.q || 'todos'}”.`;
+  const summary=document.querySelector('[data-filter-summary]');
+  if(summary) summary.textContent = `Sin resultados para “${filters.q || 'todos'}”.`;
   bindClearFilters();
 }
 
@@ -95,20 +105,33 @@ function renderCatalog(){
   if(!filtered.length){ renderNoResults(box, filters); return; }
   box.innerHTML = filtered.map(productCard).join('');
   const summary = document.querySelector('[data-filter-summary]');
-  if(summary) summary.textContent = `${filtered.length} producto${filtered.length===1?'':'s'} visible${filtered.length===1?'':'s'} con los filtros actuales.`;
+  if(summary){
+    const origin=usingProductFallback ? 'vista visual de respaldo' : 'API real';
+    summary.textContent = `${filtered.length} producto${filtered.length===1?'':'s'} visible${filtered.length===1?'':'s'} desde ${origin}.`;
+  }
+}
+
+function categoryName(category){
+  return String(category.nombre || category.name || category.slug || 'Categoría CommerCity');
+}
+
+function categoryCard(category) {
+  const name=categoryName(category);
+  return `<a class="cc-card cc-category-card" href="productos.html?categoria=${encodeURIComponent(category.id || name)}"><img class="cc-icon" src="assets/icons/cc-categories.svg" alt="Categoría"><span><b>${esc(name)}</b><small>${usingCategoryFallback ? 'Vista visual' : 'Categoría real'} · Explorar productos</small></span></a>`;
 }
 
 function populateCategoryFilter(categories){
   const select=document.querySelector('[data-category-filter]');
   if(!select) return;
   const selected = new URLSearchParams(location.search).get('categoria') || select.value || '';
-  select.innerHTML = '<option value="">Todas las categorías</option>' + categories.map(c=>`<option value="${c.id || c.nombre}">${c.nombre}</option>`).join('');
+  select.innerHTML = '<option value="">Todas las categorías</option>' + categories.map(c=>`<option value="${esc(c.id || categoryName(c))}">${esc(categoryName(c))}</option>`).join('');
   select.value = selected;
 }
 
 function bindCatalogFilters(){
   const form=document.querySelector('[data-product-filters]');
-  if(!form) return;
+  if(!form || form.dataset.boundCatalog === 'true') return;
+  form.dataset.boundCatalog='true';
   form.addEventListener('submit', event=>{ event.preventDefault(); renderCatalog(); });
   form.querySelectorAll('input,select').forEach(control=>control.addEventListener('change', renderCatalog));
   form.querySelector('[data-product-search]')?.addEventListener('input', renderCatalog);
@@ -116,41 +139,72 @@ function bindCatalogFilters(){
 }
 
 function bindClearFilters(){
-  document.querySelectorAll('[data-clear-filters]').forEach(btn=>btn.addEventListener('click',()=>{
-    const search=document.querySelector('[data-product-search]');
-    const category=document.querySelector('[data-category-filter]');
-    const sort=document.querySelector('[data-product-sort]');
-    if(search) search.value='';
-    if(category) category.value='';
-    if(sort) sort.value='recent';
-    renderCatalog();
-  }));
+  document.querySelectorAll('[data-clear-filters]').forEach(btn=>{
+    if(btn.dataset.boundClear==='true') return;
+    btn.dataset.boundClear='true';
+    btn.addEventListener('click',()=>{
+      const search=document.querySelector('[data-product-search]');
+      const category=document.querySelector('[data-category-filter]');
+      const sort=document.querySelector('[data-product-sort]');
+      if(search) search.value='';
+      if(category) category.value='';
+      if(sort) sort.value='recent';
+      renderCatalog();
+    });
+  });
+}
+
+export function addLocalCart(product){
+  const key='cc_cart_local';
+  const list=JSON.parse(localStorage.getItem(key) || '[]');
+  const id=String(product.id || product.producto_id || product.product_id || '');
+  const found=list.find(item=>String(item.id)===id);
+  if(found) found.cantidad += 1;
+  else list.push({ id, nombre: product.nombre || 'Producto CommerCity', precio: productPrice(product), cantidad:1 });
+  localStorage.setItem(key, JSON.stringify(list));
+}
+
+function bindAddToCart(){
+  document.addEventListener('click', event=>{
+    const btn=event.target.closest('[data-cart]');
+    if(!btn || btn.dataset.boundCart==='true') return;
+    const id=String(btn.dataset.cart);
+    const product=catalogProducts.find(item=>String(item.id || item.producto_id || item.product_id)===id) || { id, nombre:'Producto CommerCity', precio:0 };
+    addLocalCart(product);
+    btn.dataset.boundCart='true';
+    btn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadido';
+    setTimeout(()=>{ btn.dataset.boundCart=''; btn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir'; },1200);
+  });
 }
 
 export async function loadProducts(limit = 8) {
   const box = document.querySelector('[data-products]');
   if (!box) return;
-  box.innerHTML = '<div class="cc-card cc-loading-card">Cargando productos destacados...</div>';
+  box.innerHTML = '<div class="cc-card cc-loading-card">Cargando productos desde la API...</div>';
   try {
     const data = await api.get(`/products?page=1&limit=${limit}`);
     const list = normalizeList(data, 'products');
-    catalogProducts = list.length ? list : fallbackProducts;
-    if(document.querySelector('[data-product-filters]')){
-      setInitialFilters();
-      bindCatalogFilters();
-      renderCatalog();
-    } else {
-      box.innerHTML = catalogProducts.length ? catalogProducts.map(productCard).join('') : fallbackProducts.map(productFallbackCard).join('');
+    usingProductFallback = false;
+    catalogProducts = list;
+    if(!catalogProducts.length){
+      box.innerHTML = '<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-product-card.svg" alt=""><h2>No hay productos disponibles.</h2><p class="cc-muted">La API respondió correctamente, pero no devolvió productos activos.</p></section>';
+      return;
     }
-  } catch {
+    if(document.querySelector('[data-product-filters]')){
+      setInitialFilters(); bindCatalogFilters(); renderCatalog();
+    } else {
+      box.innerHTML = catalogProducts.map(productCard).join('');
+    }
+  } catch(error) {
+    usingProductFallback = true;
     catalogProducts = fallbackProducts;
     if(document.querySelector('[data-product-filters]')){
-      setInitialFilters();
-      bindCatalogFilters();
-      renderCatalog();
+      setInitialFilters(); bindCatalogFilters(); renderCatalog();
     } else {
-      box.innerHTML = `<div class="cc-card cc-soft-warning"><h3 class="text-xl font-bold">No pudimos cargar los productos en este momento.</h3><p>Intenta nuevamente en unos segundos. Mientras tanto puedes revisar ejemplos visuales del marketplace.</p></div>${fallbackProducts.map(productFallbackCard).join('')}`;
+      box.innerHTML = `<div class="cc-card cc-soft-warning"><h3 class="text-xl font-bold">No pudimos cargar productos reales.</h3><p>${esc(error.message)} Se muestra respaldo visual controlado.</p></div>${fallbackProducts.map(productCard).join('')}`;
     }
+  } finally {
+    bindAddToCart();
   }
 }
 
@@ -158,25 +212,37 @@ export async function loadCategories() {
   const box = document.querySelector('[data-categories]');
   try {
     const data = await api.get('/categories');
-    const list = normalizeList(data, 'categories');
-    catalogCategories = list.length ? list : fallbackCategories;
+    const list = normalizeList(data, 'categories').filter(c=>categoryName(c).trim());
+    usingCategoryFallback = false;
+    catalogCategories = list;
   } catch {
+    usingCategoryFallback = true;
+    catalogCategories = fallbackCategories;
+  }
+  if(!catalogCategories.length){
+    usingCategoryFallback = true;
     catalogCategories = fallbackCategories;
   }
   populateCategoryFilter(catalogCategories);
-  if (box) box.innerHTML = catalogCategories.slice(0, 8).map(categoryCard).join('');
+  if (box) box.innerHTML = catalogCategories.slice(0, 12).map(categoryCard).join('');
 }
 
 export async function loadProductDetail() {
   const box = document.querySelector('[data-product-detail]');
   if (!box) return;
-  const id = new URLSearchParams(location.search).get('id') || '103';
+  const id = new URLSearchParams(location.search).get('id');
+  if(!id){
+    box.innerHTML = `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-product-detail.svg" alt=""><h1 class="text-3xl font-bold">Producto no especificado.</h1><p class="cc-muted">Abre el detalle desde el catálogo para consultar un producto real.</p><a class="cc-btn" href="productos.html">Volver al catálogo</a></section>`;
+    return;
+  }
+  box.innerHTML = '<div class="cc-card cc-loading-card">Cargando producto real...</div>';
   try {
-    const data = await api.get(`/products/${id}`);
+    const data = await api.get(`/products/${encodeURIComponent(id)}`);
     const p = data.data?.product || data.product || data.producto || data.data || data;
-    box.innerHTML = `<div class="cc-grid cols-2"><section class="cc-card"><div class="cc-product-media h-96"><img src="assets/icons/cc-product-detail.svg" alt="Producto"></div></section><section class="cc-card"><span class="cc-chip orange">Detalle verificado</span><h1 class="text-4xl font-bold mt-4">${p.nombre || 'Producto CommerCity'}</h1><p class="cc-muted mt-3">${p.descripcion || 'Producto publicado por vendedor verificado.'}</p><p class="cc-price mt-5">${money(p.precio)}</p><p class="mt-2">Stock: <b>${p.stock ?? 'Disponible'}</b></p><p class="cc-muted mt-2">Tienda: <b>${productStoreName(p) || 'Vendedor verificado'}</b></p><div class="grid md:grid-cols-2 gap-3 mt-6"><button class="cc-btn"><span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir al carrito</button><a class="cc-btn secondary" href="chat.html">Consultar vendedor</a></div></section></div>`;
-  } catch {
-    const p = fallbackProducts[0];
-    box.innerHTML = `<div class="cc-grid cols-2"><section class="cc-card"><div class="cc-product-media h-96"><img src="assets/icons/cc-product-detail.svg" alt="Producto"></div></section><section class="cc-card"><span class="cc-chip orange">Vista previa</span><h1 class="text-4xl font-bold mt-4">${p.nombre}</h1><p class="cc-muted mt-3">No pudimos cargar el producto real en este momento. Esta vista mantiene la experiencia visual lista para revisión.</p><p class="cc-price mt-5">${money(p.precio)}</p><div class="cc-alert mt-4">Cuando el backend público esté disponible, este detalle cargará datos reales.</div><a class="cc-btn mt-4" href="productos.html">Volver al catálogo</a></section></div>`;
+    box.innerHTML = `<div class="cc-grid cols-2"><section class="cc-card"><div class="cc-product-media h-96"><img src="${esc(productImage(p))}" alt="${esc(p.nombre || 'Producto CommerCity')}"></div></section><section class="cc-card"><span class="cc-chip orange">Producto real</span><h1 class="text-4xl font-bold mt-4">${esc(p.nombre || 'Producto CommerCity')}</h1><p class="cc-muted mt-3">${esc(p.descripcion || 'Producto publicado por vendedor verificado.')}</p><p class="cc-price mt-5">${money(productPrice(p))}</p><p class="mt-2">Stock: <b>${esc(p.stock ?? 'Disponible')}</b></p><p class="cc-muted mt-2">Categoría: <b>${esc(productCategoryName(p))}</b></p><p class="cc-muted mt-2">Tienda: <b>${esc(productStoreName(p))}</b></p><div class="grid md:grid-cols-2 gap-3 mt-6"><button class="cc-btn" data-cart="${esc(p.id || id)}"><span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir al carrito</button><a class="cc-btn secondary" href="chat.html">Consultar vendedor</a></div></section></div>`;
+    catalogProducts=[p];
+    bindAddToCart();
+  } catch(error) {
+    box.innerHTML = `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-product-detail.svg" alt=""><h1 class="text-3xl font-bold">No pudimos cargar este producto.</h1><p class="cc-muted">${esc(error.message)}</p><a class="cc-btn" href="productos.html">Volver al catálogo</a></section>`;
   }
 }
