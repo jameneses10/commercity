@@ -164,16 +164,48 @@ export function addLocalCart(product){
   localStorage.setItem(key, JSON.stringify(list));
 }
 
-function bindAddToCart(){
-  document.addEventListener('click', event=>{
-    const btn=event.target.closest('[data-cart]');
-    if(!btn || btn.dataset.boundCart==='true') return;
-    const id=String(btn.dataset.cart);
-    const product=catalogProducts.find(item=>String(item.id || item.producto_id || item.product_id)===id) || { id, nombre:'Producto CommerCity', precio:0 };
-    addLocalCart(product);
-    btn.dataset.boundCart='true';
-    btn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadido';
-    setTimeout(()=>{ btn.dataset.boundCart=''; btn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir'; },1200);
+function localFavorites(){
+  try { return JSON.parse(localStorage.getItem('cc_favorites_local') || '[]'); } catch { return []; }
+}
+function saveLocalFavorites(list){
+  localStorage.setItem('cc_favorites_local', JSON.stringify(list));
+}
+
+export async function addFavorite(product){
+  const id=String(product.id || product.producto_id || product.product_id || '');
+  if(!id) return { local:false };
+  try{
+    await api.post(`/favorites/${encodeURIComponent(id)}`, {});
+    return { api:true };
+  }catch(error){
+    if(error.status===409) return { api:true, duplicate:true };
+    const list=localFavorites();
+    if(!list.some(item=>String(item.id)===id)) list.push({ id, nombre: product.nombre || 'Producto CommerCity', precio: productPrice(product), tienda_nombre: productStoreName(product) });
+    saveLocalFavorites(list);
+    return { local:true };
+  }
+}
+
+function bindProductActions(){
+  document.addEventListener('click', async event=>{
+    const cartBtn=event.target.closest('[data-cart]');
+    if(cartBtn && cartBtn.dataset.boundCart!=='true'){
+      const id=String(cartBtn.dataset.cart);
+      const product=catalogProducts.find(item=>String(item.id || item.producto_id || item.product_id)===id) || { id, nombre:'Producto CommerCity', precio:0 };
+      addLocalCart(product);
+      cartBtn.dataset.boundCart='true';
+      cartBtn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadido';
+      setTimeout(()=>{ cartBtn.dataset.boundCart=''; cartBtn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir'; },1200);
+    }
+    const favBtn=event.target.closest('[data-favorite]');
+    if(favBtn && favBtn.dataset.busyFavorite!=='true'){
+      favBtn.dataset.busyFavorite='true';
+      const id=String(favBtn.dataset.favorite);
+      const product=catalogProducts.find(item=>String(item.id || item.producto_id || item.product_id)===id) || { id, nombre:'Producto CommerCity', precio:0 };
+      const result=await addFavorite(product);
+      favBtn.innerHTML=`<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-favorites-wishlist.svg" alt=""></span>${result.api?'Guardado':'Local'}`;
+      setTimeout(()=>{ favBtn.dataset.busyFavorite=''; favBtn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-favorites-wishlist.svg" alt=""></span>Favorito'; },1400);
+    }
   });
 }
 
@@ -204,7 +236,7 @@ export async function loadProducts(limit = 8) {
       box.innerHTML = `<div class="cc-card cc-soft-warning"><h3 class="text-xl font-bold">No pudimos cargar productos reales.</h3><p>${esc(error.message)} Se muestra respaldo visual controlado.</p></div>${fallbackProducts.map(productCard).join('')}`;
     }
   } finally {
-    bindAddToCart();
+    bindProductActions();
   }
 }
 
@@ -239,9 +271,9 @@ export async function loadProductDetail() {
   try {
     const data = await api.get(`/products/${encodeURIComponent(id)}`);
     const p = data.data?.product || data.product || data.producto || data.data || data;
-    box.innerHTML = `<div class="cc-grid cols-2"><section class="cc-card"><div class="cc-product-media h-96"><img src="${esc(productImage(p))}" alt="${esc(p.nombre || 'Producto CommerCity')}"></div></section><section class="cc-card"><span class="cc-chip orange">Producto real</span><h1 class="text-4xl font-bold mt-4">${esc(p.nombre || 'Producto CommerCity')}</h1><p class="cc-muted mt-3">${esc(p.descripcion || 'Producto publicado por vendedor verificado.')}</p><p class="cc-price mt-5">${money(productPrice(p))}</p><p class="mt-2">Stock: <b>${esc(p.stock ?? 'Disponible')}</b></p><p class="cc-muted mt-2">Categoría: <b>${esc(productCategoryName(p))}</b></p><p class="cc-muted mt-2">Tienda: <b>${esc(productStoreName(p))}</b></p><div class="grid md:grid-cols-2 gap-3 mt-6"><button class="cc-btn" data-cart="${esc(p.id || id)}"><span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir al carrito</button><a class="cc-btn secondary" href="chat.html">Consultar vendedor</a></div></section></div>`;
+    box.innerHTML = `<div class="cc-grid cols-2"><section class="cc-card"><div class="cc-product-media h-96"><img src="${esc(productImage(p))}" alt="${esc(p.nombre || 'Producto CommerCity')}"></div></section><section class="cc-card"><span class="cc-chip orange">Producto real</span><h1 class="text-4xl font-bold mt-4">${esc(p.nombre || 'Producto CommerCity')}</h1><p class="cc-muted mt-3">${esc(p.descripcion || 'Producto publicado por vendedor verificado.')}</p><p class="cc-price mt-5">${money(productPrice(p))}</p><p class="mt-2">Stock: <b>${esc(p.stock ?? 'Disponible')}</b></p><p class="cc-muted mt-2">Categoría: <b>${esc(productCategoryName(p))}</b></p><p class="cc-muted mt-2">Tienda: <b>${esc(productStoreName(p))}</b></p><div class="grid md:grid-cols-3 gap-3 mt-6"><button class="cc-btn" data-cart="${esc(p.id || id)}"><span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir al carrito</button><button class="cc-btn outline" data-favorite="${esc(p.id || id)}" type="button"><span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-favorites-wishlist.svg" alt=""></span>Favorito</button><a class="cc-btn secondary" href="chat.html">Consultar vendedor</a></div></section></div>`;
     catalogProducts=[p];
-    bindAddToCart();
+    bindProductActions();
   } catch(error) {
     box.innerHTML = `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-product-detail.svg" alt=""><h1 class="text-3xl font-bold">No pudimos cargar este producto.</h1><p class="cc-muted">${esc(error.message)}</p><a class="cc-btn" href="productos.html">Volver al catálogo</a></section>`;
   }
