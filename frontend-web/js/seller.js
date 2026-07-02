@@ -1,5 +1,129 @@
-export function initSeller(){
-  const note=document.querySelector('[data-seller-note]');
-  if(note) note.textContent='Vista vendedor preparada';
+import { api, token, updateStoredUser } from './api.js';
+import { money, showMessage } from './ui.js';
+import { UPLOADS_BASE_URL } from './config.js';
+
+const page = location.pathname.split('/').pop() || 'vendedor.html';
+const sellerPages = new Set(['vendedor.html','vendedor-tienda.html','vendedor-productos.html','vendedor-producto-form.html','vendedor-pedidos.html','vendedor-envios.html','vendedor-resenas.html','vendedor-reputacion.html','vendedor-ganancias.html','vendedor-configuracion.html']);
+
+function esc(value){ return String(value ?? '').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function icon(name, cls='cc-icon'){ return `<img class="${cls}" src="assets/icons/${name}" alt="">`; }
+function empty(iconName, title, text, action=''){ return `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/${iconName}" alt=""><h2 class="text-2xl font-bold">${esc(title)}</h2><p class="cc-muted">${esc(text)}</p>${action}</section>`; }
+function loading(text='Cargando datos reales...'){ return `<section class="cc-card cc-loading-card">${esc(text)}</section>`; }
+function normStatus(value){ return String(value || 'pendiente').toLowerCase().replace(/\s+/g,'-').replace('agotado','sin-stock').replace('oculto','pausado'); }
+function imgUrl(value, fallback='assets/icons/cc-product-card.svg'){ if(!value) return fallback; const s=String(value); if(s.startsWith('/uploads')) return `${UPLOADS_BASE_URL}${s.replace('/uploads','')}`; if(s.startsWith('/')) return `${UPLOADS_BASE_URL}/${s.replace(/^\/+/, '')}`; return s; }
+function main(){ return document.querySelector('main'); }
+function productId(p){ return p.id || p.producto_id || p.product_id; }
+function storeId(s){ return s?.id || s?.tienda_id || s?.store_id; }
+
+async function sellerSession(){
+  if(!token()){
+    main()?.insertAdjacentHTML('afterbegin','<section class="cc-card cc-soft-warning mb-5"><b>Sesión de vendedor requerida.</b><p>Inicia sesión para consultar datos reales de tu tienda.</p><a class="cc-btn mt-3" href="login.html">Ir a login</a></section>');
+    return null;
+  }
+  try{
+    const res=await api.get('/auth/me');
+    const user=res?.data?.user || res?.user;
+    updateStoredUser(user);
+    if(user?.rol==='comprador'){ location.href='comprador.html'; return null; }
+    if(user?.rol==='administrador'){ location.href='admin.html'; return null; }
+    if(user?.rol!=='vendedor') throw new Error('La sesión actual no corresponde a vendedor.');
+    return user;
+  }catch(error){
+    main()?.insertAdjacentHTML('afterbegin',`<section class="cc-card cc-soft-warning mb-5"><b>No pudimos validar la sesión.</b><p>${esc(error.message)}</p><a class="cc-btn mt-3" href="login.html">Volver a iniciar sesión</a></section>`);
+    return null;
+  }
 }
-initSeller();
+async function getStore(){ try{ return (await api.get('/stores/me')).data.store; }catch(error){ return { error }; } }
+async function getStats(){ try{ return (await api.get('/seller/store/stats')).data; }catch(error){ return { error }; } }
+async function getEarnings(){ try{ return (await api.get('/seller/store/earnings')).data; }catch(error){ return { error }; } }
+async function getOrders(){ try{ return (await api.get('/seller/orders')).data.orders || []; }catch(error){ return { error }; } }
+async function getShipments(){ try{ return (await api.get('/seller/shipments')).data.shipments || []; }catch(error){ return { error }; } }
+async function getProducts(store){
+  const id=storeId(store);
+  if(!id) return [];
+  try{ const d=(await api.get(`/stores/${id}/products?limit=50`)).data; return d.products || d.items || []; }
+  catch(error){ return { error }; }
+}
+async function getReputation(store){
+  const id=storeId(store); if(!id) return { error:new Error('No hay tienda para consultar reputación.') };
+  try{ return (await api.get(`/stores/${id}/reputation`)).data; }catch(error){ return { error }; }
+}
+async function getCategories(){ try{ return (await api.get('/categories')).data.categories || []; }catch{ return []; } }
+
+function bindFilters(root=document){
+  root.querySelectorAll('[data-seller-filter-group]').forEach(group=>{
+    const key=group.dataset.sellerFilterGroup;
+    const selector=`[data-seller-item="${key}"]`;
+    const apply=()=>{
+      const filter=group.querySelector('.active')?.dataset.filter || 'all';
+      const query=(root.querySelector(`[data-seller-search="${key}"]`)?.value || '').toLowerCase().trim();
+      const items=[...root.querySelectorAll(selector)];
+      let visible=0;
+      items.forEach(item=>{
+        const status=item.dataset.status || 'all';
+        const text=(item.dataset.filterText || item.innerText || '').toLowerCase();
+        const byFilter=filter==='all' || status===filter || text.includes(filter);
+        const byQuery=!query || text.includes(query);
+        const show=byFilter && byQuery;
+        item.classList.toggle('hidden', !show); if(show) visible++;
+      });
+      const emptyBox=root.querySelector(`[data-seller-empty="${key}"]`);
+      emptyBox?.classList.toggle('hidden', visible>0 || !items.length);
+    };
+    group.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{ group.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); apply(); }));
+    root.querySelector(`[data-seller-search="${key}"]`)?.addEventListener('input', apply);
+    apply();
+  });
+}
+
+function pageShell(title, chipIcon, chip, description, action=''){
+  return `<div class="cc-section-title"><div><span class="cc-chip orange">${icon(chipIcon)} ${esc(chip)}</span><h1 class="text-4xl font-bold mt-3">${esc(title)}</h1><p class="cc-muted">${esc(description)}</p></div>${action}</div>`;
+}
+function productRow(p){
+  const id=productId(p); const status=normStatus(p.estado || (Number(p.stock)===0?'sin-stock':'activo'));
+  const cat=p.categoria_nombre || p.category_name || p.categoria || 'Sin categoría';
+  return `<tr data-seller-item="products" data-status="${esc(status)}" data-filter-text="${esc(`${p.nombre} ${cat} ${status}`)}"><td><span class="cc-table-product"><img class="cc-icon" src="${esc(imgUrl(p.imagen_url))}" alt="">${esc(p.nombre || 'Producto')}</span></td><td>${esc(cat)}</td><td>${money(p.precio_final || p.precio || 0)}</td><td>${esc(p.stock ?? 0)}</td><td><span class="cc-chip ${status==='activo'?'blue':status==='sin-stock'?'orange':'neutral'}">${esc(status)}</span></td><td>${esc(p.ventas || p.total_vendidos || 0)}</td><td><div class="cc-mini-actions"><a href="vendedor-producto-form.html?id=${esc(id)}">Editar</a><button type="button" data-product-visibility="${esc(id)}" data-next-status="${status==='activo'?'oculto':'activo'}">${status==='activo'?'Pausar':'Activar'}</button><a href="producto-detalle.html?id=${esc(id)}">Ver detalle</a></div></td></tr>`;
+}
+function orderCard(o){
+  const id=o.id || o.pedido_id || o.numero || 'pedido'; const status=normStatus(o.estado || o.status || 'pendiente');
+  return `<article class="cc-card cc-order-card" data-seller-item="orders" data-status="${esc(status)}" data-filter-text="${esc(JSON.stringify(o))}"><div><span class="cc-chip ${status==='cancelado'?'dark':status==='entregado'||status==='enviado'?'blue':'orange'}">${esc(status)}</span><h2>#${esc(id)} · ${esc(o.comprador_nombre || o.buyer_name || 'Comprador')}</h2><p class="cc-muted">${esc(o.created_at || o.fecha || 'Fecha no disponible')} · ${money(o.total || 0)} · ${esc(o.metodo_pago || 'Método pendiente')}</p><p class="cc-muted">${esc(o.productos_resumen || o.resumen || 'Detalle disponible desde pedido.')}</p></div><div class="cc-card-actions-row"><a class="cc-btn outline" href="pedido-detalle.html?id=${esc(id)}">Ver detalle</a><button class="cc-btn" type="button" data-visual-action="Preparar pedido">Preparar pedido</button><a class="cc-btn secondary" href="vendedor-envios.html">Gestionar envío</a></div></article>`;
+}
+function shipmentCard(s){
+  const id=s.id || s.envio_id || s.codigo || 'envio'; const status=normStatus(s.estado || s.status || 'pendiente');
+  return `<article class="cc-card" data-seller-item="shipments" data-status="${esc(status)}" data-filter-text="${esc(JSON.stringify(s))}"><span class="cc-chip ${status==='entregado'||status==='enviado'?'blue':'orange'}">${esc(status)}</span><h2>${esc(s.codigo || s.guia || `Envío #${id}`)}</h2><p class="cc-muted">Pedido: ${esc(s.pedido_id || s.order_id || 'pendiente')} · Comprador: ${esc(s.comprador_nombre || 'No disponible')}</p><p class="cc-muted">${esc(s.direccion_resumen || s.direccion || 'Dirección protegida o no disponible.')}</p><div class="cc-card-actions-row"><button class="cc-btn" type="button" data-shipment-status="${esc(id)}" data-next-status="enviado">Marcar enviado</button><button class="cc-btn outline" type="button" data-shipment-status="${esc(id)}" data-next-status="entregado">Marcar entregado</button></div></article>`;
+}
+function earningRow(e){
+  const status=normStatus(e.estado || e.status || 'pendiente');
+  return `<tr data-seller-item="earnings" data-status="${esc(status)}"><td>${esc(e.fecha || e.created_at || '')}</td><td>${esc(e.pedido_id || e.order_id || '')}</td><td>${money(e.venta_total || e.total || 0)}</td><td>${money(e.comision || e.commission || 0)}</td><td>${money(e.neto || e.net || e.total_neto || 0)}</td><td><span class="cc-chip ${status==='pagado'?'blue':'orange'}">${esc(status)}</span></td></tr>`;
+}
+
+async function dashboard(user){
+  const [store, statsData, earningsData, orders, shipments]=await Promise.all([getStore(),getStats(),getEarnings(),getOrders(),getShipments()]);
+  const stats=statsData.stats || {}; const earnings=earningsData.earnings || [];
+  const products=store.error?[]:await getProducts(store);
+  main().querySelector('section.grid.gap-5')?.insertAdjacentHTML('afterbegin',`<section class="cc-card cc-api-summary"><h2 class="text-2xl font-bold">Hola, ${esc(user.nombre || 'vendedor')}</h2><p class="cc-muted">${store.error ? 'Tienda pendiente: '+esc(store.error.message) : 'Tienda real: '+esc(store.nombre)}</p></section>`);
+  main().querySelectorAll('.cc-metric-card strong').forEach((el,i)=>{ const vals=[Array.isArray(products)?products.length:0,Array.isArray(orders)?orders.length:0,money((earnings[0]?.neto || earnings[0]?.total || stats.ventas_totales || 0)), stats.promedio_calificacion || stats.rating || '0']; if(vals[i]!==undefined) el.textContent=vals[i]; });
+}
+async function storePage(){
+  const store=await getStore();
+  const m=main();
+  if(store.error){ m.insertAdjacentHTML('beforeend', empty('cc-store-shopping-bag.svg','Tienda pendiente',store.error.message,'<a class="cc-btn" href="vendedor-tienda.html">Crear tienda</a>')); return; }
+  m.innerHTML=pageShell('Mi tienda','cc-store-shopping-bag.svg','Perfil comercial','Datos reales de la tienda conectados al backend.','<a class="cc-btn outline" href="vendedor.html">Volver al panel</a>')+`<section class="cc-card cc-store-profile"><div class="cc-store-banner">${store.banner_url?`<img src="${esc(imgUrl(store.banner_url,'assets/icons/cc-store-shopping-bag.svg'))}" alt="Banner tienda">`:'Banner de tienda'}</div><div class="cc-store-main"><div class="cc-store-logo"><img src="${esc(imgUrl(store.logo_url,'assets/icons/cc-store-shopping-bag.svg'))}" alt="Logo tienda"></div><div><h2 class="text-3xl font-bold">${esc(store.nombre)}</h2><p class="cc-muted">${esc(store.descripcion || 'Sin descripción registrada.')}</p><p><b>Estado:</b> <span class="cc-chip blue">${esc(store.estado || 'activa')}</span></p><p><b>Creada:</b> ${esc(store.created_at || store.fecha_creacion || 'No disponible')}</p></div></div></section><section class="cc-card mt-5"><h2 class="text-2xl font-bold mb-4">Editar datos de tienda</h2><div id="storeMsg"></div><form class="cc-form cc-form-grid" id="sellerStoreForm"><label class="cc-label">Nombre de tienda<input class="cc-input" name="nombre" value="${esc(store.nombre)}" required></label><label class="cc-label full">Descripción<textarea class="cc-input" name="descripcion">${esc(store.descripcion || '')}</textarea></label><label class="cc-label">Logo<input class="cc-input" type="file" name="logo" accept="image/*"></label><label class="cc-label">Banner<input class="cc-input" type="file" name="banner" accept="image/*"></label><button class="cc-btn" type="submit">Guardar cambios reales</button></form></section>`;
+  document.querySelector('#sellerStoreForm')?.addEventListener('submit',async e=>{ e.preventDefault(); const fd=new FormData(e.currentTarget); try{ await api.patch('/stores/me',fd); showMessage('#storeMsg','Tienda actualizada con la API real.',true); }catch(error){ showMessage('#storeMsg',error.message); }});
+}
+async function productsPage(){ const store=await getStore(); const products=store.error?{error:store.error}:await getProducts(store); const m=main(); m.innerHTML=pageShell('Mis productos','cc-products-management.svg','Inventario','Inventario real de la tienda conectado al backend.','<a class="cc-btn" href="vendedor-producto-form.html">Nuevo producto</a>')+`<section class="cc-card mb-5"><div class="cc-module-filters" data-seller-filter-group="products"><button class="cc-filter-pill active" data-filter="all" type="button">Todos</button><button class="cc-filter-pill" data-filter="activo" type="button">Activos</button><button class="cc-filter-pill" data-filter="pausado" type="button">Pausados</button><button class="cc-filter-pill" data-filter="sin-stock" type="button">Sin stock</button><button class="cc-filter-pill" data-filter="reportado" type="button">Reportados</button></div><label class="cc-label mt-4">Buscar producto<input class="cc-input" data-seller-search="products" placeholder="Nombre, categoría o estado"></label></section><section class="cc-table-wrap"><table class="cc-table"><thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Ventas</th><th>Acciones</th></tr></thead><tbody>${Array.isArray(products)&&products.length?products.map(productRow).join(''):''}</tbody></table></section>${Array.isArray(products)&&products.length?'':empty('cc-products-management.svg','Sin productos reales visibles.',products.error?.message || 'Crea productos reales desde el formulario.')}`; bindFilters(m); }
+async function productFormPage(){
+  const cats=await getCategories(); const params=new URLSearchParams(location.search); const id=params.get('id'); let product=null; if(id){ try{ product=(await api.get(`/products/${id}`)).data.product; }catch{} }
+  main().innerHTML=pageShell(id?'Editar producto':'Crear producto','cc-create-product.svg','Inventario','Formulario conectado a productos y categorías reales.','<a class="cc-btn outline" href="vendedor-productos.html">Cancelar</a>')+`<section class="cc-grid cols-2"><article class="cc-card"><h2 class="text-2xl font-bold mb-4">Datos del producto</h2><div id="productFormMsg"></div><form class="cc-form cc-form-grid" id="sellerProductForm"><label class="cc-label full">Nombre<input class="cc-input" name="nombre" value="${esc(product?.nombre||'')}" required></label><label class="cc-label">Categoría<select class="cc-input" name="categoria_id" required>${cats.map(c=>`<option value="${esc(c.id)}" ${String(product?.categoria_id)===String(c.id)?'selected':''}>${esc(c.nombre)}</option>`).join('')}</select></label><label class="cc-label">Precio<input class="cc-input" name="precio" type="number" min="1" value="${esc(product?.precio||'')}" required></label><label class="cc-label">Stock<input class="cc-input" name="stock" type="number" min="0" value="${esc(product?.stock??'')}" required></label><label class="cc-label">Estado<select class="cc-input" name="estado"><option value="activo">Activo</option><option value="oculto">Pausado/Oculto</option><option value="agotado">Sin stock</option></select></label><label class="cc-label full">Descripción<textarea class="cc-input" name="descripcion" required>${esc(product?.descripcion||'')}</textarea></label><label class="cc-label full">Imágenes<input class="cc-input" type="file" name="images" accept="image/*" multiple></label><button class="cc-btn" type="submit">Guardar producto real</button></form></article><article class="cc-card">${empty('cc-product-image-upload.svg','Carga de imágenes preparada','El backend acepta hasta 6 imágenes en el campo images.','')}</article></section>`;
+  document.querySelector('#sellerProductForm')?.addEventListener('submit',async e=>{ e.preventDefault(); const fd=new FormData(e.currentTarget); try{ const res=id?await api.patch(`/products/${id}`,fd):await api.post('/products',fd); showMessage('#productFormMsg',res.message || 'Producto guardado con la API real.',true); }catch(error){ showMessage('#productFormMsg',error.message); }});
+}
+async function ordersPage(){ const orders=await getOrders(); const list=Array.isArray(orders)?orders:[]; main().innerHTML=pageShell('Pedidos recibidos','cc-order-history.svg','Operación','Pedidos reales asociados a la tienda.','<a class="cc-btn outline" href="vendedor-envios.html">Gestionar envíos</a>')+`<section class="cc-card mb-5"><div class="cc-module-filters" data-seller-filter-group="orders"><button class="cc-filter-pill active" data-filter="all" type="button">Todos</button><button class="cc-filter-pill" data-filter="pendiente" type="button">Pendientes</button><button class="cc-filter-pill" data-filter="pagado" type="button">Pagados</button><button class="cc-filter-pill" data-filter="preparacion" type="button">En preparación</button><button class="cc-filter-pill" data-filter="enviado" type="button">Enviados</button><button class="cc-filter-pill" data-filter="entregado" type="button">Entregados</button><button class="cc-filter-pill" data-filter="cancelado" type="button">Cancelados</button></div></section><section class="cc-module-list">${list.length?list.map(orderCard).join(''):empty('cc-order-history.svg','Sin pedidos recibidos.','Cuando compradores realicen pedidos a tu tienda, aparecerán aquí.')}</section>`; bindFilters(main()); }
+async function shipmentsPage(){ const shipments=await getShipments(); const list=Array.isArray(shipments)?shipments:[]; main().innerHTML=pageShell('Gestión de envíos','cc-shipping-package.svg','Logística','Envíos reales del vendedor cuando existan.','<a class="cc-btn outline" href="vendedor-pedidos.html">Ver pedidos</a>')+`<section class="cc-card mb-5"><div class="cc-module-filters" data-seller-filter-group="shipments"><button class="cc-filter-pill active" data-filter="all" type="button">Todos</button><button class="cc-filter-pill" data-filter="pendiente" type="button">Pendiente</button><button class="cc-filter-pill" data-filter="preparando" type="button">Preparando</button><button class="cc-filter-pill" data-filter="enviado" type="button">Enviado</button><button class="cc-filter-pill" data-filter="entregado" type="button">Entregado</button></div></section><section class="cc-grid cols-2">${list.length?list.map(shipmentCard).join(''):empty('cc-shipping-package.svg','Sin envíos reales.','Los envíos se crearán cuando existan pedidos despachables.')}</section>`; bindFilters(main()); }
+async function reviewsPage(){ const store=await getStore(); const products=store.error?[]:await getProducts(store); const reviews=[]; if(Array.isArray(products)){ for(const p of products.slice(0,8)){ try{ const data=(await api.get(`/products/${productId(p)}/reviews`)).data; (data.reviews||[]).forEach(r=>reviews.push({...r, product:p})); }catch{} } } main().innerHTML=pageShell('Reseñas recibidas','cc-rating-star-review.svg','Opiniones','Reseñas reales de productos cuando existan.','<a class="cc-btn outline" href="vendedor-reputacion.html">Ver reputación</a>')+`<section class="cc-card mb-5"><div class="cc-module-filters" data-seller-filter-group="reviews"><button class="cc-filter-pill active" data-filter="all" type="button">Todas</button><button class="cc-filter-pill" data-filter="positiva" type="button">Positivas</button><button class="cc-filter-pill" data-filter="media" type="button">Medias</button><button class="cc-filter-pill" data-filter="baja" type="button">Bajas</button></div></section><section class="cc-grid cols-2">${reviews.length?reviews.map(r=>{const n=Number(r.calificacion||0); const st=n>=4?'positiva':n>=3?'media':'baja'; return `<article class="cc-card cc-review-card" data-seller-item="reviews" data-status="${st}"><span class="cc-chip blue">${esc(st)}</span><h2>${esc(r.product?.nombre||'Producto')}</h2><p class="cc-muted">Comprador: ${esc(r.comprador_nombre||'Comprador')}</p><p class="cc-stars">${'★'.repeat(Math.max(0,n))}${'☆'.repeat(Math.max(0,5-n))}</p><p>${esc(r.comentario||'Sin comentario')}</p></article>`}).join(''):empty('cc-rating-star-review.svg','Sin reseñas reales.','Cuando compradores califiquen tus productos, aparecerán aquí.')}</section>`; bindFilters(main()); }
+async function reputationPage(){ const store=await getStore(); const rep=store.error?{error:store.error}:await getReputation(store); const r=rep.reputation || rep.stats || rep; main().innerHTML=pageShell('Reputación de vendedor','cc-rating-star-review.svg','Confianza','Indicadores reales o calculados desde datos disponibles.','<a class="cc-btn outline" href="vendedor-resenas.html">Ver reseñas</a>')+`<section class="cc-grid cols-4"><article class="cc-card cc-metric-card"><b>Nivel actual</b><strong>${esc(r.nivel||r.level||'Inicial')}</strong><span>Backend real</span></article><article class="cc-card cc-metric-card"><b>Calificación</b><strong>${esc(r.promedio_calificacion||r.rating||0)}</strong><span>Promedio</span></article><article class="cc-card cc-metric-card"><b>Reseñas</b><strong>${esc(r.total_resenas||r.total_reviews||0)}</strong><span>Opiniones</span></article><article class="cc-card cc-metric-card"><b>Cumplimiento</b><strong>${esc(r.cumplimiento_envios||r.fulfillment||0)}%</strong><span>Envíos</span></article></section><section class="cc-card mt-5"><h2 class="text-2xl font-bold">Estado de reputación</h2><p class="cc-muted">${esc(rep.error?.message || 'Reputación consultada desde endpoint de tienda.')}</p></section>`; }
+async function earningsPage(){ const data=await getEarnings(); const earnings=data.earnings||[]; const total=earnings.reduce((a,e)=>a+Number(e.neto||e.total||0),0); main().innerHTML=pageShell('Ganancias y comisiones','cc-commission.svg','Finanzas','Resumen financiero real cuando exista historial.','<a class="cc-btn outline" href="vendedor.html">Panel vendedor</a>')+`<section class="cc-grid cols-4"><article class="cc-card cc-metric-card"><b>Registros</b><strong>${earnings.length}</strong><span>API real</span></article><article class="cc-card cc-metric-card"><b>Neto estimado</b><strong>${money(total)}</strong><span>Según registros</span></article><article class="cc-card cc-metric-card"><b>Comisiones</b><strong>${money(earnings.reduce((a,e)=>a+Number(e.comision||0),0))}</strong><span>CommerCity</span></article><article class="cc-card cc-metric-card"><b>Estado</b><strong>${data.error?'Pendiente':'Real'}</strong><span>${esc(data.error?.message||'Conectado')}</span></article></section><section class="cc-card mt-5"><div class="cc-module-filters" data-seller-filter-group="earnings"><button class="cc-filter-pill active" data-filter="all" type="button">Mes actual</button><button class="cc-filter-pill" data-filter="pendiente" type="button">Pendientes</button><button class="cc-filter-pill" data-filter="pagado" type="button">Pagadas</button><button class="cc-filter-pill" data-filter="revisado" type="button">Revisadas</button></div></section><section class="cc-table-wrap mt-5"><table class="cc-table"><thead><tr><th>Fecha</th><th>Pedido</th><th>Venta</th><th>Comisión</th><th>Neta</th><th>Estado</th></tr></thead><tbody>${earnings.length?earnings.map(earningRow).join(''):''}</tbody></table></section>${earnings.length?'':empty('cc-commission.svg','Sin ganancias registradas.','Cuando haya pedidos pagados, aparecerán ganancias y comisiones reales.')}`; bindFilters(main()); }
+async function configPage(user){ const [store, bank]=await Promise.all([getStore(), api.get('/seller/bank-account').catch(e=>({error:e}))]); main().innerHTML=pageShell('Configuración de vendedor','cc-settings-general.svg','Configuración','Datos reales de sesión, tienda y cuenta bancaria cuando existan.','<a class="cc-btn outline" href="vendedor.html">Volver al panel</a>')+`<section class="cc-grid cols-2"><article class="cc-card"><h2>Datos de vendedor</h2><p><b>Nombre:</b> ${esc(user.nombre)}</p><p><b>Correo:</b> ${esc(user.correo)}</p><p><b>Rol:</b> ${esc(user.rol)}</p></article><article class="cc-card"><h2>Tienda</h2><p><b>Nombre:</b> ${esc(store.nombre || 'Pendiente')}</p><p><b>Estado:</b> ${esc(store.estado || store.error?.message || 'No disponible')}</p><a class="cc-btn outline mt-3" href="vendedor-tienda.html">Editar tienda</a></article><article class="cc-card"><h2>Cuenta bancaria</h2><p class="cc-muted">${esc(bank.error?.message || 'Cuenta bancaria real consultada.')}</p></article><article class="cc-card"><h2>Seguridad</h2><a class="cc-btn" href="reset-password.html">Cambiar contraseña</a></article></section>`; }
+function bindVisualActions(){ document.addEventListener('click',async e=>{ const v=e.target.closest('[data-product-visibility]'); if(v){ try{ await api.patch(`/products/${v.dataset.productVisibility}/visibility`,{estado:v.dataset.nextStatus}); v.textContent='Actualizado'; }catch(error){ v.textContent='Pendiente API'; console.warn(error.message); } } const s=e.target.closest('[data-shipment-status]'); if(s){ try{ await api.patch(`/shipments/${s.dataset.shipmentStatus}/status`,{estado:s.dataset.nextStatus}); s.textContent='Actualizado'; }catch(error){ s.textContent='Acción preparada'; console.warn(error.message); } } const a=e.target.closest('[data-visual-action]'); if(a){ a.textContent=`${a.dataset.visualAction} preparado`; } }); }
+
+async function init(){ if(!sellerPages.has(page)) return; const user=await sellerSession(); if(!user) return; bindVisualActions(); if(page==='vendedor.html') await dashboard(user); if(page==='vendedor-tienda.html') await storePage(); if(page==='vendedor-productos.html') await productsPage(); if(page==='vendedor-producto-form.html') await productFormPage(); if(page==='vendedor-pedidos.html') await ordersPage(); if(page==='vendedor-envios.html') await shipmentsPage(); if(page==='vendedor-resenas.html') await reviewsPage(); if(page==='vendedor-reputacion.html') await reputationPage(); if(page==='vendedor-ganancias.html') await earningsPage(); if(page==='vendedor-configuracion.html') await configPage(user); }
+init();
