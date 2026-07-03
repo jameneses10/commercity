@@ -1,4 +1,4 @@
-import { api } from './api.js';
+import { api, token } from './api.js';
 import { productCard, money } from './ui.js';
 import { UPLOADS_BASE_URL } from './config.js';
 
@@ -154,15 +154,22 @@ function bindClearFilters(){
   });
 }
 
-export function addLocalCart(product){
+export async function addCart(product){
+  const id=String(product.id || product.producto_id || product.product_id || '');
+  if(token()){
+    await api.post('/cart/items', { product_id:Number(id), cantidad:1 });
+    return { api:true };
+  }
   const key='cc_cart_local';
   const list=JSON.parse(localStorage.getItem(key) || '[]');
-  const id=String(product.id || product.producto_id || product.product_id || '');
   const found=list.find(item=>String(item.id)===id);
   if(found) found.cantidad += 1;
   else list.push({ id, nombre: product.nombre || 'Producto CommerCity', precio: productPrice(product), cantidad:1 });
   localStorage.setItem(key, JSON.stringify(list));
+  return { local:true };
 }
+
+export function addLocalCart(product){ return addCart(product); }
 
 function localFavorites(){
   try { return JSON.parse(localStorage.getItem('cc_favorites_local') || '[]'); } catch { return []; }
@@ -192,9 +199,14 @@ function bindProductActions(){
     if(cartBtn && cartBtn.dataset.boundCart!=='true'){
       const id=String(cartBtn.dataset.cart);
       const product=catalogProducts.find(item=>String(item.id || item.producto_id || item.product_id)===id) || { id, nombre:'Producto CommerCity', precio:0 };
-      addLocalCart(product);
-      cartBtn.dataset.boundCart='true';
-      cartBtn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadido';
+      try{
+        const result=await addCart(product);
+        cartBtn.dataset.boundCart='true';
+        cartBtn.innerHTML=`<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>${result.api?'Sincronizado':'Añadido'}`;
+      }catch(error){
+        cartBtn.dataset.boundCart='true';
+        cartBtn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Sin stock';
+      }
       setTimeout(()=>{ cartBtn.dataset.boundCart=''; cartBtn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir'; },1200);
     }
     const favBtn=event.target.closest('[data-favorite]');

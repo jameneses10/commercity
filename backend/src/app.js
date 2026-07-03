@@ -34,6 +34,8 @@ const returnRoutes = require('./routes/return.routes');
 const sellerReturnRoutes = require('./routes/sellerReturn.routes');
 const adminReturnRoutes = require('./routes/adminReturn.routes');
 const adminAccountRoutes = require('./routes/adminAccount.routes');
+const sellerWebRoutes = require('./routes/sellerWeb.routes');
+const adminWebRoutes = require('./routes/adminWeb.routes');
 const notFound = require('./middlewares/notFound');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -78,6 +80,8 @@ app.use('/api/v1/returns', returnRoutes);
 app.use('/api/v1/seller', sellerReturnRoutes);
 app.use('/api/v1/admin', adminReturnRoutes);
 app.use('/api/v1/admin', adminAccountRoutes);
+app.use('/api/v1/seller', sellerWebRoutes);
+app.use('/api/v1/admin', adminWebRoutes);
 app.use('/api/v1/shipments', shipmentRouter);
 app.use('/api/v1/seller', sellerShipmentRouter);
 app.use('/api/v1/reviews', reviewRouter);

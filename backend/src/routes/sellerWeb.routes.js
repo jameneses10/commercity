@@ -1,0 +1,11 @@
+const express = require('express');
+const controller = require('../controllers/webIntegration.controller');
+const authRequired = require('../middlewares/authRequired');
+const requireRole = require('../middlewares/requireRole');
+const router = express.Router();
+router.use(authRequired, requireRole('vendedor'));
+router.get('/products', controller.sellerProducts);
+router.get('/reviews', controller.sellerReviews);
+router.get('/reputation', controller.sellerReputation);
+router.get('/commissions', controller.sellerCommissions);
+module.exports = router;

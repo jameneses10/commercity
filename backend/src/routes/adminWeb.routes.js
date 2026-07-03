@@ -1,0 +1,13 @@
+const express = require('express');
+const controller = require('../controllers/webIntegration.controller');
+const authRequired = require('../middlewares/authRequired');
+const requireRole = require('../middlewares/requireRole');
+const router = express.Router();
+router.use(authRequired, requireRole('administrador'));
+router.get('/stores', controller.adminStores);
+router.get('/payments', controller.adminPayments);
+router.get('/shipments', controller.adminShipments);
+router.get('/reviews', controller.adminReviews);
+router.get('/commissions', controller.adminCommissions);
+router.patch('/commissions/:id/status', controller.updateCommissionStatus);
+module.exports = router;

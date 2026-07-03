@@ -1,2 +1,14 @@
-const express=require('express'); const controller=require('../controllers/cart.controller'); const authRequired=require('../middlewares/authRequired'); const requireRole=require('../middlewares/requireRole'); const {cartValidator}=require('../validators/cart.validators');
-const router=express.Router(); router.post('/validate',authRequired,requireRole('comprador'),cartValidator,controller.validate); module.exports=router;
+const express=require('express');
+const controller=require('../controllers/cart.controller');
+const authRequired=require('../middlewares/authRequired');
+const requireRole=require('../middlewares/requireRole');
+const {cartValidator}=require('../validators/cart.validators');
+const router=express.Router();
+router.use(authRequired,requireRole('comprador'));
+router.get('/',controller.get);
+router.post('/items',controller.addItem);
+router.patch('/items/:id',controller.updateItem);
+router.delete('/items/:id',controller.deleteItem);
+router.delete('/',controller.clear);
+router.post('/validate',cartValidator,controller.validate);
+module.exports=router;

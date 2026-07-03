@@ -1,4 +1,5 @@
 const { pool } = require('../config/database');
+const persistent = require('../models/cartPersistent.model');
 function err(m,s){const e=new Error(m);e.statusCode=s;return e;}
 async function validateCart(items){
  if(!Array.isArray(items)||!items.length) throw err('El carrito debe contener items.',400);
@@ -19,4 +20,11 @@ async function validateCart(items){
  const total=valid_items.reduce((a,b)=>a+b.subtotal,0);
  return {valid_items,invalid_items,total,advertencias:invalid_items.map(i=>i.reason)};
 }
-module.exports={validateCart};
+function positiveInt(value, field='cantidad') { const n=Number(value); if(!Number.isInteger(n)||n<1) throw err(`${field} debe ser un entero mayor o igual a 1.`,400); return n; }
+function id(value, field='id') { const n=Number(value); if(!Number.isInteger(n)||n<1) throw err(`${field} inválido.`,400); return n; }
+async function getCart(user){ return persistent.getCart(user.id); }
+async function addItem(user, body){ return persistent.upsertItem(user.id, id(body.product_id || body.producto_id, 'product_id'), positiveInt(body.cantidad)); }
+async function updateItem(user, itemId, body){ return persistent.updateItem(user.id, id(itemId), positiveInt(body.cantidad)); }
+async function deleteItem(user, itemId){ return persistent.deleteItem(user.id, id(itemId)); }
+async function clearCart(user){ return persistent.clearCart(user.id); }
+module.exports={validateCart,getCart,addItem,updateItem,deleteItem,clearCart};
