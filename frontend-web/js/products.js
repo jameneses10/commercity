@@ -181,6 +181,12 @@ function saveLocalFavorites(list){
 export async function addFavorite(product){
   const id=String(product.id || product.producto_id || product.product_id || '');
   if(!id) return { local:false };
+  if(!token()){
+    const list=localFavorites();
+    if(!list.some(item=>String(item.id)===id)) list.push({ id, nombre: product.nombre || 'Producto CommerCity', precio: productPrice(product), tienda_nombre: productStoreName(product) });
+    saveLocalFavorites(list);
+    return { local:true };
+  }
   try{
     await api.post(`/favorites/${encodeURIComponent(id)}`, {});
     return { api:true };
@@ -215,8 +221,11 @@ function bindProductActions(){
       const id=String(favBtn.dataset.favorite);
       const product=catalogProducts.find(item=>String(item.id || item.producto_id || item.product_id)===id) || { id, nombre:'Producto CommerCity', precio:0 };
       const result=await addFavorite(product);
-      favBtn.innerHTML=`<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-favorites-wishlist.svg" alt=""></span>${result.api?'Guardado':'Local'}`;
-      setTimeout(()=>{ favBtn.dataset.busyFavorite=''; favBtn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-favorites-wishlist.svg" alt=""></span>Favorito'; },1400);
+      favBtn.classList.add('saved');
+      favBtn.setAttribute('aria-label', 'Quitar de favoritos');
+      favBtn.setAttribute('title', result.api ? 'Favorito guardado' : 'Favorito guardado localmente');
+      favBtn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-favorites-wishlist.svg" alt=""></span>';
+      setTimeout(()=>{ favBtn.dataset.busyFavorite=''; favBtn.setAttribute('title', 'Quitar de favoritos'); },1400);
     }
   });
 }
