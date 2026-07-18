@@ -1,5 +1,5 @@
 import { api, token } from './api.js';
-import { productCard, money } from './ui.js';
+import { productCard, money, showToast, setUiIcon, syncHeaderStatusIcons } from './ui.js';
 import { UPLOADS_BASE_URL } from './config.js';
 
 const fallbackProducts = [
@@ -104,6 +104,8 @@ function renderCatalog(){
   const filtered = sortProducts(catalogProducts.filter(p=>matchesQuery(p, filters.q) && matchesCategory(p, filters.categoria)), filters.orden);
   if(!filtered.length){ renderNoResults(box, filters); return; }
   box.innerHTML = filtered.map(productCard).join('');
+  syncFavoriteButtons();
+  syncProductCartIcons();
   const summary = document.querySelector('[data-filter-summary]');
   if(summary){
     const origin=usingProductFallback ? 'vista visual de respaldo' : 'API real';
@@ -117,7 +119,7 @@ function categoryName(category){
 
 function categoryCard(category) {
   const name=categoryName(category);
-  return `<a class="cc-card cc-category-card" href="productos.html?categoria=${encodeURIComponent(category.id || name)}"><img class="cc-icon" src="assets/icons/cc-categories.svg" alt="Categoría"><span><b>${esc(name)}</b><small>${usingCategoryFallback ? 'Vista visual' : 'Categoría real'} · Explorar productos</small></span></a>`;
+  return `<a class="cc-card cc-category-card" href="productos.html?categoria=${encodeURIComponent(category.id || name)}"><img class="cc-icon" src="assets/icons/cc-menu-categories.svg" alt="Categoría"><span><b>${esc(name)}</b><small>${usingCategoryFallback ? 'Vista visual' : 'Categoría real'} · Explorar productos</small></span></a>`;
 }
 
 function populateCategoryFilter(categories){
@@ -177,55 +179,175 @@ function localFavorites(){
 function saveLocalFavorites(list){
   localStorage.setItem('cc_favorites_local', JSON.stringify(list));
 }
+function productId(product){
+  return String(product?.id || product?.producto_id || product?.product_id || '');
+}
+function favoriteProduct(record){
+  return record?.producto || record?.product || record?.product_data || record;
+}
+function favoriteRecordId(record){
+  const product=favoriteProduct(record);
+  return String(record?.producto_id || record?.product_id || product?.id || product?.producto_id || record?.id || '');
+}
+let favoriteIds = new Set();
+let favoriteStateLoaded = false;
+
+async function loadFavoriteState(){
+  if(token()){
+    try{
+      const data=await api.get('/favorites');
+      const favorites=data?.data?.favorites || data?.favorites || [];
+      favoriteIds = new Set(favorites.map(favoriteRecordId).filter(Boolean));
+      favoriteStateLoaded = true;
+      return favoriteIds;
+    }catch(error){
+      favoriteIds = new Set(localFavorites().map(favoriteRecordId).filter(Boolean));
+      favoriteStateLoaded = true;
+      return favoriteIds;
+    }
+  }
+  favoriteIds = new Set(localFavorites().map(favoriteRecordId).filter(Boolean));
+  favoriteStateLoaded = true;
+  return favoriteIds;
+}
+
+function setProductCartButtonState(btn, inCart){
+  setUiIcon(btn.querySelector('[data-product-cart-icon]') || btn, inCart ? 'cc-added-shopping-cart.svg' : 'cc-add-shopping-cart.svg', {className:'cc-icon', attrs:'data-product-cart-icon'});
+}
+function localCartIds(){
+  try{return new Set(JSON.parse(localStorage.getItem('cc_cart_local') || '[]').filter(item=>Number(item.cantidad || item.quantity || 0)>0).map(item=>String(item.id || item.producto_id || item.product_id)));}
+  catch{return new Set();}
+}
+async function cartProductIds(){
+  if(token()){
+    try{
+      const data=await api.get('/cart');
+      return new Set((data?.data?.items || data?.items || []).filter(item=>Number(item.cantidad || item.quantity || 0)>0).map(item=>String(item.producto_id || item.product_id || item.id)));
+    }catch{}
+  }
+  return localCartIds();
+}
+async function syncProductCartIcons(){
+  const ids=await cartProductIds();
+  document.querySelectorAll('[data-cart]').forEach(btn=>setProductCartButtonState(btn, ids.has(String(btn.dataset.cart))));
+  syncHeaderStatusIcons();
+  return ids;
+}
+function setFavoriteButtonState(btn, saved){
+  btn.classList.toggle('is-favorite', saved);
+  btn.setAttribute('aria-pressed', String(saved));
+  btn.setAttribute('aria-label', saved ? 'Quitar de favoritos' : 'Agregar a favoritos');
+  btn.setAttribute('title', saved ? 'Quitar de favoritos' : 'Agregar a favoritos');
+  setUiIcon(btn.querySelector('[data-product-favorite-icon]') || btn, saved ? 'cc-added-favorites-wishlist.svg' : 'cc-favorites-wishlist.svg', {className:'cc-icon', attrs:'data-product-favorite-icon'});
+}
+function applyFavoriteState(){
+  document.querySelectorAll('.cc-product-favorite[data-favorite]').forEach(btn=>{
+    setFavoriteButtonState(btn, favoriteIds.has(String(btn.dataset.favorite)));
+  });
+}
+async function syncFavoriteButtons(){
+  if(!favoriteStateLoaded) await loadFavoriteState();
+  applyFavoriteState();
+}
 
 export async function addFavorite(product){
-  const id=String(product.id || product.producto_id || product.product_id || '');
+  const id=productId(product);
   if(!id) return { local:false };
   if(!token()){
     const list=localFavorites();
-    if(!list.some(item=>String(item.id)===id)) list.push({ id, nombre: product.nombre || 'Producto CommerCity', precio: productPrice(product), tienda_nombre: productStoreName(product) });
+    if(!list.some(item=>favoriteRecordId(item)===id)) list.push({ id, nombre: product.nombre || 'Producto CommerCity', precio: productPrice(product), tienda_nombre: productStoreName(product) });
     saveLocalFavorites(list);
+    favoriteIds.add(id);
     return { local:true };
   }
   try{
     await api.post(`/favorites/${encodeURIComponent(id)}`, {});
+    favoriteIds.add(id);
     return { api:true };
   }catch(error){
-    if(error.status===409) return { api:true, duplicate:true };
-    const list=localFavorites();
-    if(!list.some(item=>String(item.id)===id)) list.push({ id, nombre: product.nombre || 'Producto CommerCity', precio: productPrice(product), tienda_nombre: productStoreName(product) });
-    saveLocalFavorites(list);
+    if(error.status===409){ favoriteIds.add(id); return { api:true, duplicate:true }; }
+    console.warn('No fue posible agregar favorito.', error.message || error);
+    throw error;
+  }
+}
+
+export async function removeFavorite(product){
+  const id=productId(product);
+  if(!id) return { local:false };
+  if(!token()){
+    saveLocalFavorites(localFavorites().filter(item=>favoriteRecordId(item)!==id));
+    favoriteIds.delete(id);
     return { local:true };
+  }
+  try{
+    await api.delete(`/favorites/${encodeURIComponent(id)}`);
+    favoriteIds.delete(id);
+    return { api:true };
+  }catch(error){
+    console.warn('No fue posible quitar favorito.', error.message || error);
+    throw error;
   }
 }
 
 function bindProductActions(){
   document.addEventListener('click', async event=>{
     const cartBtn=event.target.closest('[data-cart]');
-    if(cartBtn && cartBtn.dataset.boundCart!=='true'){
+    if(cartBtn){
+      const now=Date.now();
+      if(cartBtn.dataset.busyCart==='true' || Number(cartBtn.dataset.lockedUntil || 0) > now) return;
+      cartBtn.dataset.busyCart='true';
+      cartBtn.dataset.lockedUntil=String(now+900);
+      cartBtn.disabled=true;
+      cartBtn.setAttribute('aria-busy','true');
       const id=String(cartBtn.dataset.cart);
       const product=catalogProducts.find(item=>String(item.id || item.producto_id || item.product_id)===id) || { id, nombre:'Producto CommerCity', precio:0 };
       try{
-        const result=await addCart(product);
-        cartBtn.dataset.boundCart='true';
-        cartBtn.innerHTML=`<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>${result.api?'Sincronizado':'Añadido'}`;
+        await addCart(product);
+        setProductCartButtonState(cartBtn, true);
+        await syncHeaderStatusIcons();
+        showToast('Producto añadido al carrito');
       }catch(error){
-        cartBtn.dataset.boundCart='true';
-        cartBtn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Sin stock';
+        console.warn('No fue posible agregar al carrito.', error.message || error);
+      }finally{
+        cartBtn.dataset.busyCart='false';
+        cartBtn.disabled=false;
+        cartBtn.removeAttribute('aria-busy');
+        const remaining=Number(cartBtn.dataset.lockedUntil || 0)-Date.now();
+        window.setTimeout(()=>{ cartBtn.dataset.lockedUntil=''; },Math.max(0,remaining));
       }
-      setTimeout(()=>{ cartBtn.dataset.boundCart=''; cartBtn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir'; },1200);
     }
     const favBtn=event.target.closest('[data-favorite]');
-    if(favBtn && favBtn.dataset.busyFavorite!=='true'){
+    if(favBtn){
+      const now=Date.now();
+      if(favBtn.dataset.busyFavorite==='true' || Number(favBtn.dataset.lockedUntil || 0) > now) return;
       favBtn.dataset.busyFavorite='true';
+      favBtn.dataset.lockedUntil=String(now+900);
+      favBtn.disabled=true;
+      favBtn.setAttribute('aria-busy','true');
       const id=String(favBtn.dataset.favorite);
-      const product=catalogProducts.find(item=>String(item.id || item.producto_id || item.product_id)===id) || { id, nombre:'Producto CommerCity', precio:0 };
-      const result=await addFavorite(product);
-      favBtn.classList.add('saved');
-      favBtn.setAttribute('aria-label', 'Quitar de favoritos');
-      favBtn.setAttribute('title', result.api ? 'Favorito guardado' : 'Favorito guardado localmente');
-      favBtn.innerHTML='<span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-favorites-wishlist.svg" alt=""></span>';
-      setTimeout(()=>{ favBtn.dataset.busyFavorite=''; favBtn.setAttribute('title', 'Quitar de favoritos'); },1400);
+      const product=catalogProducts.find(item=>productId(item)===id) || { id, nombre:'Producto CommerCity', precio:0 };
+      const wasSaved=favBtn.getAttribute('aria-pressed')==='true' || favoriteIds.has(id);
+      try{
+        if(wasSaved) await removeFavorite(product);
+        else{
+          await addFavorite(product);
+          showToast('Añadido a favoritos con éxito');
+        }
+        if(favBtn.classList.contains('cc-product-favorite')) setFavoriteButtonState(favBtn, !wasSaved);
+        else {
+          setUiIcon(favBtn.querySelector('[data-product-favorite-icon]') || favBtn, !wasSaved ? 'cc-added-favorites-wishlist.svg' : 'cc-favorites-wishlist.svg', {className:'cc-icon', attrs:'data-product-favorite-icon'});
+          favBtn.lastChild && favBtn.lastChild.nodeType===3 && (favBtn.lastChild.textContent = wasSaved?'Agregar a favoritos':'Quitar de favoritos');
+        }
+      }catch(error){
+        console.warn(wasSaved ? 'No fue posible quitar favorito.' : 'No fue posible agregar favorito.', error.message || error);
+        if(favBtn.classList.contains('cc-product-favorite')) setFavoriteButtonState(favBtn, wasSaved);
+      }finally{
+        favBtn.dataset.busyFavorite='false';
+        favBtn.disabled=false;
+        favBtn.removeAttribute('aria-busy');
+        const remaining=Number(favBtn.dataset.lockedUntil || 0)-Date.now();
+        window.setTimeout(()=>{ favBtn.dataset.lockedUntil=''; },Math.max(0,remaining));
+      }
     }
   });
 }
@@ -247,6 +369,8 @@ export async function loadProducts(limit = 8) {
       setInitialFilters(); bindCatalogFilters(); renderCatalog();
     } else {
       box.innerHTML = catalogProducts.map(productCard).join('');
+      await syncFavoriteButtons();
+      await syncProductCartIcons();
     }
   } catch(error) {
     usingProductFallback = true;
@@ -255,6 +379,8 @@ export async function loadProducts(limit = 8) {
       setInitialFilters(); bindCatalogFilters(); renderCatalog();
     } else {
       box.innerHTML = `<div class="cc-card cc-soft-warning"><h3 class="text-xl font-bold">No pudimos cargar productos reales.</h3><p>${esc(error.message)} Se muestra respaldo visual controlado.</p></div>${fallbackProducts.map(productCard).join('')}`;
+      await syncFavoriteButtons();
+      await syncProductCartIcons();
     }
   } finally {
     bindProductActions();
@@ -292,9 +418,11 @@ export async function loadProductDetail() {
   try {
     const data = await api.get(`/products/${encodeURIComponent(id)}`);
     const p = data.data?.product || data.product || data.producto || data.data || data;
-    box.innerHTML = `<div class="cc-grid cols-2"><section class="cc-card"><div class="cc-product-media h-96"><img src="${esc(productImage(p))}" alt="${esc(p.nombre || 'Producto CommerCity')}"></div></section><section class="cc-card"><span class="cc-chip orange">Producto real</span><h1 class="text-4xl font-bold mt-4">${esc(p.nombre || 'Producto CommerCity')}</h1><p class="cc-muted mt-3">${esc(p.descripcion || 'Producto publicado por vendedor verificado.')}</p><p class="cc-price mt-5">${money(productPrice(p))}</p><p class="mt-2">Stock: <b>${esc(p.stock ?? 'Disponible')}</b></p><p class="cc-muted mt-2">Categoría: <b>${esc(productCategoryName(p))}</b></p><p class="cc-muted mt-2">Tienda: <b>${esc(productStoreName(p))}</b></p><div class="grid md:grid-cols-3 gap-3 mt-6"><button class="cc-btn" data-cart="${esc(p.id || id)}"><span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-shopping-cart.svg" alt=""></span>Añadir al carrito</button><button class="cc-btn outline" data-favorite="${esc(p.id || id)}" type="button"><span class="cc-btn-icon"><img class="cc-icon" src="assets/icons/cc-favorites-wishlist.svg" alt=""></span>Favorito</button><a class="cc-btn secondary" href="chat.html">Consultar vendedor</a></div></section></div>`;
+    box.innerHTML = `<div class="cc-grid cols-2"><section class="cc-card"><div class="cc-product-media h-96"><img src="${esc(productImage(p))}" alt="${esc(p.nombre || 'Producto CommerCity')}"></div></section><section class="cc-card"><span class="cc-chip orange">Producto real</span><h1 class="text-4xl font-bold mt-4">${esc(p.nombre || 'Producto CommerCity')}</h1><p class="cc-muted mt-3">${esc(p.descripcion || 'Producto publicado por vendedor verificado.')}</p><p class="cc-price mt-5">${money(productPrice(p))}</p><p class="mt-2">Stock: <b>${esc(p.stock ?? 'Disponible')}</b></p><p class="cc-muted mt-2">Categoría: <b>${esc(productCategoryName(p))}</b></p><p class="cc-muted mt-2">Tienda: <b>${esc(productStoreName(p))}</b></p><div class="grid md:grid-cols-3 gap-3 mt-6"><button class="cc-btn" data-cart="${esc(p.id || id)}"><span class="cc-btn-icon"><span class="cc-ui-icon cc-ui-icon-mask cc-icon-tone-orange cc-icon" style="--cc-icon-url:url('/assets/icons/cc-add-shopping-cart.svg')" data-icon-name="cc-add-shopping-cart.svg" data-product-cart-icon aria-hidden="true"></span></span>Añadir al carrito</button><button class="cc-btn outline" data-favorite="${esc(p.id || id)}" type="button"><span class="cc-btn-icon"><span class="cc-ui-icon cc-ui-icon-mask cc-icon-tone-red cc-icon" style="--cc-icon-url:url('/assets/icons/cc-favorites-wishlist.svg')" data-icon-name="cc-favorites-wishlist.svg" data-product-favorite-icon aria-hidden="true"></span></span>Favorito</button><a class="cc-btn secondary" href="chat.html">Consultar vendedor</a></div></section></div>`;
     catalogProducts=[p];
     bindProductActions();
+    await syncFavoriteButtons();
+    await syncProductCartIcons();
   } catch(error) {
     box.innerHTML = `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-product-detail.svg" alt=""><h1 class="text-3xl font-bold">No pudimos cargar este producto.</h1><p class="cc-muted">${esc(error.message)}</p><a class="cc-btn" href="productos.html">Volver al catálogo</a></section>`;
   }

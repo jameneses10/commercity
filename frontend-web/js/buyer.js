@@ -1,5 +1,5 @@
 import { api, currentUser, token, updateStoredUser } from './api.js';
-import { money, showMessage } from './ui.js';
+import { money, showMessage, syncHeaderNotificationIcon } from './ui.js';
 
 function path(){ return location.pathname.split('/').pop() || 'index.html'; }
 function icon(name){ return `<img class="cc-icon" src="assets/icons/${name}" alt="">`; }
@@ -157,8 +157,8 @@ function bindNotificationFilters(){
 async function loadNotifications(){
   const box=document.querySelector('[data-notifications-list]'); if(!box) return;
   box.innerHTML='<section class="cc-card cc-loading-card">Cargando notificaciones reales...</section>';
-  try{ const data=await api.get('/notifications'); const list=data?.data?.notifications || data?.notifications || []; box.innerHTML=list.length ? list.map(notificationCard).join('') : empty('cc-notifications.svg','No tienes notificaciones.','Los avisos reales de pedidos, pagos y sistema aparecerán aquí.'); }
-  catch(error){ box.innerHTML=empty('cc-notifications.svg','No pudimos cargar notificaciones.',error.message); }
+  try{ const data=await api.get('/notifications'); const list=data?.data?.notifications || data?.notifications || []; box.innerHTML=list.length ? list.map(notificationCard).join('') : empty('cc-notifications.svg','No tienes notificaciones.','Los avisos reales de pedidos, pagos y sistema aparecerán aquí.'); syncHeaderNotificationIcon(list.filter(n=>!notificationRead(n)).length); }
+  catch(error){ box.innerHTML=empty('cc-notifications.svg','No pudimos cargar notificaciones.',error.message); syncHeaderNotificationIcon(0); }
   bindNotificationFilters();
 }
 async function initNotifications(){

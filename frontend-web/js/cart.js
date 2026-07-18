@@ -1,5 +1,5 @@
 import { api, token } from './api.js';
-import { showMessage, money } from './ui.js';
+import { showMessage, money, syncHeaderStatusIcons } from './ui.js';
 
 let apiCart = null;
 function localCart(){ try { return JSON.parse(localStorage.getItem('cc_cart_local') || '[]'); } catch { return []; } }
@@ -20,6 +20,7 @@ function renderItems(items, fromApi=false){
   }
   document.querySelectorAll('[data-cart-subtotal]').forEach(el=>{ el.textContent=money(subtotal); });
   document.querySelectorAll('[data-cart-total]').forEach(el=>{ el.textContent=money(subtotal); });
+  syncHeaderStatusIcons();
 }
 async function loadApiCart(){
   apiCart=(await api.get('/cart')).data;
