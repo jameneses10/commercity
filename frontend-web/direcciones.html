@@ -10,9 +10,10 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="css/styles.css">
 </head>
-<body data-page="comprador">
+<body data-page="comprador" data-role-sidebar="comprador">
 <main class="cc-container cc-section cc-buyer-page"><div class="cc-section-title"><div><span class="cc-chip orange"><img class="cc-icon" src="assets/icons/cc-address-location.svg" alt=""> Envíos</span><h1 class="text-4xl font-bold mt-3">Mis direcciones</h1><p class="cc-muted">Gestiona direcciones reales de entrega desde la API de CommerCity.</p></div><button class="cc-btn" type="button" data-scroll-target="addressForm">Agregar dirección</button></div><section class="cc-grid cols-2" data-addresses-list></section><section class="cc-card mt-5" id="addressForm"><h2 class="text-2xl font-bold mb-4">Agregar dirección</h2><div id="addressMsg"></div><form class="cc-form cc-form-grid" novalidate data-address-form><label class="cc-label">Nombre de destinatario<input class="cc-input" name="nombre_destinatario" placeholder="Nombre de quien recibe"></label><label class="cc-label">Teléfono<input class="cc-input" name="telefono" inputmode="tel" required></label><label class="cc-label">Departamento<input class="cc-input" name="departamento" required></label><label class="cc-label">Ciudad<input class="cc-input" name="ciudad" required></label><label class="cc-label">Dirección<input class="cc-input" name="direccion" required></label><label class="cc-label">Barrio / código postal<input class="cc-input" name="barrio"></label><label class="cc-check"><input type="checkbox" name="es_principal"><span>Marcar como dirección principal</span></label><button class="cc-btn" type="submit">Guardar dirección real</button></form></section></main>
 <script type="module" src="js/main.js"></script>
+<script type="module" src="js/role-sidebar.js"></script>
 <script type="module" src="js/phase617.js"></script><script type="module" src="js/buyer.js"></script>
 </body>
 </html>

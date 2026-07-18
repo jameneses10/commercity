@@ -10,21 +10,9 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="css/styles.css">
 </head>
-<body data-page="vendedor">
+<body data-page="vendedor" data-role-sidebar="vendedor">
 <main class="cc-container cc-dashboard">
-  <aside class="cc-sidebar">
-    <h2 class="text-xl font-bold mb-3">Vendedor</h2>
-    <a class="cc-side-link active" href="vendedor.html"><img class="cc-icon" src="assets/icons/cc-store-shopping-bag.svg" alt="Panel">Panel</a>
-    <a class="cc-side-link" href="vendedor-tienda.html"><img class="cc-icon" src="assets/icons/cc-store-shopping-bag.svg" alt="Tienda">Mi tienda</a>
-    <a class="cc-side-link" href="vendedor-productos.html"><img class="cc-icon" src="assets/icons/cc-products-management.svg" alt="Productos">Productos</a>
-    <a class="cc-side-link" href="vendedor-producto-form.html"><img class="cc-icon" src="assets/icons/cc-create-product.svg" alt="Nuevo">Nuevo producto</a>
-    <a class="cc-side-link" href="vendedor-pedidos.html"><img class="cc-icon" src="assets/icons/cc-order-history.svg" alt="Pedidos">Pedidos</a>
-    <a class="cc-side-link" href="vendedor-envios.html"><img class="cc-icon" src="assets/icons/cc-shipping-package.svg" alt="Envíos">Envíos</a>
-    <a class="cc-side-link" href="vendedor-resenas.html"><img class="cc-icon" src="assets/icons/cc-rating-star-review.svg" alt="Reseñas">Reseñas</a>
-    <a class="cc-side-link" href="vendedor-reputacion.html"><img class="cc-icon" src="assets/icons/cc-rating-star-review.svg" alt="Reputación">Reputación</a>
-    <a class="cc-side-link" href="vendedor-ganancias.html"><img class="cc-icon" src="assets/icons/cc-commission.svg" alt="Ganancias">Ganancias</a>
-    <a class="cc-side-link" href="vendedor-configuracion.html"><img class="cc-icon" src="assets/icons/cc-settings-general.svg" alt="Configuración">Configuración</a>
-  </aside>
+  <aside id="role-sidebar" class="cc-sidebar" data-role="vendedor"></aside>
   <section class="grid gap-5">
     <div class="cc-card cc-module-hero">
       <span class="cc-chip orange"><img class="cc-icon" src="assets/icons/cc-store-shopping-bag.svg" alt=""> Centro vendedor</span>
@@ -60,5 +48,6 @@
   </section>
 </main>
 <script type="module" src="js/main.js"></script>
+<script type="module" src="js/role-sidebar.js"></script>
 <script type="module" src="js/seller.js"></script></body>
 </html>

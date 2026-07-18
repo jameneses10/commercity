@@ -10,24 +10,9 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="css/styles.css">
 </head>
-<body data-page="admin">
+<body data-page="admin" data-role-sidebar="administrador">
 <main class="cc-container cc-dashboard">
-  <aside class="cc-sidebar">
-    <h2 class="text-xl font-bold mb-3">Administrador</h2>
-    <a class="cc-side-link active" href="admin.html"><img class="cc-icon" src="assets/icons/cc-admin-dashboard.svg" alt="Panel">Panel</a>
-    <a class="cc-side-link" href="admin-usuarios.html"><img class="cc-icon" src="assets/icons/cc-user-profile.svg" alt="Usuarios">Usuarios</a>
-    <a class="cc-side-link" href="admin-tiendas.html"><img class="cc-icon" src="assets/icons/cc-store-shopping-bag.svg" alt="Tiendas">Tiendas</a>
-    <a class="cc-side-link" href="admin-productos.html"><img class="cc-icon" src="assets/icons/cc-products-management.svg" alt="Productos">Productos</a>
-    <a class="cc-side-link" href="admin-categorias.html"><img class="cc-icon" src="assets/icons/cc-categories.svg" alt="Categorías">Categorías</a>
-    <a class="cc-side-link" href="admin-pedidos.html"><img class="cc-icon" src="assets/icons/cc-order-history.svg" alt="Pedidos">Pedidos</a>
-    <a class="cc-side-link" href="admin-pagos.html"><img class="cc-icon" src="assets/icons/cc-credit-card.svg" alt="Pagos">Pagos</a>
-    <a class="cc-side-link" href="admin-envios.html"><img class="cc-icon" src="assets/icons/cc-shipping-package.svg" alt="Envíos">Envíos</a>
-    <a class="cc-side-link" href="admin-resenas.html"><img class="cc-icon" src="assets/icons/cc-rating-star-review.svg" alt="Reseñas">Reseñas</a>
-    <a class="cc-side-link" href="admin-comisiones.html"><img class="cc-icon" src="assets/icons/cc-commission.svg" alt="Comisiones">Comisiones</a>
-    <a class="cc-side-link" href="admin-notificaciones.html"><img class="cc-icon" src="assets/icons/cc-notifications.svg" alt="Notificaciones">Notificaciones</a>
-    <a class="cc-side-link" href="admin-logs.html"><img class="cc-icon" src="assets/icons/cc-audit-logs.svg" alt="Logs">Logs</a>
-    <a class="cc-side-link" href="admin-reportes.html"><img class="cc-icon" src="assets/icons/cc-reports-analytics.svg" alt="Reportes">Reportes</a>
-  </aside>
+  <aside id="role-sidebar" class="cc-sidebar" data-role="admin"></aside>
   <section class="grid gap-5">
     <div class="cc-card cc-module-hero"><span class="cc-chip orange"><img class="cc-icon" src="assets/icons/cc-admin-dashboard.svg" alt=""> Centro administrativo</span><h1 class="text-4xl font-bold mt-3">Panel administrador</h1><p class="cc-muted">Supervisa usuarios, tiendas, productos, pedidos, pagos, envíos, reseñas, comisiones y reportes.</p></div>
     <div class="cc-grid cols-4"><a class="cc-card cc-metric-card" href="admin-usuarios.html"><b>Usuarios</b><strong>1.2K</strong><span>Visual</span></a><a class="cc-card cc-metric-card" href="admin-tiendas.html"><b>Tiendas</b><strong>120</strong><span>Activas</span></a><a class="cc-card cc-metric-card" href="admin-pedidos.html"><b>Pedidos</b><strong>830</strong><span>Procesados</span></a><a class="cc-card cc-metric-card" href="admin-comisiones.html"><b>Comisiones</b><strong>$4.8M</strong><span>Visual</span></a></div>
@@ -50,5 +35,6 @@
   </section>
 </main>
 <script type="module" src="js/main.js"></script>
+<script type="module" src="js/role-sidebar.js"></script>
 <script type="module" src="js/admin.js"></script></body>
 </html>
