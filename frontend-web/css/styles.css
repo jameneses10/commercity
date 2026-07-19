@@ -97,3 +97,43 @@ body>main{flex:1 0 auto}h1,h2,h3,h4,.brand-title,.cc-brand-word{font-family:Popp
 .cc-night .cc-product-media img:not([src*="assets/icons/"]){background:initial;border:0;padding:0}
 .cc-night .cc-avatar:not(img),.cc-night img.cc-avatar[src*="assets/icons/"]{background:#172033;border-color:#334155}
 .cc-night img.cc-avatar:not([src*="assets/icons/"]){background:initial;border:0;padding:0}
+/* Fase 6.33: sistema global de botones semánticos e iconos internos sin superficies secundarias */
+.cc-btn-primary,.cc-btn{background:#fa8000;border-color:#fa8000;color:#ffffff}
+.cc-btn-secondary,.cc-btn.secondary,.cc-product-view{background:#2276ff;border-color:#2276ff;color:#ffffff}
+.cc-btn-tertiary,.cc-btn.tertiary{background:#102a6b;border-color:#102a6b;color:#ffffff}
+.cc-btn-outline,.cc-btn.outline{background:#ffffff;border-color:#2276ff;color:#2276ff}
+.cc-btn-danger,.cc-btn.danger{background:#dc2626;border-color:#dc2626;color:#ffffff}
+.cc-btn-danger-strong,.cc-btn.danger-strong{background:#991b1b;border-color:#991b1b;color:#ffffff}
+.cc-btn-success,.cc-btn.success{background:#16a34a;border-color:#16a34a;color:#ffffff}
+.cc-btn-history,.cc-btn.history{background:#7e22ce;border-color:#7e22ce;color:#ffffff}
+.cc-btn-neutral,.cc-btn.dark,.cc-btn.neutral{background:#475569;border-color:#475569;color:#ffffff}
+.cc-btn-warning,.cc-btn.warning{background:#d97706;border-color:#d97706;color:#ffffff}
+.cc-btn:hover,.cc-btn:focus-visible{background:#c96500;border-color:#c96500;color:#ffffff}
+.cc-btn-secondary:hover,.cc-btn.secondary:hover,.cc-product-view:hover,.cc-product-view:focus-visible{background:#165bd8;border-color:#165bd8;color:#ffffff}
+.cc-btn-tertiary:hover,.cc-btn.tertiary:hover{background:#1e3a8a;border-color:#1e3a8a;color:#ffffff}
+.cc-btn-outline:hover,.cc-btn-outline:focus-visible,.cc-btn.outline:hover,.cc-btn.outline:focus-visible{background:#e9f1ff;border-color:#165bd8;color:#165bd8}
+.cc-btn-danger:hover,.cc-btn.danger:hover{background:#b91c1c;border-color:#b91c1c;color:#ffffff}
+.cc-btn-danger-strong:hover,.cc-btn.danger-strong:hover{background:#7f1d1d;border-color:#7f1d1d;color:#ffffff}
+.cc-btn-success:hover,.cc-btn.success:hover{background:#15803d;border-color:#15803d;color:#ffffff}
+.cc-btn-history:hover,.cc-btn.history:hover{background:#6b21a8;border-color:#6b21a8;color:#ffffff}
+.cc-btn-neutral:hover,.cc-btn.dark:hover,.cc-btn.neutral:hover{background:#334155;border-color:#334155;color:#ffffff}
+.cc-btn-warning:hover,.cc-btn.warning:hover{background:#b45309;border-color:#b45309;color:#ffffff}
+.cc-btn:active{transform:translateY(1px)}
+.cc-btn:disabled,.cc-btn[aria-disabled="true"]{background:#cbd5e1;border-color:#cbd5e1;color:#334155;cursor:not-allowed;transform:none}
+.cc-btn .cc-btn-icon,button .cc-btn-icon,a.cc-btn .cc-btn-icon,[role="button"] .cc-btn-icon{background:none;border:0;padding:0;border-radius:0;box-shadow:none;filter:none;color:currentColor}
+.cc-btn .cc-ui-icon,button .cc-ui-icon,a.cc-btn .cc-ui-icon,[role="button"] .cc-ui-icon,.cc-btn svg,button svg,a.cc-btn svg,[role="button"] svg,.cc-btn img.cc-icon,button img.cc-icon,a.cc-btn img.cc-icon,[role="button"] img.cc-icon{border:0;padding:0;border-radius:0;box-shadow:none;filter:none;color:currentColor}
+.cc-btn .cc-ui-icon-mask,button .cc-ui-icon-mask,a.cc-btn .cc-ui-icon-mask,[role="button"] .cc-ui-icon-mask{background-color:currentColor}
+.cc-icon-btn .cc-header-icon,.cc-icon-btn .cc-header-icon-svg,.cc-icon-btn .cc-ui-icon,.cc-icon-btn svg{border:0;padding:0;border-radius:0;box-shadow:none;filter:none;background-color:currentColor}
+.cc-icon-btn .cc-header-icon-svg,.cc-icon-btn svg.cc-header-icon-svg{background:initial}
+.cc-night .cc-btn-primary,.cc-night .cc-btn{background:#fa8000;border-color:#fa8000;color:#ffffff}
+.cc-night .cc-btn-secondary,.cc-night .cc-btn.secondary,.cc-night .cc-product-view{background:#2276ff;border-color:#2276ff;color:#ffffff}
+.cc-night .cc-btn-tertiary,.cc-night .cc-btn.tertiary{background:#102a6b;border-color:#102a6b;color:#ffffff}
+.cc-night .cc-btn-outline,.cc-night .cc-btn.outline{background:#172033;border-color:#60a5fa;color:#bfdbfe}
+.cc-night .cc-btn-danger,.cc-night .cc-btn.danger{background:#dc2626;border-color:#dc2626;color:#ffffff}
+.cc-night .cc-btn-danger-strong,.cc-night .cc-btn.danger-strong{background:#991b1b;border-color:#991b1b;color:#ffffff}
+.cc-night .cc-btn-success,.cc-night .cc-btn.success{background:#16a34a;border-color:#16a34a;color:#ffffff}
+.cc-night .cc-btn-history,.cc-night .cc-btn.history{background:#7e22ce;border-color:#7e22ce;color:#ffffff}
+.cc-night .cc-btn-neutral,.cc-night .cc-btn.dark,.cc-night .cc-btn.neutral{background:#475569;border-color:#475569;color:#ffffff}
+.cc-night .cc-btn-warning,.cc-night .cc-btn.warning{background:#d97706;border-color:#d97706;color:#ffffff}
+.cc-night .cc-btn:disabled,.cc-night .cc-btn[aria-disabled="true"]{background:#334155;border-color:#334155;color:#cbd5e1;cursor:not-allowed;transform:none}
+.cc-night .cc-btn .cc-btn-icon,.cc-night button .cc-btn-icon,.cc-night a.cc-btn .cc-btn-icon,.cc-night [role="button"] .cc-btn-icon{background:none;border:0;padding:0;border-radius:0;box-shadow:none;filter:none;color:currentColor}

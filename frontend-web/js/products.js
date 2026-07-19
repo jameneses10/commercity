@@ -91,7 +91,7 @@ function setInitialFilters(){
 }
 
 function renderNoResults(box, filters){
-  box.innerHTML = `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-search.svg" alt=""><h2 class="text-2xl font-bold">No encontramos productos para tu búsqueda.</h2><p class="cc-muted">Ajusta el texto, cambia la categoría o limpia los filtros para volver al catálogo completo.</p><button class="cc-btn" type="button" data-clear-filters>Limpiar filtros</button></section>`;
+  box.innerHTML = `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-search.svg" alt=""><h2 class="text-2xl font-bold">No encontramos productos para tu búsqueda.</h2><p class="cc-muted">Ajusta el texto, cambia la categoría o limpia los filtros para volver al catálogo completo.</p><button class="cc-btn outline" type="button" data-clear-filters>Limpiar filtros</button></section>`;
   const summary=document.querySelector('[data-filter-summary]');
   if(summary) summary.textContent = `Sin resultados para “${filters.q || 'todos'}”.`;
   bindClearFilters();
@@ -411,7 +411,7 @@ export async function loadProductDetail() {
   if (!box) return;
   const id = new URLSearchParams(location.search).get('id');
   if(!id){
-    box.innerHTML = `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-product-detail.svg" alt=""><h1 class="text-3xl font-bold">Producto no especificado.</h1><p class="cc-muted">Abre el detalle desde el catálogo para consultar un producto real.</p><a class="cc-btn" href="productos.html">Volver al catálogo</a></section>`;
+    box.innerHTML = `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-product-detail.svg" alt=""><h1 class="text-3xl font-bold">Producto no especificado.</h1><p class="cc-muted">Abre el detalle desde el catálogo para consultar un producto real.</p><a class="cc-btn outline" href="productos.html">Volver al catálogo</a></section>`;
     return;
   }
   box.innerHTML = '<div class="cc-card cc-loading-card">Cargando producto real...</div>';
@@ -424,6 +424,6 @@ export async function loadProductDetail() {
     await syncFavoriteButtons();
     await syncProductCartIcons();
   } catch(error) {
-    box.innerHTML = `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-product-detail.svg" alt=""><h1 class="text-3xl font-bold">No pudimos cargar este producto.</h1><p class="cc-muted">${esc(error.message)}</p><a class="cc-btn" href="productos.html">Volver al catálogo</a></section>`;
+    box.innerHTML = `<section class="cc-card cc-empty-state"><img class="cc-icon-lg" src="assets/icons/cc-product-detail.svg" alt=""><h1 class="text-3xl font-bold">No pudimos cargar este producto.</h1><p class="cc-muted">${esc(error.message)}</p><a class="cc-btn outline" href="productos.html">Volver al catálogo</a></section>`;
   }
 }
